@@ -1,0 +1,1 @@
+import Nav from '../components/Nav';import Footer from '../components/Footer';export default function Contact(){return (<div><Nav/><h1>Contact</h1><form><input placeholder='Name'/><br/><input placeholder='Email'/><br/><textarea placeholder='Message'></textarea><br/><button>Send</button></form><Footer/></div>)}
