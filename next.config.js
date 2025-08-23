@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: "/tapestry-vertical-gardens",
-  output: "export",
+  // basePath: "/tapestry-vertical-gardens",
+  // output: "export",
   reactStrictMode: true,
 };
 

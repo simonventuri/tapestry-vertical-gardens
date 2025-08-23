@@ -36,7 +36,7 @@ a:hover {
     padding: 2rem
 }
 
-.nav {
+.main-nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -48,25 +48,20 @@ a:hover {
     z-index: 10
 }
 
-.nav .brand {
+.main-nav .brand {
     font-weight: 700;
     color: var(--green)
 }
 
-.nav .links a {
+.main-nav .links a {
     margin-left: 1rem
 }
 
-.nav .cta {
+.main-nav .cta {
     background: var(--green);
     color: #fff;
     padding: .5rem .9rem;
     border-radius: .5rem
-}
-
-.nav img {
-    max-width: 40%;
-    height: auto;
 }
 
 .hero {
@@ -172,6 +167,11 @@ footer {
 img {
     max-width: 100%;
     border-radius: .75rem
+}
+
+.brand img {
+    max-width: 50%;
+    height: auto
 }
 
 .prose p {
