@@ -16,8 +16,148 @@ export default function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "Organization", "name": "Tapestry Vertical Gardens", "url": "https://www.tapestryverticalgardens.com/", "logo": "https://www.tapestryverticalgardens.com/images/logo.jpg", "sameAs": [] }) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "LocalBusiness", "name": "Tapestry Vertical Gardens", "image": "https://www.tapestryverticalgardens.com/images/hero-vertical-gardens-uk.jpg", "address": { "@type": "PostalAddress", "streetAddress": "[ADD STREET ADDRESS]", "addressLocality": "Devon", "addressRegion": "[ADD COUNTY]", "postalCode": "[ADD POSTCODE]", "addressCountry": "GB" }, "telephone": "[ADD PHONE NUMBER]", "areaServed": "GB", "url": "https://www.tapestryverticalgardens.com/" }) }} />
     </Head>
+
     <Nav />
-    <div dangerouslySetInnerHTML={{ __html: "\n<section class='hero'>\n  <div class='container'>\n    <p class='small' style='letter-spacing:.15em;color:#166534;font-weight:700'>VERTICAL GARDENS \u2022 LIVING WALLS</p>\n    <h1>Vertical Gardens: The Future of Green Architecture</h1>\n    <p>Vertical gardens bring texture, freshness, and vitality to spaces that would otherwise be flat and grey. We design, grow, install, and maintain living walls across the UK \u2014 each one nurtured in our Devon nursery and delivered ready to thrive.</p>\n    <p><a class='btn' href='/contact'>Start Your Project</a></p>\n    <img src='./images/hero-vertical-gardens-uk.jpg' alt='Vertical gardens UK - lush living wall feature' />\n  </div>\n</section>\n\n<div class='container prose'>\n  <h2>Why Vertical Gardens Are More Than Green D\u00e9cor</h2>\n  <p>In cities, space is scarce. Gardens compete with paving, car parks, and glass. A vertical garden flips the equation, turning unused walls into living ecosystems. They beautify, clean the air, regulate temperature, soften sound, and attract pollinators. They also make people feel better \u2014 biophilic design reduces stress and boosts mood.</p>\n\n  <h2>The Tapestry Difference</h2>\n  <h3>Plants First, Hardware Second</h3>\n  <p>Many systems force plants to fit the hardware. We do the opposite. We start with the planting plan \u2014 light levels, exposure, texture, colour, seasonality \u2014 and build the system around it. The result is a tapestry that looks natural and stays healthy.</p>\n\n  <h3>Devon Nursery Advantage</h3>\n  <p>Every garden is assembled and matured in our Devon nursery. We deliver established planting for immediate impact and minimal disruption on site.</p>\n\n  <h3>Hydroponic Precision</h3>\n  <p>Our proprietary hydroponic approach delivers water and nutrients precisely where they are needed. Optional automation keeps maintenance low and reliability high.</p>\n\n  <h3>Beyond 2D: Living Sculpture</h3>\n  <p>We create more than flat walls. Living spheres, columns, and chandeliers transform greenery into sculpture. These installations become centrepieces for homes, offices, and events.</p>\n\n  <h2>What We Create</h2>\n  <ul class='inline'><li>Living walls</li><li>Indoor features</li><li>Outdoor fa\u00e7ades</li><li>Green columns</li><li>Bio spheres</li><li>Chandeliers</li></ul>\n\n  <p>Explore the <a href='/portfolio'>portfolio</a>, learn the <a href='/benefits'>benefits</a>, or browse our <a href='/faqs'>FAQs</a>. When you\u2019re ready, <a href='/contact'>tell us about your space</a>.</p>\n</div>\n" }} />
+
+    {/* Hero Section */}
+    <section className="hero">
+      <div className="container">
+        <div className="subtitle">Vertical Gardens • Living Walls</div>
+        <h1>Vertical Gardens: The Future of Green Architecture</h1>
+        <p className="lead">
+          Vertical gardens bring texture, freshness, and vitality to spaces that would otherwise be flat and grey.
+          We design, grow, install, and maintain living walls across the UK — each one nurtured in our Devon nursery
+          and delivered ready to thrive.
+        </p>
+        <div>
+          <a className="btn btn-large" href="/contact">Start Your Project</a>
+        </div>
+        <div className="hero-image">
+          <img src="./images/hero-vertical-gardens-uk.jpg" alt="Vertical gardens UK - lush living wall feature" />
+        </div>
+      </div>
+    </section>
+
+    {/* Why Vertical Gardens Section */}
+    <section className="content-section">
+      <div className="container">
+        <div className="section-header">
+          <h2 className="section-title">Why Vertical Gardens Are More Than Green Décor</h2>
+          <p className="section-subtitle">
+            In cities, space is scarce. Gardens compete with paving, car parks, and glass. A vertical garden flips the equation,
+            turning unused walls into living ecosystems.
+          </p>
+        </div>
+
+        <div className="grid grid-3">
+          <div className="feature-card">
+            <div className="feature-icon">🌱</div>
+            <h3>Air Purification</h3>
+            <p>Living walls naturally filter air pollutants and increase oxygen levels, creating healthier indoor and outdoor environments.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">🌡️</div>
+            <h3>Climate Control</h3>
+            <p>Vertical gardens provide natural insulation, reducing energy costs by moderating temperature and humidity levels.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">🦋</div>
+            <h3>Biodiversity</h3>
+            <p>Attract pollinators and create micro-ecosystems that support local wildlife while enhancing urban biodiversity.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">🧠</div>
+            <h3>Wellbeing</h3>
+            <p>Biophilic design reduces stress, boosts mood, and improves cognitive function through connection with nature.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">🔇</div>
+            <h3>Sound Reduction</h3>
+            <p>Natural sound barriers that absorb noise pollution, creating quieter, more peaceful environments.</p>
+          </div>
+          <div className="feature-card">
+            <div className="feature-icon">✨</div>
+            <h3>Visual Impact</h3>
+            <p>Transform bland walls into stunning focal points that add beauty, texture, and life to any space.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* The Tapestry Difference */}
+    <section className="content-section">
+      <div className="container">
+        <div className="section-header">
+          <h2 className="section-title">The Tapestry Difference</h2>
+          <p className="section-subtitle">
+            We don't just install plants on walls. We create living masterpieces that thrive for years to come.
+          </p>
+        </div>
+
+        <div className="grid grid-2">
+          <div className="card">
+            <h3>Plants First, Hardware Second</h3>
+            <p>
+              Many systems force plants to fit the hardware. We do the opposite. We start with the planting plan —
+              light levels, exposure, texture, colour, seasonality — and build the system around it. The result is
+              a tapestry that looks natural and stays healthy.
+            </p>
+          </div>
+
+          <div className="card">
+            <h3>Devon Nursery Advantage</h3>
+            <p>
+              Every garden is assembled and matured in our Devon nursery. We deliver established planting for
+              immediate impact and minimal disruption on site. Your vertical garden arrives ready to impress.
+            </p>
+          </div>
+
+          <div className="card">
+            <h3>Hydroponic Precision</h3>
+            <p>
+              Our proprietary hydroponic approach delivers water and nutrients precisely where they are needed.
+              Optional automation keeps maintenance low and reliability high, ensuring long-term success.
+            </p>
+          </div>
+
+          <div className="card">
+            <h3>Beyond 2D: Living Sculpture</h3>
+            <p>
+              We create more than flat walls. Living spheres, columns, and chandeliers transform greenery into
+              sculpture. These installations become centrepieces for homes, offices, and events.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* What We Create */}
+    <section className="content-section">
+      <div className="container">
+        <div className="section-header">
+          <h2 className="section-title">What We Create</h2>
+        </div>
+
+        <ul className="inline">
+          <li>Living Walls</li>
+          <li>Indoor Features</li>
+          <li>Outdoor Façades</li>
+          <li>Green Columns</li>
+          <li>Bio Spheres</li>
+          <li>Chandeliers</li>
+          <li>Custom Installations</li>
+          <li>Maintenance Services</li>
+        </ul>
+
+        <div className="text-center mt-4">
+          <p style={{ fontSize: '1.125rem', marginBottom: '2rem' }}>
+            Explore the <a href="/portfolio">portfolio</a>, learn the <a href="/benefits">benefits</a>, or browse our <a href="/faqs">FAQs</a>.
+          </p>
+          <a href="/contact" className="btn btn-large">Tell Us About Your Space</a>
+        </div>
+      </div>
+    </section>
+
     <Footer />
   </>)
 }
