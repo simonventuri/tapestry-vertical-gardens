@@ -836,7 +836,7 @@ html:has(.landing-page) {
 }
 
 .landing-title {
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(1.5rem, 4vw, 3rem);
     font-weight: 700;
     letter-spacing: 0.3em;
     color: white;
@@ -844,6 +844,10 @@ html:has(.landing-page) {
     margin: 0;
     font-variant: small-caps;
     transition: all 0.3s ease;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .landing-subtitle {
@@ -857,10 +861,13 @@ html:has(.landing-page) {
     opacity: 0.9;
     position: absolute;
     bottom: 10vh;
+    white-space: nowrap;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .landing-page:hover .landing-title {
-    transform: scale(1.05);
+    transform: translate(-50%, -50%) scale(1.05);
     text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
 }
 
