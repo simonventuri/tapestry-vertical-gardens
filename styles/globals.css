@@ -813,7 +813,7 @@ html:has(.landing-page) {
     background-size: cover;
     background-position: 50% 50%;
     background-repeat: no-repeat;
-    transition: opacity 0.8s ease-in-out;
+    transition: opacity 0.2s ease-in-out;
 }
 
 .landing-bg.fade-in {
@@ -827,11 +827,12 @@ html:has(.landing-page) {
 .landing-content {
     position: relative;
     z-index: 2;
-}
-
-.landing-content {
     text-align: center;
-    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 
 .landing-title {
@@ -843,6 +844,19 @@ html:has(.landing-page) {
     margin: 0;
     font-variant: small-caps;
     transition: all 0.3s ease;
+}
+
+.landing-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    margin: 2rem 0 0 0;
+    font-variant: small-caps;
+    opacity: 0.9;
+    position: absolute;
+    bottom: 10vh;
 }
 
 .landing-page:hover .landing-title {

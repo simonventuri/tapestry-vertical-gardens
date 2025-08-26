@@ -17,9 +17,9 @@ export default function Landing() {
         setCurrentImage(prev => prev >= 11 ? 1 : prev + 1);
         // Start fade in
         setFadeClass('fade-in');
-      }, 400); // Half of transition time
+      }, 100); // Very short black screen time
 
-    }, 3000); // Change image every 3 seconds
+    }, 5000); // Change image every 5 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -50,6 +50,7 @@ export default function Landing() {
 
         <div className="landing-content">
           <h1 className="landing-title">TAPESTRY</h1>
+          <h2 className="landing-subtitle">Vertical Gardens : Living Walls</h2>
         </div>
       </div>
     </>
