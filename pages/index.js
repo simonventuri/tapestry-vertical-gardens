@@ -1,23 +1,85 @@
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
 
-import Head from 'next/head'
-import Nav from '../components/Nav'
-import Footer from '../components/Footer'
+export default function Landing() {
+  const router = useRouter();
+  const [currentImage, setCurrentImage] = useState(1);
+  const [fadeClass, setFadeClass] = useState('fade-in');
+  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
 
-export default function Home() {
-  return (<>
-    <Head>
-      <title>Vertical Gardens UK | Living Walls & Green Spaces — Tapestry Vertical Gardens</title>
-      <meta name="description" content="Vertical gardens and living walls designed, grown in Devon, and installed across the UK. Plant-first design, hydroponics, and living sculpture." />
-      <meta property="og:title" content="Vertical Gardens UK | Living Walls & Green Spaces — Tapestry Vertical Gardens" />
-      <meta property="og:description" content="Plant-first living walls, grown in our Devon nursery and installed across the UK." />
-      <meta property="og:type" content="website" />
-      <meta property="og:image" content="./images/hero-vertical-gardens-uk.jpg" />
-      <link rel="canonical" href="https://www.tapestryverticalgardens.com/" />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "Organization", "name": "Tapestry Vertical Gardens", "url": "https://www.tapestryverticalgardens.com/", "logo": "https://www.tapestryverticalgardens.com/images/logo.jpg", "sameAs": [] }) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "LocalBusiness", "name": "Tapestry Vertical Gardens", "image": "https://www.tapestryverticalgardens.com/images/hero-vertical-gardens-uk.jpg", "address": { "@type": "PostalAddress", "streetAddress": "[ADD STREET ADDRESS]", "addressLocality": "Devon", "addressRegion": "[ADD COUNTY]", "postalCode": "[ADD POSTCODE]", "addressCountry": "GB" }, "telephone": "[ADD PHONE NUMBER]", "areaServed": "GB", "url": "https://www.tapestryverticalgardens.com/" }) }} />
-    </Head>
-    <Nav />
-    <div dangerouslySetInnerHTML={{ __html: "\n<section class='hero'>\n  <div class='container'>\n    <p class='small' style='letter-spacing:.15em;color:#166534;font-weight:700'>VERTICAL GARDENS \u2022 LIVING WALLS</p>\n    <h1>Vertical Gardens: The Future of Green Architecture</h1>\n    <p>Vertical gardens bring texture, freshness, and vitality to spaces that would otherwise be flat and grey. We design, grow, install, and maintain living walls across the UK \u2014 each one nurtured in our Devon nursery and delivered ready to thrive.</p>\n    <p><a class='btn' href='/contact'>Start Your Project</a></p>\n    <img src='./images/hero-vertical-gardens-uk.jpg' alt='Vertical gardens UK - lush living wall feature' />\n  </div>\n</section>\n\n<div class='container prose'>\n  <h2>Why Vertical Gardens Are More Than Green D\u00e9cor</h2>\n  <p>In cities, space is scarce. Gardens compete with paving, car parks, and glass. A vertical garden flips the equation, turning unused walls into living ecosystems. They beautify, clean the air, regulate temperature, soften sound, and attract pollinators. They also make people feel better \u2014 biophilic design reduces stress and boosts mood.</p>\n\n  <h2>The Tapestry Difference</h2>\n  <h3>Plants First, Hardware Second</h3>\n  <p>Many systems force plants to fit the hardware. We do the opposite. We start with the planting plan \u2014 light levels, exposure, texture, colour, seasonality \u2014 and build the system around it. The result is a tapestry that looks natural and stays healthy.</p>\n\n  <h3>Devon Nursery Advantage</h3>\n  <p>Every garden is assembled and matured in our Devon nursery. We deliver established planting for immediate impact and minimal disruption on site.</p>\n\n  <h3>Hydroponic Precision</h3>\n  <p>Our proprietary hydroponic approach delivers water and nutrients precisely where they are needed. Optional automation keeps maintenance low and reliability high.</p>\n\n  <h3>Beyond 2D: Living Sculpture</h3>\n  <p>We create more than flat walls. Living spheres, columns, and chandeliers transform greenery into sculpture. These installations become centrepieces for homes, offices, and events.</p>\n\n  <h2>What We Create</h2>\n  <ul class='inline'><li>Living walls</li><li>Indoor features</li><li>Outdoor fa\u00e7ades</li><li>Green columns</li><li>Bio spheres</li><li>Chandeliers</li></ul>\n\n  <p>Explore the <a href='/portfolio'>portfolio</a>, learn the <a href='/benefits'>benefits</a>, or browse our <a href='/faqs'>FAQs</a>. When you\u2019re ready, <a href='/contact'>tell us about your space</a>.</p>\n</div>\n" }} />
-    <Footer />
-  </>)
+  // Precache all images, but start carousel after first image
+  useEffect(() => {
+    // Load first image immediately
+    const firstImg = new Image();
+    firstImg.src = `/images/carousel/1.webp`;
+    firstImg.onload = () => {
+      setFirstImageLoaded(true);
+    };
+
+    // Precache remaining images in background
+    for (let i = 2; i <= 11; i++) {
+      const img = new Image();
+      img.src = `/images/carousel/${i}.webp`;
+      // No need to track these - they'll load in background
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!firstImageLoaded) return; // Don't start carousel until first image is loaded
+
+    const interval = setInterval(() => {
+      // Start fade out
+      setFadeClass('fade-out');
+
+      setTimeout(() => {
+        // Change image during fade
+        setCurrentImage(prev => prev >= 11 ? 1 : prev + 1);
+        // Start fade in
+        setFadeClass('fade-in');
+      }, 50); // Extremely short transition time
+      
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [firstImageLoaded]);
+
+  const handleClick = () => {
+    router.push('/home');
+  };
+
+  return (
+    <>
+      <Head>
+        <title>Tapestry Vertical Gardens</title>
+        <meta name="description" content="Vertical gardens and living walls designed, grown in Devon, and installed across the UK." />
+        <meta property="og:title" content="Tapestry Vertical Gardens" />
+        <meta property="og:description" content="Plant-first living walls, grown in our Devon nursery and installed across the UK." />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="./images/carousel/1.webp" />
+      </Head>
+
+      <div className="landing-page" onClick={handleClick}>
+        {/* Single background image with fade transition */}
+        <div
+          className={`landing-bg ${fadeClass}`}
+          style={{
+            backgroundImage: `url('/images/carousel/${currentImage}.webp')`
+          }}
+        />
+
+        {/* Loading indicator while first image loads */}
+        {!firstImageLoaded && (
+          <div className="loading-overlay">
+            <div className="loading-spinner"></div>
+          </div>
+        )}
+
+        <div className="landing-content">
+          <h1 className="landing-title">TAPESTRY</h1>
+          <h2 className="landing-subtitle">Vertical Gardens : Living Walls</h2>
+        </div>
+      </div>
+    </>
+  );
 }
