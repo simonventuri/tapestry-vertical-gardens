@@ -845,13 +845,13 @@ html:has(.landing-page) {
     font-variant: small-caps;
     transition: all 0.3s ease;
     position: absolute;
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
 .landing-subtitle {
-    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
     font-weight: 400;
     letter-spacing: 0.1em;
     color: white;
@@ -860,7 +860,7 @@ html:has(.landing-page) {
     font-variant: small-caps;
     opacity: 0.9;
     position: absolute;
-    bottom: 10vh;
+    bottom: 15vh;
     white-space: nowrap;
     left: 50%;
     transform: translateX(-50%);
@@ -869,6 +869,19 @@ html:has(.landing-page) {
 .landing-page:hover .landing-title {
     transform: translate(-50%, -50%) scale(1.05);
     text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
+}
+
+/* Mobile adjustments for landing page */
+@media (max-width: 768px) {
+    .landing-title {
+        top: 40%;
+        font-size: clamp(1.2rem, 6vw, 2.5rem);
+    }
+    
+    .landing-subtitle {
+        bottom: 20vh;
+        font-size: clamp(0.7rem, 3vw, 1rem);
+    }
 }
 
 /* Adam Portrait */
