@@ -18,8 +18,7 @@ export default function Contact() {
                 <div className="container">
                     <div className="section-header">
                         <h1 className="section-title">Meet Tapestry Vertical Gardens</h1>
-                        <p className="section-subtitle">Design artistry meets horticultural precision.</p>
-                        <p><strong>Founded by Adam Shepherd</strong> — a graphic designer turned horticulturalist trained at The English Gardening School in Chelsea — Tapestry blends two decades of design with deep plant knowledge.</p>
+                        <p><strong>Founded by Adam Shepherd</strong> — a graphic designer turned horticulturalist trained at The English Gardening School in Chelsea — Tapestry blends two decades of design with a lifelong passion for plants.</p>
 
                         <div className="adam-portrait">
                             <img src="./images/adam-portrait.webp" alt="Adam Shepherd, founder of Tapestry Vertical Gardens" />

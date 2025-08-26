@@ -56,7 +56,8 @@ export default function Home() {
     {/* Hero Section */}
     <section className="hero">
       <div className="container">
-        <h1>Vertical Gardens<br />The Future of Green Architecture</h1>
+        <h1>Vertical Gardens</h1>
+        <h2>The Future of Green Architecture</h2>
         <p className="lead">
           We believe that vertical gardens bring texture, freshness and vitality to spaces that would otherwise be flat, lifeless and grey. We produce biodiverse living walls that change with the seasons and develop over time — each one nurtured in our Devon nursery and delivered ready to thrive.
         </p>
@@ -73,7 +74,7 @@ export default function Home() {
     <section className="content-section">
       <div className="container">
         <div className="section-header">
-          <h2 className="section-title">Why Vertical Gardens Are More Than Green Décor</h2>
+          <h2>Why Vertical Gardens Are More Than Green Décor</h2>
           <p className="section-subtitle">
             In cities, space is scarce. Gardens compete with paving, car parks, and glass. A vertical garden flips the equation,
             turning unused walls into living ecosystems.
@@ -113,7 +114,7 @@ export default function Home() {
     <section className="content-section">
       <div className="container">
         <div className="section-header">
-          <h2 className="section-title">The Tapestry Difference</h2>
+          <h2>The Tapestry Difference</h2>
           <p className="section-subtitle">
             We don't just install plants on walls. We create living masterpieces that thrive for years to come.
           </p>
