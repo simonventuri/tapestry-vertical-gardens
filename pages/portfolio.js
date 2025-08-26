@@ -61,20 +61,6 @@ export default function Portfolio() {
           ))}
         </div>
 
-        {/* Image Gallery */}
-        <div className="section-header mt-4">
-          <h2 className="section-title">Project Gallery</h2>
-        </div>
-
-        <div className="image-gallery">
-          <img src="./images/devon-nursery-vertical-gardens.jpg" alt="Devon nursery where vertical gardens are grown" />
-          <img src="./images/eaton-square-vertical-garden-london.jpg" alt="Eaton Square vertical garden detail" />
-          <img src="./images/belsize-avenue-living-wall-london.jpg" alt="Belsize Avenue living wall close-up" />
-          <img src="./images/kings-road-living-wall-commercial.jpg" alt="Kings Road commercial installation" />
-          <img src="./images/bio-sphere-living-sculpture.jpg" alt="Bio Sphere living sculpture detail" />
-          <img src="./images/hero-vertical-gardens-uk.jpg" alt="Vertical garden showcase" />
-        </div>
-
         <div className="text-center mt-4">
           <p style={{ fontSize: '1.125rem', marginBottom: '2rem' }}>
             See how living walls can elevate your space and transform your environment.

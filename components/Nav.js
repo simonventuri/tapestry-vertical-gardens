@@ -1,13 +1,12 @@
 
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useTheme } from './ThemeProvider';
 
 export default function Nav() {
   const router = useRouter();
   const currentPath = router.pathname;
   const [scrolled, setScrolled] = useState(false);
-  const { theme, resolvedTheme, toggleTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,40 +14,62 @@ export default function Nav() {
       setScrolled(isScrolled);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && !event.target.closest('.main-nav')) {
+        setIsMenuOpen(false);
+      }
+    };
 
-  const getThemeIcon = () => {
-    if (theme === 'system') {
-      return '🖥️';
-    } else if (resolvedTheme === 'dark') {
-      return '🌙';
-    } else {
-      return '☀️';
-    }
+    window.addEventListener('scroll', handleScroll);
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
   return (
-    <nav className={`main-nav ${scrolled ? 'scrolled' : ''}`}>
-      <a href="./" className="brand">
-        <img src="./images/logo.jpg" alt="Tapestry Vertical Gardens" />
-      </a>
-      <div className="links">
-        <a href="./" className={currentPath === '/' ? 'cta' : ''}>Home</a>
-        <a href="./about" className={currentPath === '/about' ? 'cta' : ''}>About</a>
-        <a href="./portfolio" className={currentPath === '/portfolio' ? 'cta' : ''}>Portfolio</a>
-        <a href="./benefits" className={currentPath === '/benefits' ? 'cta' : ''}>Benefits</a>
-        <a href="./faqs" className={currentPath === '/faqs' ? 'cta' : ''}>FAQs</a>
-        <a href="./contact" className="cta">Contact</a>
+    <>
+      {/* Mobile menu backdrop */}
+      <div
+        className={`menu-backdrop ${isMenuOpen ? 'open' : ''}`}
+        onClick={closeMenu}
+      ></div>
+
+      <nav className={`main-nav ${scrolled ? 'scrolled' : ''}`}>
+        <div className="nav-left">
+          <a href="./portfolio" className={currentPath === '/portfolio' ? 'cta' : ''} onClick={closeMenu}>Portfolio</a>
+        </div>
+
+        <a href="./" className="brand">
+          TAPESTRY
+        </a>
+
+        {/* Burger Menu Button */}
         <button
-          onClick={toggleTheme}
-          className="theme-toggle"
-          title={`Current theme: ${theme} (${resolvedTheme}). Click to cycle through light/dark/system.`}
+          className={`burger-menu ${isMenuOpen ? 'open' : ''}`}
+          onClick={toggleMenu}
+          aria-label="Toggle navigation menu"
         >
-          {getThemeIcon()}
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
-      </div>
-    </nav>
+
+        <div className={`nav-right ${isMenuOpen ? 'open' : ''}`}>
+          <a href="./portfolio" className={`mobile-only ${currentPath === '/portfolio' ? 'cta' : ''}`} onClick={closeMenu}>Portfolio</a>
+          <a href="./contact" className={currentPath === '/contact' ? 'active' : ''} onClick={closeMenu}>Contact</a>
+        </div>
+      </nav>
+    </>
   )
 }
