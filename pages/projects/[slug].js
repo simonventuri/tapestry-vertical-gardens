@@ -81,13 +81,6 @@ export default function ProjectPage({ project }) {
                         {/* Project Gallery - Additional Images */}
                         {project.images && project.images.length > 1 && (
                             <div className="project-gallery" style={{ marginBottom: '3rem' }}>
-                                <h2 style={{
-                                    fontSize: '1.8rem',
-                                    fontWeight: '600',
-                                    marginBottom: '2rem',
-                                    color: 'var(--color-dark)',
-                                    textAlign: 'center'
-                                }}>Project Gallery</h2>
                                 <div className="gallery-grid" style={{
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(3, 1fr)',
