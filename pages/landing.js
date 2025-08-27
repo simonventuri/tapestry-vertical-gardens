@@ -11,10 +11,10 @@ export default function Landing() {
     return (
         <>
             <Head>
-                <title>Tapestry Vertical Gardens</title>
-                <meta name="description" content="Vertical gardens and living walls designed, grown in Devon, and installed across the UK." />
-                <meta property="og:title" content="Tapestry Vertical Gardens" />
-                <meta property="og:description" content="Plant-first living walls, grown in our Devon nursery and installed across the UK." />
+                <title>Tapestry</title>
+                <meta name="description" content="Designed, grown in Devon, and installed across the UK." />
+                <meta property="og:title" content="Tapestry" />
+                <meta property="og:description" content="Plant-first design, grown in our Devon nursery and installed across the UK." />
                 <meta property="og:type" content="website" />
                 <meta property="og:image" content="./images/carousel/full+height+WEB.webp" />
             </Head>

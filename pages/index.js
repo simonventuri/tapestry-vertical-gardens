@@ -6,43 +6,23 @@ export default function Landing() {
   const router = useRouter();
   const [currentImage, setCurrentImage] = useState(1);
   const [fadeClass, setFadeClass] = useState('fade-in');
-  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
-
-  // Precache all images, but start carousel after first image
-  useEffect(() => {
-    // Load first image immediately
-    const firstImg = new Image();
-    firstImg.src = `/images/carousel/1.webp`;
-    firstImg.onload = () => {
-      setFirstImageLoaded(true);
-    };
-
-    // Precache remaining images in background
-    for (let i = 2; i <= 11; i++) {
-      const img = new Image();
-      img.src = `/images/carousel/${i}.webp`;
-      // No need to track these - they'll load in background
-    }
-  }, []);
 
   useEffect(() => {
-    if (!firstImageLoaded) return; // Don't start carousel until first image is loaded
-
     const interval = setInterval(() => {
       // Start fade out
       setFadeClass('fade-out');
 
       setTimeout(() => {
-        // Change image during fade
+        // Change image during black screen
         setCurrentImage(prev => prev >= 11 ? 1 : prev + 1);
         // Start fade in
         setFadeClass('fade-in');
-      }, 50); // Extremely short transition time
-      
+      }, 100); // Very short black screen time
+
     }, 5000); // Change image every 5 seconds
 
     return () => clearInterval(interval);
-  }, [firstImageLoaded]);
+  }, []);
 
   const handleClick = () => {
     router.push('/home');
@@ -68,16 +48,13 @@ export default function Landing() {
           }}
         />
 
-        {/* Loading indicator while first image loads */}
-        {!firstImageLoaded && (
-          <div className="loading-overlay">
-            <div className="loading-spinner"></div>
-          </div>
-        )}
-
         <div className="landing-content">
-          <h1 className="landing-title">TAPESTRY</h1>
-          <h2 className="landing-subtitle">Vertical Gardens : Living Walls</h2>
+          <h1
+            className="landing-title"
+            style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}
+          >
+            TAPESTRY
+          </h1>
         </div>
       </div>
     </>
