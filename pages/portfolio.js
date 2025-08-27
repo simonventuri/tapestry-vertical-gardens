@@ -146,12 +146,22 @@ export default function Portfolio({ projects }) {
 }
 
 export async function getStaticProps() {
-  const projects = await getPortfolioItems();
+  try {
+    const projects = await getPortfolioItems();
 
-  return {
-    props: {
-      projects: JSON.parse(JSON.stringify(projects)),
-    },
-    revalidate: 60, // Revalidate every 60 seconds
-  };
+    return {
+      props: {
+        projects: JSON.parse(JSON.stringify(projects)),
+      },
+      revalidate: 60, // Revalidate every 60 seconds
+    };
+  } catch (error) {
+    console.error('Failed to fetch portfolio items:', error);
+    return {
+      props: {
+        projects: [],
+      },
+      revalidate: 10, // Retry after 10 seconds
+    };
+  }
 }

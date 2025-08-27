@@ -225,31 +225,35 @@ export default function ProjectPage({ project }) {
 }
 
 export async function getStaticPaths() {
-    const projects = await getPortfolioItems();
-
-    const paths = projects.map((project) => ({
-        params: { slug: project.slug },
-    }));
-
+    // Return empty paths to avoid build-time database calls
+    // Pages will be generated on-demand (ISR)
     return {
-        paths,
-        fallback: true,
+        paths: [],
+        fallback: 'blocking',
     };
 }
 
 export async function getStaticProps({ params }) {
-    const project = await getPortfolioItem(params.slug);
+    try {
+        const project = await getPortfolioItem(params.slug);
 
-    if (!project) {
+        if (!project) {
+            return {
+                notFound: true,
+            };
+        }
+
+        return {
+            props: {
+                project: JSON.parse(JSON.stringify(project)),
+            },
+            revalidate: 60,
+        };
+    } catch (error) {
+        console.error('Failed to fetch project:', error);
         return {
             notFound: true,
+            revalidate: 10, // Retry after 10 seconds
         };
     }
-
-    return {
-        props: {
-            project: JSON.parse(JSON.stringify(project)),
-        },
-        revalidate: 60,
-    };
 }
