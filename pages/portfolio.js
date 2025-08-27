@@ -146,8 +146,8 @@ export default function Portfolio({ projects }) {
 
 export async function getStaticProps() {
   try {
-    const { getPortfolioItems } = await import('../lib/database');
-    const projects = await getPortfolioItems();
+    const { getPortfolioItemsOptimized } = await import('../lib/database');
+    const projects = await getPortfolioItemsOptimized();
 
     return {
       props: {
