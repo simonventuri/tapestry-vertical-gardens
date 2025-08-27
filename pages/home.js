@@ -116,7 +116,7 @@ export default function Home() {
         <div className="section-header">
           <h2>The Tapestry Difference</h2>
           <p className="section-subtitle">
-            We don't just install plants on walls. We create living masterpieces that thrive for years to come.
+            We transform walls into dynamic, living installations built to thrive and inspire for years.
           </p>
         </div>
 

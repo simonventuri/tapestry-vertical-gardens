@@ -3,8 +3,5 @@
     "pages/api/**/*.js": {
       "maxDuration": 10
     }
-  },
-  "env": {
-    "REDIS_URL": "@redis_url"
   }
 }
