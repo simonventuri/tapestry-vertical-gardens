@@ -157,7 +157,7 @@ export default async function handler(req, res) {
 
         console.log('Database seeded successfully with', portfolioItems.length, 'portfolio items');
 
-        res.status(200).json({ 
+        res.status(200).json({
             message: 'Database seeded successfully',
             itemsSeeded: portfolioItems.length,
             items: portfolioItems.map(item => ({ id: item.id, title: item.title, slug: item.slug }))
@@ -165,9 +165,9 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('Seeding error:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Failed to seed database',
-            details: error.message 
+            details: error.message
         });
     }
 }
