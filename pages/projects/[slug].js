@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Nav from '../../components/Nav';
+import Footer from '../../components/Footer';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -76,6 +77,63 @@ export default function ProjectPage({ project }) {
                                 marginBottom: '1.5rem'
                             }}>{project.description}</p>
                         </div>
+
+                        {/* Project Gallery - Additional Images */}
+                        {project.images && project.images.length > 1 && (
+                            <div className="project-gallery" style={{ marginBottom: '3rem' }}>
+                                <h2 style={{
+                                    fontSize: '1.8rem',
+                                    fontWeight: '600',
+                                    marginBottom: '2rem',
+                                    color: 'var(--color-dark)',
+                                    textAlign: 'center'
+                                }}>Project Gallery</h2>
+                                <div className="gallery-grid" style={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(3, 1fr)',
+                                    gap: '1.5rem',
+                                    marginBottom: '2rem'
+                                }}>
+                                    <style jsx>{`
+                                        @media (max-width: 768px) {
+                                            .gallery-grid {
+                                                grid-template-columns: repeat(2, 1fr) !important;
+                                            }
+                                        }
+                                        @media (max-width: 480px) {
+                                            .gallery-grid {
+                                                grid-template-columns: 1fr !important;
+                                            }
+                                        }
+                                    `}</style>
+                                    {project.images.slice(1).map((image, index) => (
+                                        <div key={index} className="gallery-item" style={{
+                                            borderRadius: '8px',
+                                            overflow: 'hidden',
+                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                            cursor: 'pointer',
+                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                                        }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
+                                                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                            }}
+                                            onClick={() => setLightboxImage(image)}
+                                        >
+                                            <img src={image} alt={`${project.title} - Gallery Image ${index + 2}`} style={{
+                                                width: '100%',
+                                                height: '250px',
+                                                objectFit: 'cover'
+                                            }} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="project-navigation" style={{
@@ -113,6 +171,8 @@ export default function ProjectPage({ project }) {
                     </div>
                 </div>
             </section>
+
+            <Footer />
 
             {/* Lightbox */}
             {lightboxImage && (

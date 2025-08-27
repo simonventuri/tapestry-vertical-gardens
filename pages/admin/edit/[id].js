@@ -20,7 +20,7 @@ export default function EditProject({ project, isAuthenticated }) {
     const [draggedImageIndex, setDraggedImageIndex] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [saving, setSaving] = useState(false);
-    
+
     const fileInputRef = useRef();
 
     useEffect(() => {
@@ -396,7 +396,7 @@ export default function EditProject({ project, isAuthenticated }) {
                         <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a202c' }}>
                             Project Images
                         </h2>
-                        
+
                         <p style={{ marginBottom: '1rem', color: '#6b7280', fontSize: '0.875rem' }}>
                             The first image will be used as the hero image. Drag and drop to reorder images.
                         </p>
