@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import Nav from '../../components/Nav';
-import { getPortfolioItems, getPortfolioItem } from '../../lib/database';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -20,7 +19,7 @@ export default function ProjectPage({ project }) {
         <>
             <Head>
                 <title>{project.title} - Tapestry Vertical Gardens</title>
-                <meta name="description" content={project.story.substring(0, 160)} />
+                <meta name="description" content={project.description?.substring(0, 160) || ''} />
             </Head>
 
             <Nav />
@@ -53,9 +52,9 @@ export default function ProjectPage({ project }) {
                                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
                                 e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
                             }}
-                            onClick={() => setLightboxImage(project.hero_image)}
+                            onClick={() => setLightboxImage(project.images[0])}
                         >
-                            <img src={project.hero_image} alt={project.title} style={{
+                            <img src={project.images[0]} alt={project.title} style={{
                                 width: '100%',
                                 height: 'auto',
                                 display: 'block',
@@ -75,52 +74,8 @@ export default function ProjectPage({ project }) {
                                 lineHeight: '1.7',
                                 color: 'var(--color-text)',
                                 marginBottom: '1.5rem'
-                            }}>{project.story}</p>
+                            }}>{project.description}</p>
                         </div>
-
-                        {project.photos && project.photos.length > 0 && (
-                            <div className="project-gallery">
-                                <h2 style={{
-                                    fontSize: '1.8rem',
-                                    fontWeight: '600',
-                                    marginBottom: '2rem',
-                                    color: 'var(--color-dark)',
-                                    textAlign: 'center'
-                                }}>Project Gallery</h2>
-                                <div className="gallery-grid" style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                                    gap: '1.5rem',
-                                    marginBottom: '3rem'
-                                }}>
-                                    {project.photos.map((photo) => (
-                                        <div key={photo.id} className="gallery-item" style={{
-                                            borderRadius: '8px',
-                                            overflow: 'hidden',
-                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                                            cursor: 'pointer',
-                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-                                        }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
-                                                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                                            }}
-                                            onClick={() => setLightboxImage(photo.image_path)}
-                                        >
-                                            <img src={photo.image_path} alt={`${project.title} - Gallery Image`} style={{
-                                                width: '100%',
-                                                height: '250px',
-                                                objectFit: 'cover'
-                                            }} />
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
 
                     <div className="project-navigation" style={{
@@ -235,6 +190,7 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
     try {
+        const { getPortfolioItem } = await import('../../lib/database');
         const project = await getPortfolioItem(params.slug);
 
         if (!project) {

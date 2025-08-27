@@ -1,4 +1,4 @@
-import { updateProject, updateProjectPhotos, deleteProject } from '../../../../lib/database';
+import { updateProject, deleteProject } from '../../../../lib/database';
 import { requireAuth } from '../../../../lib/auth';
 
 async function handler(req, res) {
@@ -7,20 +7,26 @@ async function handler(req, res) {
     if (req.method === 'PUT') {
         // Update project
         try {
-            const { title, story, slug, hero_image, gallery_images } = req.body;
+            const { title, description, slug, category, location, year, size, images, features, plants } = req.body;
 
             // Validate required fields
-            if (!title || !story || !slug) {
+            if (!title || !description || !slug) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
-            // Update project basic info
-            await updateProject(id, { title, story, slug, hero_image });
-
-            // Update gallery images if provided
-            if (gallery_images) {
-                await updateProjectPhotos(id, gallery_images);
-            }
+            // Update project with new schema
+            await updateProject(id, {
+                title,
+                description,
+                slug,
+                category,
+                location,
+                year,
+                size,
+                images,
+                features,
+                plants
+            });
 
             res.status(200).json({ message: 'Project updated successfully' });
         } catch (error) {

@@ -51,7 +51,7 @@ export default function Landing() {
         <div className="landing-content">
           <h1
             className="landing-title"
-            style={{ fontSize: 'clamp(1rem, 2vw, 1.5rem)' }}
+            style={{ fontSize: 'clamp(1.4rem, 2vw, 1.5rem)' }}
           >
             TAPESTRY
           </h1>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { getPortfolioItems } from '../../lib/database';
 import AdminLogin from '../../components/AdminLogin';
 
 export default function AdminProjects({ projects, totalCount, currentPage, isAuthenticated }) {
@@ -441,6 +440,7 @@ export async function getServerSideProps({ query, req }) {
 
     try {
         // Get paginated projects
+        const { getPortfolioItems } = await import('../../lib/database');
         const allProjects = await getPortfolioItems();
         const totalCount = allProjects.length;
         const projects = allProjects.slice(offset, offset + limit);

@@ -1,7 +1,6 @@
 
 import Head from 'next/head';
 import Nav from '../components/Nav';
-import { getPortfolioItems } from '../lib/database';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
@@ -147,6 +146,7 @@ export default function Portfolio({ projects }) {
 
 export async function getStaticProps() {
   try {
+    const { getPortfolioItems } = await import('../lib/database');
     const projects = await getPortfolioItems();
 
     return {
