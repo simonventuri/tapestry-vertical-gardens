@@ -241,9 +241,9 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                                 projects.map((project) => (
                                     <tr key={project.id} style={{ borderBottom: '1px solid #eee' }}>
                                         <td style={{ padding: '15px' }}>
-                                            {project.coverImage ? (
+                                            {project.images && project.images.length > 0 ? (
                                                 <img
-                                                    src={project.coverImage}
+                                                    src={project.images[0]}
                                                     alt={project.title}
                                                     style={{
                                                         width: '60px',
