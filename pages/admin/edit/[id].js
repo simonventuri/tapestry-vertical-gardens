@@ -24,14 +24,16 @@ export default function EditProject({ project, isAuthenticated }) {
     const fileInputRef = useRef();
 
     useEffect(() => {
-        // Check for stored token on client side
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('admin_token');
-            if (token && !authenticated) {
-                setAuthenticated(true);
+        // Only trust server-side authentication, don't auto-authenticate from localStorage
+        // The server-side props should be the source of truth
+        if (!isAuthenticated && authenticated) {
+            // If server says not authenticated but client thinks it is, clear client state
+            setAuthenticated(false);
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('admin_token');
             }
         }
-    }, [authenticated]);
+    }, [isAuthenticated, authenticated]);
 
     const handleLogin = (token) => {
         setAuthenticated(true);

@@ -11,25 +11,47 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
     const totalPages = Math.ceil(totalCount / projectsPerPage);
 
     useEffect(() => {
-        // Check for stored token on client side
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('admin_token');
-            if (token && !authenticated) {
-                setAuthenticated(true);
+        // Only trust server-side authentication, don't auto-authenticate from localStorage
+        // The server-side props should be the source of truth
+        if (!isAuthenticated && authenticated) {
+            // If server says not authenticated but client thinks it is, clear client state
+            setAuthenticated(false);
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('admin_token');
             }
         }
-    }, [authenticated]);
+    }, [isAuthenticated, authenticated]);
 
     const handleLogin = (token) => {
         setAuthenticated(true);
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            // Call logout API to clear server-side session
+            await fetch('/api/admin/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch (error) {
+            console.error('Logout API error:', error);
+        }
+
+        // Clear client-side storage
         if (typeof window !== 'undefined') {
             localStorage.removeItem('admin_token');
+            sessionStorage.clear();
         }
+
+        // Clear cookies
+        document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + window.location.hostname;
         document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+        // Set state and force reload to clear any cached authentication
         setAuthenticated(false);
+
+        // Force a page reload to ensure clean state
+        window.location.reload();
     };
 
     const handleDeleteProject = async (projectId) => {
