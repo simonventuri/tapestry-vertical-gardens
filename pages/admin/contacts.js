@@ -339,8 +339,21 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
 
                                 <div>
                                     <h3 style={{ margin: '0 0 15px', color: '#2d5016', fontSize: '18px' }}>Message</h3>
-                                    <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '6px' }}>
-                                        <p style={{ margin: 0, lineHeight: '1.6', whiteSpace: 'pre-wrap' }}>
+                                    <div style={{
+                                        backgroundColor: '#ffffff',
+                                        padding: '24px',
+                                        borderRadius: '8px',
+                                        border: '2px solid #e9ecef',
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                    }}>
+                                        <p style={{
+                                            margin: 0,
+                                            lineHeight: '1.7',
+                                            whiteSpace: 'pre-wrap',
+                                            fontSize: '16px',
+                                            color: '#1a202c',
+                                            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                                        }}>
                                             {selectedContact.message}
                                         </p>
                                     </div>

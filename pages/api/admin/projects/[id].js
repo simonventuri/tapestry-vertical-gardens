@@ -15,7 +15,7 @@ async function handler(req, res) {
             }
 
             // Update project with new schema
-            await updateProject(id, {
+            const updateResult = await updateProject(id, {
                 title,
                 description,
                 slug,
@@ -28,7 +28,12 @@ async function handler(req, res) {
                 plants
             });
 
-            res.status(200).json({ message: 'Project updated successfully' });
+            res.status(200).json({
+                message: 'Project updated successfully',
+                slugChanged: updateResult.oldSlug !== updateResult.newSlug,
+                oldSlug: updateResult.oldSlug,
+                newSlug: updateResult.newSlug
+            });
         } catch (error) {
             console.error('Error updating project:', error);
             res.status(500).json({ message: 'Internal server error' });

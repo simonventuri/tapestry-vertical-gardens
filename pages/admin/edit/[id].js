@@ -7,6 +7,7 @@ import AdminLogin from '../../../components/AdminLogin';
 export default function EditProject({ project, isAuthenticated }) {
     const router = useRouter();
     const [authenticated, setAuthenticated] = useState(isAuthenticated);
+    const [originalSlug] = useState(project?.slug || ''); // Store original slug
     const [formData, setFormData] = useState({
         title: project?.title || '',
         description: project?.description || '',
@@ -135,8 +136,47 @@ export default function EditProject({ project, isAuthenticated }) {
                 throw new Error('Failed to save project');
             }
 
-            alert('Project saved successfully!');
-            router.push('/admin/projects');
+            const updatedProject = await response.json();
+
+            // Check if slug has changed and notify user
+            if (formData.slug !== originalSlug) {
+                alert(`Project saved successfully!\n\nNote: The project URL slug has been changed from "${originalSlug}" to "${formData.slug}". This will affect the public URL of this project.`);
+
+                // Update the page title to reflect the change
+                if (typeof window !== 'undefined') {
+                    document.title = `Edit Project: ${formData.title} - Admin`;
+                }
+
+                // Trigger ISR revalidation for the affected pages
+                try {
+                    const revalidationResponse = await fetch('/api/revalidate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+                        },
+                        body: JSON.stringify({
+                            oldSlug: originalSlug,
+                            newSlug: formData.slug,
+                            projectId: project.id
+                        }),
+                    });
+
+                    if (revalidationResponse.ok) {
+                        console.log('Pages revalidated successfully');
+                    } else {
+                        console.warn('Revalidation request failed:', await revalidationResponse.text());
+                    }
+                } catch (revalidationError) {
+                    console.error('Failed to revalidate pages:', revalidationError);
+                    // Don't show error to user as the save was successful
+                }
+
+                router.push('/admin/projects');
+            } else {
+                alert('Project saved successfully!');
+                router.push('/admin/projects');
+            }
         } catch (error) {
             console.error('Error saving project:', error);
             alert('Error saving project. Please try again.');
