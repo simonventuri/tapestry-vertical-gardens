@@ -57,9 +57,9 @@ export default function Home() {
     <section className="hero">
       <div className="container">
         <h1>Vertical Gardens</h1>
-        <h2>The Future of Green Architecture</h2>
+        <h2>Where Design Meets Nature</h2>
         <p className="lead">
-          We believe that vertical gardens bring texture, freshness and vitality to spaces that would otherwise be flat, lifeless and grey. We produce biodiverse living walls that change with the seasons and develop over time — each one nurtured in our Devon nursery and delivered ready to thrive.
+          Living walls bring freshness, texture, and vitality to spaces — transforming the ordinary into thriving, sustainable environments. Our biodiverse walls are produced in our Devon nursery, designed to evolve with the seasons, and delivered ready to flourish.
         </p>
         <div>
           <a className="btn btn-large" href="/contact">Start Your Project</a>
@@ -116,7 +116,7 @@ export default function Home() {
         <div className="section-header">
           <h2>The Tapestry Difference</h2>
           <p className="section-subtitle">
-            We don't just install plants on walls. We create living masterpieces that thrive for years to come.
+            We transform walls into dynamic, living installations built to thrive and inspire for years.
           </p>
         </div>
 

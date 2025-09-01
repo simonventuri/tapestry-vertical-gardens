@@ -1,75 +1,167 @@
 
-import Head from 'next/head'
-import Nav from '../components/Nav'
-import Footer from '../components/Footer'
+import Head from 'next/head';
+import Nav from '../components/Nav';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
-export default function Portfolio() {
-  const projects = [
-    {
-      title: "Eaton Square — Urban Luxury Reimagined",
-      image: "./images/eaton-square-vertical-garden-london.jpg",
-      alt: "Eaton Square vertical garden in London - evergreen living wall",
-      description: "In the heart of London, residents sought greenery to soften a refined courtyard. We composed an evergreen structure woven with seasonal highlights for year-round presence. Delivered fully established from our nursery, the wall changed the mood of the space overnight."
-    },
-    {
-      title: "Belsize Avenue — Residential Charm Meets Living Art",
-      image: "./images/belsize-avenue-living-wall-london.jpg",
-      alt: "Belsize Avenue living wall in London - grasses and perennials",
-      description: "A home feature that evolves with the seasons: fresh greens and blossoms in spring, rich abundance in summer, warm tones in autumn. A conversation piece that connects daily life with the rhythm of nature."
-    },
-    {
-      title: "Kings Road — Commercial Green Statement",
-      image: "./images/kings-road-living-wall-commercial.jpg",
-      alt: "Kings Road commercial living wall - sustainable facade",
-      description: "For a high-footfall retail street, we created a façade that communicates freshness, creativity, and care for the environment. Customers notice. Employees feel the difference."
-    },
-    {
-      title: "Bio Sphere — A Vision of the Future",
-      image: "./images/bio-sphere-living-sculpture.jpg",
-      alt: "Bio Sphere living sculpture - free-standing hydroponic sphere",
-      description: "A free-standing orb wrapped in living plants. Part sculpture, part garden, all theatre. Ideal for exhibitions, atria, and events that want a centrepiece with life."
+export default function Portfolio({ projects }) {
+  const [windowWidth, setWindowWidth] = useState(1200);
+  const [touchedCard, setTouchedCard] = useState(null);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+
+    // Set initial window width only on client side
+    if (typeof window !== 'undefined') {
+      setWindowWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
     }
-  ];
 
-  return (<>
-    <Head>
-      <title>Portfolio — Living Walls & Vertical Garden Projects</title>
-      <meta name="description" content="See living wall and sculptural vertical garden projects across the UK, including Eaton Square, Belsize Avenue, Kings Road, and the Bio Sphere." />
-      <link rel="canonical" href="https://www.tapestryverticalgardens.com/portfolio" />
-    </Head>
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize);
+      }
+    };
+  }, []);
 
-    <Nav />
+  const getGridColumns = () => {
+    if (windowWidth <= 768) return '1fr';
+    if (windowWidth <= 1024) return 'repeat(2, 1fr)';
+    return 'repeat(3, 1fr)';
+  };
 
-    <section className="section">
-      <div className="container">
-        <div className="section-header">
-          <h1 className="section-title">Living Walls That Transform Spaces</h1>
-          <p className="section-subtitle">
-            A selection of projects that show how vertical gardens humanise architecture and bring life to urban environments.
-          </p>
+  const getGridGap = () => {
+    if (windowWidth <= 768) return '1rem';
+    if (windowWidth <= 1024) return '1.5rem';
+    return '2rem';
+  };
+
+  const isTouchDevice = () => {
+    if (typeof window === 'undefined') return false;
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  };
+
+  const handleCardInteraction = (projectId, isActive) => {
+    if (isTouchDevice()) {
+      setTouchedCard(isActive ? projectId : null);
+    }
+  };
+
+  const getCardStyle = (projectId) => {
+    // Only use touch state on client side, default to false on server
+    const isElevated = typeof window !== 'undefined' && isTouchDevice() ? touchedCard === projectId : false;
+    return {
+      position: 'relative',
+      aspectRatio: '4/3',
+      overflow: 'hidden',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      textDecoration: 'none',
+      color: 'inherit',
+      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+      boxShadow: isElevated ? '0 12px 25px rgba(0, 0, 0, 0.2)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
+      transform: isElevated ? 'translateY(-8px)' : 'translateY(0)'
+    };
+  };
+  return (
+    <>
+      <Head>
+        <title>Portfolio - Tapestry Vertical Gardens</title>
+        <meta name="description" content="Our portfolio of vertical gardens and living wall projects across the UK." />
+      </Head>
+
+      <Nav />
+
+      <main className="main-content">
+        <div className="container">
+
+          <div className="projects-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: getGridColumns(),
+            gap: getGridGap(),
+            margin: '2rem 0'
+          }}>
+            {projects.map((project) => (
+              <Link href={`/projects/${project.slug}`} key={project.id} className="project-card"
+                style={getCardStyle(project.id)}
+                onMouseEnter={(e) => {
+                  if (typeof window !== 'undefined' && !isTouchDevice()) {
+                    e.currentTarget.style.transform = 'translateY(-8px)';
+                    e.currentTarget.style.boxShadow = '0 12px 25px rgba(0, 0, 0, 0.2)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (typeof window !== 'undefined' && !isTouchDevice()) {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                  }
+                }}
+                onTouchStart={() => handleCardInteraction(project.id, true)}
+                onTouchEnd={() => handleCardInteraction(project.id, false)}
+              >
+                <div className="project-image" style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%'
+                }}>
+                  <img src={project.hero_image} alt={project.title} style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }} />
+                </div>
+                <div className="project-info" style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(0, 0, 0, 0.4)'
+                }}>
+                  <h3 style={{
+                    color: 'white',
+                    fontSize: '1.2rem',
+                    fontWeight: '600',
+                    textAlign: 'center',
+                    margin: 0,
+                    padding: '1rem',
+                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                    fontVariant: 'small-caps',
+                    letterSpacing: '0.1em'
+                  }}>{project.title}</h3>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
+      </main>
+    </>
+  );
+}
 
-        <div className="grid grid-2">
-          {projects.map((project, index) => (
-            <div key={index} className="card">
-              <div className="card-image">
-                <img src={project.image} alt={project.alt} />
-              </div>
-              <h3>{project.title}</h3>
-              <p>{project.description}</p>
-            </div>
-          ))}
-        </div>
+export async function getStaticProps() {
+  try {
+    const { getPortfolioItemsOptimized } = await import('../lib/database');
+    const projects = await getPortfolioItemsOptimized();
 
-        <div className="text-center mt-4">
-          <p style={{ fontSize: '1.125rem', marginBottom: '2rem' }}>
-            See how living walls can elevate your space and transform your environment.
-          </p>
-          <a href="/contact" className="btn btn-large">Book a Consultation</a>
-        </div>
-      </div>
-    </section>
-
-    <Footer />
-  </>)
+    return {
+      props: {
+        projects: JSON.parse(JSON.stringify(projects)),
+      },
+      revalidate: 60, // Revalidate every 60 seconds
+    };
+  } catch (error) {
+    console.error('Failed to fetch portfolio items:', error);
+    return {
+      props: {
+        projects: [],
+      },
+      revalidate: 10, // Retry after 10 seconds
+    };
+  }
 }

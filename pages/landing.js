@@ -8,6 +8,21 @@ export default function Landing() {
         router.push('/');
     };
 
+    const titleStyle = {
+        fontSize: '48px',
+        fontWeight: '800',
+        letterSpacing: '0.3em',
+        color: 'white',
+        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+        margin: '0 0 1rem 0',
+        fontVariant: 'normal',
+        textTransform: 'uppercase',
+        transition: 'all 0.3s ease',
+        fontFamily: 'inherit',
+        lineHeight: '1',
+        textAlign: 'center'
+    };
+
     return (
         <>
             <Head>
@@ -21,7 +36,7 @@ export default function Landing() {
 
             <div className="landing-page" onClick={handleClick}>
                 <div className="landing-content">
-                    <h1 className="landing-title">TAPESTRY</h1>
+                    <div style={titleStyle}>TAPESTRY</div>
                 </div>
             </div>
         </>
