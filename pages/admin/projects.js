@@ -3,15 +3,14 @@ import Head from 'next/head';
 import Link from 'next/link';
 import AdminLogin from '../../components/AdminLogin';
 
-export default function AdminProjects({ projects, totalCount, currentPage, isAuthenticated }) {
+export default function AdminProjects({ projects, isAuthenticated }) {
     const [authenticated, setAuthenticated] = useState(isAuthenticated);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [deleting, setDeleting] = useState(false);
     const [clientProjects, setClientProjects] = useState(projects);
-    const [clientTotalCount, setClientTotalCount] = useState(totalCount);
     const [mounted, setMounted] = useState(false);
-    const projectsPerPage = 10;
-    const totalPages = Math.ceil(clientTotalCount / projectsPerPage);
+    const [draggedIndex, setDraggedIndex] = useState(null);
+    const [reordering, setReordering] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -35,20 +34,12 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
             };
         });
         setClientProjects(processedProjects);
-        setClientTotalCount(totalCount);
-    }, [projects, totalCount]);
+    }, [projects]);
 
+    // Initialize authentication state from server-side props
     useEffect(() => {
-        // Only trust server-side authentication, don't auto-authenticate from localStorage
-        // The server-side props should be the source of truth
-        if (!isAuthenticated && authenticated) {
-            // If server says not authenticated but client thinks it is, clear client state
-            setAuthenticated(false);
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('admin_token');
-            }
-        }
-    }, [isAuthenticated, authenticated]);
+        setAuthenticated(isAuthenticated);
+    }, []);
 
     // Handle keyboard events for modal
     useEffect(() => {
@@ -96,11 +87,8 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
         document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + window.location.hostname;
         document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
-        // Set state and force reload to clear any cached authentication
+        // Set state to show login form
         setAuthenticated(false);
-
-        // Force a page reload to ensure clean state
-        window.location.reload();
     };
 
     const handleDeleteProject = async (projectId) => {
@@ -116,19 +104,9 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
             const responseData = await response.json();
 
             if (response.ok) {
-                // Remove the project from the client state and update total count
+                // Remove the project from the client state
                 const updatedProjects = clientProjects.filter(project => project.id !== projectId);
                 setClientProjects(updatedProjects);
-                setClientTotalCount(prevCount => prevCount - 1);
-
-                // Check if current page becomes empty after deletion
-                const newTotalPages = Math.ceil((clientTotalCount - 1) / projectsPerPage);
-                if (currentPage > newTotalPages && newTotalPages > 0) {
-                    // Redirect to the last valid page
-                    window.location.href = `/admin/projects?page=${newTotalPages}`;
-                    return;
-                }
-
                 alert('Project deleted successfully!');
             } else {
                 throw new Error(responseData.message || 'Failed to delete project');
@@ -139,6 +117,65 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
         } finally {
             setDeleting(false);
             setDeleteConfirm(null);
+        }
+    };
+
+    const handleDragStart = (e, index) => {
+        setDraggedIndex(index);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', e.target.outerHTML);
+        e.target.style.opacity = '0.5';
+    };
+
+    const handleDragEnd = (e) => {
+        e.target.style.opacity = '1';
+        setDraggedIndex(null);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    };
+
+    const handleDrop = async (e, dropIndex) => {
+        e.preventDefault();
+
+        if (draggedIndex === null || draggedIndex === dropIndex) return;
+
+        const newProjects = [...clientProjects];
+        const draggedProject = newProjects[draggedIndex];
+
+        // Remove dragged project and insert at new position
+        newProjects.splice(draggedIndex, 1);
+        newProjects.splice(dropIndex, 0, draggedProject);
+
+        setClientProjects(newProjects);
+
+        // Save new order to database
+        await saveProjectOrder(newProjects);
+    };
+
+    const saveProjectOrder = async (orderedProjects) => {
+        setReordering(true);
+        try {
+            const orderedIds = orderedProjects.map(project => project.id);
+            const response = await fetch('/api/admin/reorder', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+                body: JSON.stringify({ orderedIds }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save project order');
+            }
+        } catch (error) {
+            console.error('Error saving project order:', error);
+            alert('Failed to save project order. Please refresh and try again.');
+        } finally {
+            setReordering(false);
         }
     };
 
@@ -227,9 +264,36 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
           }
           .table-row {
             border-bottom: 1px solid #e2e8f0;
+            cursor: move;
+            transition: all 0.2s ease;
           }
           .table-row:hover {
             background: #f9fafb;
+          }
+          .table-row.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+          }
+          .table-row.drag-over {
+            background: #eff6ff;
+            border-top: 2px solid #3b82f6;
+          }
+          .drag-handle {
+            color: #9ca3af;
+            margin-right: 8px;
+            cursor: grab;
+          }
+          .drag-handle:active {
+            cursor: grabbing;
+          }
+          .reordering-notice {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            text-align: center;
           }
           .table-cell {
             padding: 1rem;
@@ -248,26 +312,6 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
           }
           .edit-button:hover {
             background: #2563eb;
-          }
-          .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 2rem;
-          }
-          .page-link {
-            padding: 0.5rem 1rem;
-            text-decoration: none;
-            border-radius: 4px;
-            border: 1px solid #d1d5db;
-          }
-          .page-link.active {
-            background: #3b82f6;
-            color: white;
-          }
-          .page-link.inactive {
-            background: #f3f4f6;
-            color: #374151;
           }
           .back-link {
             text-align: center;
@@ -311,10 +355,26 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                     </div>
                 </div>
 
+                {reordering && (
+                    <div className="reordering-notice">
+                        💾 Saving new project order...
+                    </div>
+                )}
+
                 <div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div style={{
+                        padding: '15px',
+                        backgroundColor: '#f8f9fa',
+                        borderBottom: '1px solid #ddd',
+                        color: '#374151',
+                        fontSize: '14px'
+                    }}>
+                        💡 <strong>Tip:</strong> Drag and drop rows to reorder projects. Changes are saved automatically.
+                    </div>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ backgroundColor: '#f8f9fa' }}>
+                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Order</th>
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Image</th>
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Project Details</th>
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Location</th>
@@ -325,19 +385,43 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                         <tbody>
                             {!mounted ? (
                                 <tr>
-                                    <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
+                                    <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
                                         Loading...
                                     </td>
                                 </tr>
                             ) : clientProjects.length === 0 ? (
                                 <tr>
-                                    <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
+                                    <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
                                         No projects found
                                     </td>
                                 </tr>
                             ) : (
-                                clientProjects.map((project) => (
-                                    <tr key={project.id} style={{ borderBottom: '1px solid #eee' }}>
+                                clientProjects.map((project, index) => (
+                                    <tr
+                                        key={project.id}
+                                        draggable={true}
+                                        onDragStart={(e) => handleDragStart(e, index)}
+                                        onDragEnd={handleDragEnd}
+                                        onDragOver={handleDragOver}
+                                        onDrop={(e) => handleDrop(e, index)}
+                                        className={`table-row ${draggedIndex === index ? 'dragging' : ''}`}
+                                        style={{ borderBottom: '1px solid #eee' }}
+                                    >
+                                        <td style={{ padding: '15px', width: '60px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <span className="drag-handle">⋮⋮</span>
+                                                <span style={{
+                                                    background: '#f3f4f6',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '12px',
+                                                    fontSize: '12px',
+                                                    color: '#6b7280',
+                                                    fontWeight: '500'
+                                                }}>
+                                                    #{index + 1}
+                                                </span>
+                                            </div>
+                                        </td>
                                         <td style={{ padding: '15px' }}>
                                             {project.images && project.images.length > 0 ? (
                                                 <img
@@ -427,7 +511,7 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}>
                     <span style={{ color: '#6c757d', fontSize: '14px', fontWeight: '500' }}>
-                        Total Projects: {clientTotalCount}
+                        Total Projects: {clientProjects.length}
                     </span>
                     <Link
                         href="/admin/new"
@@ -444,44 +528,6 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                         + New Project
                     </Link>
                 </div>
-
-                {totalPages > 1 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '30px', gap: '10px' }}>
-                        <Link
-                            href={`/admin/projects?page=${Math.max(currentPage - 1, 1)}`}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: currentPage === 1 ? '#ccc' : '#2d5016',
-                                color: 'white',
-                                textDecoration: 'none',
-                                borderRadius: '4px',
-                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                                pointerEvents: currentPage === 1 ? 'none' : 'auto'
-                            }}
-                        >
-                            Previous
-                        </Link>
-
-                        <span style={{ margin: '0 20px' }}>
-                            Page {currentPage} of {totalPages}
-                        </span>
-
-                        <Link
-                            href={`/admin/projects?page=${Math.min(currentPage + 1, totalPages)}`}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: currentPage === totalPages ? '#ccc' : '#2d5016',
-                                color: 'white',
-                                textDecoration: 'none',
-                                borderRadius: '4px',
-                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                                pointerEvents: currentPage === totalPages ? 'none' : 'auto'
-                            }}
-                        >
-                            Next
-                        </Link>
-                    </div>
-                )}
 
                 {/* Delete Confirmation Modal */}
                 {deleteConfirm && (
@@ -586,26 +632,18 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
     );
 }
 
-export async function getServerSideProps({ query, req }) {
+export async function getServerSideProps({ req }) {
     // Check authentication
     const isAuthenticated = !!req.cookies?.admin_token;
 
-    const page = parseInt(query.page) || 1;
-    const limit = 10;
-    const offset = (page - 1) * limit;
-
     try {
-        // Get paginated projects
+        // Get all projects in order
         const { getPortfolioItems } = await import('../../lib/database');
-        const allProjects = await getPortfolioItems();
-        const totalCount = allProjects.length;
-        const projects = allProjects.slice(offset, offset + limit);
+        const projects = await getPortfolioItems();
 
         return {
             props: {
                 projects: JSON.parse(JSON.stringify(projects)),
-                totalCount,
-                currentPage: page,
                 isAuthenticated
             }
         };
@@ -614,8 +652,6 @@ export async function getServerSideProps({ query, req }) {
         return {
             props: {
                 projects: [],
-                totalCount: 0,
-                currentPage: 1,
                 isAuthenticated
             }
         };
