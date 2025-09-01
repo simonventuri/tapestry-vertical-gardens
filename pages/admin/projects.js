@@ -7,8 +7,36 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
     const [authenticated, setAuthenticated] = useState(isAuthenticated);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [deleting, setDeleting] = useState(false);
+    const [clientProjects, setClientProjects] = useState(projects);
+    const [clientTotalCount, setClientTotalCount] = useState(totalCount);
+    const [mounted, setMounted] = useState(false);
     const projectsPerPage = 10;
-    const totalPages = Math.ceil(totalCount / projectsPerPage);
+    const totalPages = Math.ceil(clientTotalCount / projectsPerPage);
+
+    useEffect(() => {
+        setMounted(true);
+        // Process projects on client side to handle any data format issues
+        const processedProjects = projects.map(project => {
+            let images = project.images;
+            if (typeof images === 'string') {
+                try {
+                    images = JSON.parse(images);
+                } catch {
+                    images = [];
+                }
+            }
+            if (!Array.isArray(images)) {
+                images = [];
+            }
+
+            return {
+                ...project,
+                images: images
+            };
+        });
+        setClientProjects(processedProjects);
+        setClientTotalCount(totalCount);
+    }, [projects, totalCount]);
 
     useEffect(() => {
         // Only trust server-side authentication, don't auto-authenticate from localStorage
@@ -21,6 +49,27 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
             }
         }
     }, [isAuthenticated, authenticated]);
+
+    // Handle keyboard events for modal
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape' && deleteConfirm && !deleting) {
+                cancelDelete();
+            }
+        };
+
+        if (deleteConfirm) {
+            document.addEventListener('keydown', handleKeyDown);
+            // Prevent body scroll when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            // Restore body scroll
+            document.body.style.overflow = 'unset';
+        };
+    }, [deleteConfirm, deleting]);
 
     const handleLogin = (token) => {
         setAuthenticated(true);
@@ -64,15 +113,29 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                 },
             });
 
+            const responseData = await response.json();
+
             if (response.ok) {
+                // Remove the project from the client state and update total count
+                const updatedProjects = clientProjects.filter(project => project.id !== projectId);
+                setClientProjects(updatedProjects);
+                setClientTotalCount(prevCount => prevCount - 1);
+
+                // Check if current page becomes empty after deletion
+                const newTotalPages = Math.ceil((clientTotalCount - 1) / projectsPerPage);
+                if (currentPage > newTotalPages && newTotalPages > 0) {
+                    // Redirect to the last valid page
+                    window.location.href = `/admin/projects?page=${newTotalPages}`;
+                    return;
+                }
+
                 alert('Project deleted successfully!');
-                window.location.reload(); // Refresh the page to show updated list
             } else {
-                throw new Error('Failed to delete project');
+                throw new Error(responseData.message || 'Failed to delete project');
             }
         } catch (error) {
             console.error('Error deleting project:', error);
-            alert('Error deleting project. Please try again.');
+            alert(`Error deleting project: ${error.message}. Please try again.`);
         } finally {
             setDeleting(false);
             setDeleteConfirm(null);
@@ -215,6 +278,18 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
             text-decoration: none;
             font-size: 0.875rem;
           }
+          
+          /* Modal Animation */
+          @keyframes modalSlideIn {
+            0% {
+              opacity: 0;
+              transform: translateY(-20px) scale(0.95);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
         `}</style>
             </Head>
 
@@ -248,14 +323,20 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                             </tr>
                         </thead>
                         <tbody>
-                            {projects.length === 0 ? (
+                            {!mounted ? (
+                                <tr>
+                                    <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
+                                        Loading...
+                                    </td>
+                                </tr>
+                            ) : clientProjects.length === 0 ? (
                                 <tr>
                                     <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
                                         No projects found
                                     </td>
                                 </tr>
                             ) : (
-                                projects.map((project) => (
+                                clientProjects.map((project) => (
                                     <tr key={project.id} style={{ borderBottom: '1px solid #eee' }}>
                                         <td style={{ padding: '15px' }}>
                                             {project.images && project.images.length > 0 ? (
@@ -346,7 +427,7 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}>
                     <span style={{ color: '#6c757d', fontSize: '14px', fontWeight: '500' }}>
-                        Total Projects: {totalCount}
+                        Total Projects: {clientTotalCount}
                     </span>
                     <Link
                         href="/admin/new"
@@ -404,43 +485,76 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
 
                 {/* Delete Confirmation Modal */}
                 {deleteConfirm && (
-                    <div style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        background: 'rgba(0, 0, 0, 0.5)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1000
-                    }}>
+                    <div
+                        style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            background: 'rgba(0, 0, 0, 0.5)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 1000,
+                            backdropFilter: 'blur(2px)'
+                        }}
+                        onClick={(e) => {
+                            // Close modal when clicking outside the modal content
+                            if (e.target === e.currentTarget && !deleting) {
+                                cancelDelete();
+                            }
+                        }}
+                    >
                         <div style={{
                             background: 'white',
                             padding: '2rem',
-                            borderRadius: '8px',
+                            borderRadius: '12px',
                             maxWidth: '400px',
-                            width: '90%'
+                            width: '90%',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                            animation: 'modalSlideIn 0.2s ease-out',
+                            border: '1px solid #e5e7eb'
                         }}>
-                            <h3 style={{ margin: '0 0 1rem 0', color: '#1a202c' }}>
+                            <h3 style={{
+                                margin: '0 0 1rem 0',
+                                color: '#dc2626',
+                                fontSize: '1.25rem',
+                                fontWeight: '600',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}>
+                                <span style={{ fontSize: '1.5rem' }}>⚠️</span>
                                 Confirm Delete
                             </h3>
-                            <p style={{ margin: '0 0 1.5rem 0', color: '#374151' }}>
-                                Are you sure you want to delete "{deleteConfirm.title}"? This action cannot be undone.
+                            <p style={{
+                                margin: '0 0 1.5rem 0',
+                                color: '#374151',
+                                lineHeight: '1.6'
+                            }}>
+                                Are you sure you want to delete <strong>"{deleteConfirm.title}"</strong>? This action cannot be undone.
                             </p>
-                            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                                 <button
                                     onClick={cancelDelete}
                                     disabled={deleting}
                                     style={{
-                                        padding: '0.5rem 1rem',
-                                        background: '#f3f4f6',
+                                        padding: '0.625rem 1.25rem',
+                                        background: '#f9fafb',
                                         color: '#374151',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
-                                        cursor: deleting ? 'not-allowed' : 'pointer'
+                                        borderRadius: '6px',
+                                        cursor: deleting ? 'not-allowed' : 'pointer',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '500',
+                                        transition: 'all 0.15s ease',
+                                        ':hover': {
+                                            background: '#f3f4f6'
+                                        }
                                     }}
+                                    onMouseEnter={(e) => !deleting && (e.target.style.background = '#f3f4f6')}
+                                    onMouseLeave={(e) => !deleting && (e.target.style.background = '#f9fafb')}
                                 >
                                     Cancel
                                 </button>
@@ -448,13 +562,18 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                                     onClick={() => handleDeleteProject(deleteConfirm.id)}
                                     disabled={deleting}
                                     style={{
-                                        padding: '0.5rem 1rem',
-                                        background: deleting ? '#9ca3af' : '#ef4444',
+                                        padding: '0.625rem 1.25rem',
+                                        background: deleting ? '#9ca3af' : '#dc2626',
                                         color: 'white',
                                         border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: deleting ? 'not-allowed' : 'pointer'
+                                        borderRadius: '6px',
+                                        cursor: deleting ? 'not-allowed' : 'pointer',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '500',
+                                        transition: 'all 0.15s ease'
                                     }}
+                                    onMouseEnter={(e) => !deleting && (e.target.style.background = '#b91c1c')}
+                                    onMouseLeave={(e) => !deleting && (e.target.style.background = '#dc2626')}
                                 >
                                     {deleting ? 'Deleting...' : 'Delete'}
                                 </button>

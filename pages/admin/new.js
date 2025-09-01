@@ -9,17 +9,19 @@ export default function NewProject({ isAuthenticated }) {
     const [authenticated, setAuthenticated] = useState(isAuthenticated);
     const [formData, setFormData] = useState({
         title: '',
-        story: '',
-        slug: ''
+        description: '',
+        slug: '',
+        category: '',
+        location: '',
+        year: '',
+        size: ''
     });
-    const [heroImage, setHeroImage] = useState('');
-    const [galleryImages, setGalleryImages] = useState([]);
+    const [projectImages, setProjectImages] = useState([]);
+    const [draggedImageIndex, setDraggedImageIndex] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
-    const [isGalleryDragging, setIsGalleryDragging] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    const heroFileRef = useRef();
-    const galleryFileRef = useRef();
+    const fileInputRef = useRef();
 
     useEffect(() => {
         // Check for stored token on client side
@@ -58,45 +60,97 @@ export default function NewProject({ isAuthenticated }) {
         });
     };
 
-    const handleHeroDrop = (e) => {
+    // Image handling functions
+    const handleImageUpload = (files) => {
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                // Compress image before converting to base64
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Set maximum dimensions
+                    const maxWidth = 1200;
+                    const maxHeight = 800;
+
+                    let { width, height } = img;
+
+                    // Calculate new dimensions maintaining aspect ratio
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width = (width * maxHeight) / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw and compress
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8); // 80% quality
+
+                    setProjectImages(prev => [...prev, compressedDataUrl]);
+                };
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    };
+
+    const handleDrop = (e) => {
         e.preventDefault();
         setIsDragging(false);
-        const files = Array.from(e.dataTransfer.files);
-        if (files[0] && files[0].type.startsWith('image/')) {
-            handleHeroImageUpload(files[0]);
+        const files = e.dataTransfer.files;
+        handleImageUpload(files);
+    };
+
+    const handleFileInput = (e) => {
+        const files = e.target.files;
+        if (files.length > 0) {
+            handleImageUpload(files);
         }
     };
 
-    const handleGalleryDrop = (e) => {
+    const removeImage = (index) => {
+        setProjectImages(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const moveImage = (fromIndex, toIndex) => {
+        setProjectImages(prev => {
+            const newImages = [...prev];
+            const [removed] = newImages.splice(fromIndex, 1);
+            newImages.splice(toIndex, 0, removed);
+            return newImages;
+        });
+    };
+
+    const handleImageDragStart = (e, index) => {
+        setDraggedImageIndex(index);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+
+    const handleImageDragOver = (e) => {
         e.preventDefault();
-        setIsGalleryDragging(false);
-        const files = Array.from(e.dataTransfer.files);
-        const imageFiles = files.filter(file => file.type.startsWith('image/'));
-        imageFiles.forEach(handleGalleryImageUpload);
+        e.dataTransfer.dropEffect = 'move';
     };
 
-    const handleHeroImageUpload = (file) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            setHeroImage(e.target.result);
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const handleGalleryImageUpload = (file) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const newImage = {
-                id: Date.now() + Math.random(),
-                image_path: e.target.result
-            };
-            setGalleryImages(prev => [...prev, newImage]);
-        };
-        reader.readAsDataURL(file);
-    };
-
-    const removeGalleryImage = (imageId) => {
-        setGalleryImages(prev => prev.filter(img => img.id !== imageId));
+    const handleImageDrop = (e, targetIndex) => {
+        e.preventDefault();
+        if (draggedImageIndex !== null && draggedImageIndex !== targetIndex) {
+            moveImage(draggedImageIndex, targetIndex);
+        }
+        setDraggedImageIndex(null);
     };
 
     const handleSubmit = async (e) => {
@@ -106,9 +160,12 @@ export default function NewProject({ isAuthenticated }) {
         try {
             const projectData = {
                 ...formData,
-                hero_image: heroImage,
-                gallery_images: galleryImages
+                images: projectImages,
+                features: [],
+                plants: []
             };
+
+            console.log('Submitting project data:', projectData);
 
             const response = await fetch('/api/admin/projects', {
                 method: 'POST',
@@ -119,15 +176,18 @@ export default function NewProject({ isAuthenticated }) {
                 body: JSON.stringify(projectData),
             });
 
+            const responseData = await response.json();
+            console.log('API response:', responseData);
+
             if (!response.ok) {
-                throw new Error('Failed to create project');
+                throw new Error(responseData.message || 'Failed to create project');
             }
 
             alert('Project created successfully!');
-            router.push('/admin');
+            router.push('/admin/projects');
         } catch (error) {
             console.error('Error creating project:', error);
-            alert('Error creating project. Please try again.');
+            alert(`Error creating project: ${error.message}. Please check the console for more details.`);
         } finally {
             setSaving(false);
         }
@@ -257,11 +317,11 @@ export default function NewProject({ isAuthenticated }) {
                                     color: '#374151',
                                     marginBottom: '0.5rem'
                                 }}>
-                                    Story *
+                                    Description *
                                 </label>
                                 <textarea
-                                    name="story"
-                                    value={formData.story}
+                                    name="description"
+                                    value={formData.description}
                                     onChange={handleInputChange}
                                     rows={6}
                                     style={{
@@ -276,10 +336,118 @@ export default function NewProject({ isAuthenticated }) {
                                     required
                                 />
                             </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <label style={{
+                                        display: 'block',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '500',
+                                        color: '#374151',
+                                        marginBottom: '0.5rem'
+                                    }}>
+                                        Category
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleInputChange}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            fontSize: '1rem',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label style={{
+                                        display: 'block',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '500',
+                                        color: '#374151',
+                                        marginBottom: '0.5rem'
+                                    }}>
+                                        Location
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="location"
+                                        value={formData.location}
+                                        onChange={handleInputChange}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            fontSize: '1rem',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div>
+                                    <label style={{
+                                        display: 'block',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '500',
+                                        color: '#374151',
+                                        marginBottom: '0.5rem'
+                                    }}>
+                                        Year
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="year"
+                                        value={formData.year}
+                                        onChange={handleInputChange}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            fontSize: '1rem',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label style={{
+                                        display: 'block',
+                                        fontSize: '0.875rem',
+                                        fontWeight: '500',
+                                        color: '#374151',
+                                        marginBottom: '0.5rem'
+                                    }}>
+                                        Size
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="size"
+                                        value={formData.size}
+                                        onChange={handleInputChange}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            border: '1px solid #d1d5db',
+                                            borderRadius: '4px',
+                                            fontSize: '1rem',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Hero Image */}
+                    {/* Project Images */}
                     <div style={{
                         backgroundColor: 'white',
                         borderRadius: '8px',
@@ -288,15 +456,22 @@ export default function NewProject({ isAuthenticated }) {
                         marginBottom: '2rem'
                     }}>
                         <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a202c' }}>
-                            Hero Image
+                            Project Images
                         </h2>
 
+                        <p style={{ marginBottom: '1rem', color: '#6b7280', fontSize: '0.875rem' }}>
+                            The first image will be used as the hero image. Drag and drop to reorder images.
+                        </p>
+
+                        {/* Upload Area */}
                         <div
-                            onDrop={handleHeroDrop}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDragEnter={() => setIsDragging(true)}
+                            onDrop={handleDrop}
+                            onDragOver={(e) => {
+                                e.preventDefault();
+                                setIsDragging(true);
+                            }}
                             onDragLeave={() => setIsDragging(false)}
-                            onClick={() => heroFileRef.current?.click()}
+                            onClick={() => fileInputRef.current?.click()}
                             style={{
                                 border: `2px dashed ${isDragging ? '#3b82f6' : '#d1d5db'}`,
                                 borderRadius: '8px',
@@ -304,79 +479,13 @@ export default function NewProject({ isAuthenticated }) {
                                 textAlign: 'center',
                                 cursor: 'pointer',
                                 backgroundColor: isDragging ? '#eff6ff' : '#f9fafb',
-                                transition: 'all 0.3s ease'
-                            }}
-                        >
-                            {heroImage ? (
-                                <div>
-                                    <img
-                                        src={heroImage}
-                                        alt="Hero preview"
-                                        style={{
-                                            maxWidth: '300px',
-                                            maxHeight: '200px',
-                                            objectFit: 'cover',
-                                            borderRadius: '4px'
-                                        }}
-                                    />
-                                    <p style={{ marginTop: '1rem', color: '#6b7280' }}>
-                                        Click or drag to replace image
-                                    </p>
-                                </div>
-                            ) : (
-                                <div>
-                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📁</div>
-                                    <p style={{ color: '#374151', fontWeight: '500' }}>
-                                        Drop hero image here or click to upload
-                                    </p>
-                                    <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                                        PNG, JPG, GIF up to 10MB
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        <input
-                            ref={heroFileRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => e.target.files[0] && handleHeroImageUpload(e.target.files[0])}
-                            style={{ display: 'none' }}
-                        />
-                    </div>
-
-                    {/* Gallery Images */}
-                    <div style={{
-                        backgroundColor: 'white',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                        padding: '2rem',
-                        marginBottom: '2rem'
-                    }}>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1.5rem', color: '#1a202c' }}>
-                            Gallery Images (Optional)
-                        </h2>
-
-                        <div
-                            onDrop={handleGalleryDrop}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDragEnter={() => setIsGalleryDragging(true)}
-                            onDragLeave={() => setIsGalleryDragging(false)}
-                            onClick={() => galleryFileRef.current?.click()}
-                            style={{
-                                border: `2px dashed ${isGalleryDragging ? '#3b82f6' : '#d1d5db'}`,
-                                borderRadius: '8px',
-                                padding: '2rem',
-                                textAlign: 'center',
-                                cursor: 'pointer',
-                                backgroundColor: isGalleryDragging ? '#eff6ff' : '#f9fafb',
                                 transition: 'all 0.3s ease',
-                                marginBottom: galleryImages.length > 0 ? '2rem' : '0'
+                                marginBottom: '2rem'
                             }}
                         >
-                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🖼️</div>
-                            <p style={{ color: '#374151', fontWeight: '500' }}>
-                                Drop gallery images here or click to upload
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📁</div>
+                            <p style={{ color: '#374151', fontWeight: '500', marginBottom: '0.5rem' }}>
+                                Drop images here or click to upload
                             </p>
                             <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
                                 PNG, JPG, GIF up to 10MB each
@@ -384,38 +493,66 @@ export default function NewProject({ isAuthenticated }) {
                         </div>
 
                         <input
-                            ref={galleryFileRef}
+                            ref={fileInputRef}
                             type="file"
                             accept="image/*"
                             multiple
-                            onChange={(e) => {
-                                Array.from(e.target.files).forEach(handleGalleryImageUpload);
-                            }}
+                            onChange={handleFileInput}
                             style={{ display: 'none' }}
                         />
 
-                        {/* Gallery Preview */}
-                        {galleryImages.length > 0 && (
+                        {/* Image Gallery */}
+                        {projectImages.length > 0 && (
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                                 gap: '1rem'
                             }}>
-                                {galleryImages.map((image) => (
-                                    <div key={image.id} style={{ position: 'relative' }}>
+                                {projectImages.map((image, index) => (
+                                    <div
+                                        key={index}
+                                        draggable
+                                        onDragStart={(e) => handleImageDragStart(e, index)}
+                                        onDragOver={handleImageDragOver}
+                                        onDrop={(e) => handleImageDrop(e, index)}
+                                        style={{
+                                            position: 'relative',
+                                            aspectRatio: '1/1',
+                                            borderRadius: '8px',
+                                            overflow: 'hidden',
+                                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                            cursor: 'move',
+                                            border: index === 0 ? '3px solid #3b82f6' : 'none'
+                                        }}
+                                    >
+                                        {index === 0 && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '0.5rem',
+                                                left: '0.5rem',
+                                                backgroundColor: '#3b82f6',
+                                                color: 'white',
+                                                padding: '0.25rem 0.5rem',
+                                                borderRadius: '4px',
+                                                fontSize: '0.75rem',
+                                                fontWeight: '500',
+                                                zIndex: 2
+                                            }}>
+                                                HERO
+                                            </div>
+                                        )}
                                         <img
-                                            src={image.image_path}
-                                            alt="Gallery preview"
+                                            src={image}
+                                            alt={`Project image ${index + 1}`}
                                             style={{
                                                 width: '100%',
-                                                height: '150px',
-                                                objectFit: 'cover',
-                                                borderRadius: '4px'
+                                                height: '100%',
+                                                objectFit: 'cover'
                                             }}
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => removeGalleryImage(image.id)}
+                                            onClick={() => removeImage(index)}
                                             style={{
                                                 position: 'absolute',
                                                 top: '0.5rem',
@@ -427,7 +564,8 @@ export default function NewProject({ isAuthenticated }) {
                                                 width: '24px',
                                                 height: '24px',
                                                 cursor: 'pointer',
-                                                fontSize: '0.75rem'
+                                                fontSize: '0.75rem',
+                                                zIndex: 2
                                             }}
                                         >
                                             ×
@@ -442,7 +580,7 @@ export default function NewProject({ isAuthenticated }) {
                     <div style={{ textAlign: 'center' }}>
                         <button
                             type="submit"
-                            disabled={saving}
+                            disabled={saving || !formData.title || !formData.slug}
                             style={{
                                 backgroundColor: saving ? '#9ca3af' : '#10b981',
                                 color: 'white',

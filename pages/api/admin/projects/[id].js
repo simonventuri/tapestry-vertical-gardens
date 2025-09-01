@@ -1,6 +1,15 @@
 import { updateProject, deleteProject } from '../../../../lib/database';
 import { requireAuth } from '../../../../lib/auth';
 
+// Increase body size limit for image uploads
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '50mb',
+        },
+    },
+};
+
 async function handler(req, res) {
     const { id } = req.query;
 
