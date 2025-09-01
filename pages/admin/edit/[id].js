@@ -136,7 +136,7 @@ export default function EditProject({ project, isAuthenticated }) {
             }
 
             alert('Project saved successfully!');
-            router.push('/admin');
+            router.push('/admin/projects');
         } catch (error) {
             console.error('Error saving project:', error);
             alert('Error saving project. Please try again.');
@@ -150,6 +150,22 @@ export default function EditProject({ project, isAuthenticated }) {
             <Head>
                 <title>Edit Project: {project.title} - Admin</title>
                 <meta name="robots" content="noindex, nofollow" />
+                <style>{`
+                    /* Force light theme for admin pages */
+                    html, body {
+                        color-scheme: light !important;
+                        background-color: white !important;
+                        color: #1a202c !important;
+                    }
+                    html[data-theme="dark"], body[data-theme="dark"] {
+                        color-scheme: light !important;
+                        background-color: white !important;
+                        color: #1a202c !important;
+                    }
+                    * {
+                        color-scheme: light !important;
+                    }
+                `}</style>
             </Head>
 
             <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
@@ -162,18 +178,18 @@ export default function EditProject({ project, isAuthenticated }) {
                     borderBottom: '2px solid #e2e8f0',
                     paddingBottom: '1rem'
                 }}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#1a202c' }}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#111827', letterSpacing: '-0.025em' }}>
                         Edit Project
                     </h1>
                     <Link
-                        href="/admin"
+                        href="/admin/projects"
                         style={{
                             color: '#6b7280',
                             textDecoration: 'none',
                             fontSize: '0.875rem'
                         }}
                     >
-                        ← Back to Dashboard
+                        ← Back to Projects
                     </Link>
                 </div>
 

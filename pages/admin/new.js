@@ -138,6 +138,22 @@ export default function NewProject({ isAuthenticated }) {
             <Head>
                 <title>New Project - Admin</title>
                 <meta name="robots" content="noindex, nofollow" />
+                <style>{`
+                    /* Force light theme for admin pages */
+                    html, body {
+                        color-scheme: light !important;
+                        background-color: white !important;
+                        color: #1a202c !important;
+                    }
+                    html[data-theme="dark"], body[data-theme="dark"] {
+                        color-scheme: light !important;
+                        background-color: white !important;
+                        color: #1a202c !important;
+                    }
+                    * {
+                        color-scheme: light !important;
+                    }
+                `}</style>
             </Head>
 
             <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>

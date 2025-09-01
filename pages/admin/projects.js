@@ -96,7 +96,31 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
             <Head>
                 <title>Project Management - Admin - Tapestry Vertical Gardens</title>
                 <meta name="robots" content="noindex, nofollow" />
-                <style jsx>{`
+                <meta name="color-scheme" content="light only" />
+                <style>{`
+          /* Force light theme for admin pages */
+          html, body {
+            color-scheme: light !important;
+            background-color: white !important;
+            color: #1a202c !important;
+          }
+          html[data-theme="dark"], body[data-theme="dark"] {
+            color-scheme: light !important;
+            background-color: white !important;
+            color: #1a202c !important;
+          }
+          * {
+            color-scheme: light !important;
+          }
+          /* Additional override for any dark theme classes */
+          .dark, [data-theme="dark"], [class*="dark"] {
+            background-color: white !important;
+            color: #1a202c !important;
+          }
+          /* Override any component backgrounds */
+          div, section, main, table, th, td {
+            background-color: inherit !important;
+          }
           .admin-container {
             padding: 2rem;
             max-width: 1200px;
@@ -209,35 +233,6 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                         <h1 style={{ margin: 0, color: '#2d5016' }}>Project Management</h1>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Link
-                            href="/admin/new"
-                            style={{
-                                padding: '10px 20px',
-                                backgroundColor: '#28a745',
-                                color: 'white',
-                                textDecoration: 'none',
-                                borderRadius: '5px',
-                                fontSize: '14px',
-                                fontWeight: '500'
-                            }}
-                        >
-                            + New Project
-                        </Link>
-                        <span style={{ margin: '0 10px', color: '#6c757d' }}>Total: {totalCount}</span>
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                padding: '10px 20px',
-                                backgroundColor: '#dc3545',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '0.875rem'
-                            }}
-                        >
-                            Logout
-                        </button>
                     </div>
                 </div>
 
@@ -245,11 +240,11 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ backgroundColor: '#f8f9fa' }}>
-                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Image</th>
-                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Project Details</th>
-                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Location</th>
-                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Photos</th>
-                                <th style={{ padding: '15px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>Actions</th>
+                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Image</th>
+                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Project Details</th>
+                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Location</th>
+                                <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Photos</th>
+                                <th style={{ padding: '15px', textAlign: 'center', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -295,7 +290,7 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                                             )}
                                         </td>
                                         <td style={{ padding: '15px' }}>
-                                            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>{project.title}</div>
+                                            <div style={{ fontWeight: 'bold', marginBottom: '4px', color: '#1f2937' }}>{project.title}</div>
                                             <div style={{ fontSize: '14px', color: '#6c757d', marginBottom: '2px' }}>
                                                 Created: {new Date(project.createdAt).toLocaleDateString()}
                                             </div>
@@ -306,7 +301,7 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                                         </td>
                                         <td style={{ padding: '15px' }}>
                                             <div style={{ color: '#374151' }}>
-                                                {project.photos ? project.photos.length : 0} photos
+                                                {project.images ? project.images.length : 0} photo{project.images && project.images.length !== 1 ? 's' : ''}
                                             </div>
                                         </td>
                                         <td style={{ padding: '15px', textAlign: 'center' }}>
@@ -347,6 +342,26 @@ export default function AdminProjects({ projects, totalCount, currentPage, isAut
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', marginBottom: '20px' }}>
+                    <span style={{ color: '#6c757d', fontSize: '14px', fontWeight: '500' }}>
+                        Total Projects: {totalCount}
+                    </span>
+                    <Link
+                        href="/admin/new"
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#28a745',
+                            color: 'white',
+                            textDecoration: 'none',
+                            borderRadius: '5px',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                        }}
+                    >
+                        + New Project
+                    </Link>
                 </div>
 
                 {totalPages > 1 && (

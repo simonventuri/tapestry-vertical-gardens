@@ -37,6 +37,22 @@ export default function AdminDashboard({ isAuthenticated }) {
             <Head>
                 <title>Admin Dashboard - Tapestry Vertical Gardens</title>
                 <meta name="robots" content="noindex, nofollow" />
+                <style>{`
+                    /* Force light theme for admin pages */
+                    html, body {
+                        color-scheme: light !important;
+                        background-color: white !important;
+                        color: #1a202c !important;
+                    }
+                    html[data-theme="dark"], body[data-theme="dark"] {
+                        color-scheme: light !important;
+                        background-color: white !important;
+                        color: #1a202c !important;
+                    }
+                    * {
+                        color-scheme: light !important;
+                    }
+                `}</style>
             </Head>
             <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
