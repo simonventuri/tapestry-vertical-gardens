@@ -10,10 +10,10 @@
  * node scripts/generate-favicons.js
  * 
  * Requirements:
- * npm install sharp
+ * npm install canvas
  */
 
-const sharp = require('sharp');
+const { createCanvas, loadImage } = require('canvas');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -21,7 +21,6 @@ const SOURCE_IMAGE = path.join(__dirname, '../public/images/logo.png');
 const OUTPUT_DIR = path.join(__dirname, '../public');
 
 const FAVICON_CONFIGS = [
-    { name: 'favicon.ico', size: 32, format: 'ico' },
     { name: 'favicon-16x16.png', size: 16, format: 'png' },
     { name: 'favicon-32x32.png', size: 32, format: 'png' },
     { name: 'apple-touch-icon.png', size: 180, format: 'png' },
@@ -35,6 +34,10 @@ async function generateFavicons() {
         await fs.access(SOURCE_IMAGE);
         console.log('✓ Source image found:', SOURCE_IMAGE);
 
+        // Load the source image with Canvas
+        const sourceImage = await loadImage(SOURCE_IMAGE);
+        console.log(`✓ Source image loaded: ${sourceImage.width}x${sourceImage.height}`);
+
         // Ensure output directory exists
         await fs.mkdir(OUTPUT_DIR, { recursive: true });
 
@@ -42,25 +45,52 @@ async function generateFavicons() {
             const outputPath = path.join(OUTPUT_DIR, config.name);
 
             try {
-                let pipeline = sharp(SOURCE_IMAGE)
-                    .resize(config.size, config.size, {
-                        fit: 'cover',
-                        position: 'center'
-                    });
+                // Create a canvas with the target size
+                const canvas = createCanvas(config.size, config.size);
+                const ctx = canvas.getContext('2d');
 
-                if (config.format === 'png') {
-                    pipeline = pipeline.png({ quality: 90 });
-                } else if (config.format === 'ico') {
-                    // For ICO, we'll generate PNG and rename it
-                    pipeline = pipeline.png({ quality: 90 });
+                // Calculate dimensions to maintain aspect ratio and center the image
+                const sourceAspect = sourceImage.width / sourceImage.height;
+                const targetAspect = 1; // Square favicon
+
+                let drawWidth, drawHeight, drawX, drawY;
+
+                if (sourceAspect > targetAspect) {
+                    // Source is wider, fit by height
+                    drawHeight = config.size;
+                    drawWidth = drawHeight * sourceAspect;
+                    drawX = (config.size - drawWidth) / 2;
+                    drawY = 0;
+                } else {
+                    // Source is taller or square, fit by width
+                    drawWidth = config.size;
+                    drawHeight = drawWidth / sourceAspect;
+                    drawX = 0;
+                    drawY = (config.size - drawHeight) / 2;
                 }
 
-                await pipeline.toFile(outputPath);
+                // Draw the image centered and scaled
+                ctx.drawImage(sourceImage, drawX, drawY, drawWidth, drawHeight);
+
+                // Save as PNG
+                const buffer = canvas.toBuffer('image/png');
+                await fs.writeFile(outputPath, buffer);
                 console.log('✓ Generated:', config.name);
 
             } catch (error) {
                 console.error('✗ Failed to generate', config.name, ':', error.message);
             }
+        }
+
+        // Generate a simple favicon.ico by copying the 32x32 PNG
+        try {
+            const favicon32Path = path.join(OUTPUT_DIR, 'favicon-32x32.png');
+            const faviconIcoPath = path.join(OUTPUT_DIR, 'favicon.ico');
+            const faviconBuffer = await fs.readFile(favicon32Path);
+            await fs.writeFile(faviconIcoPath, faviconBuffer);
+            console.log('✓ Generated: favicon.ico (copied from 32x32 PNG)');
+        } catch (error) {
+            console.error('✗ Failed to generate favicon.ico:', error.message);
         }
 
         // Generate updated site.webmanifest
@@ -102,7 +132,7 @@ async function generateFavicons() {
 
         if (error.code === 'ENOENT') {
             console.log('\n📝 To fix this:');
-            console.log('1. Install sharp: npm install sharp');
+            console.log('1. Install canvas: npm install canvas');
             console.log('2. Place your logo.png (512x512 recommended) in public/images/');
             console.log('3. Run this script again: node scripts/generate-favicons.js');
         }
@@ -111,14 +141,14 @@ async function generateFavicons() {
     }
 }
 
-// Check if Sharp is available
+// Check if Canvas is available
 async function checkDependencies() {
     try {
-        require('sharp');
+        require('canvas');
         return true;
     } catch (error) {
-        console.error('✗ Sharp package not found');
-        console.log('Install it with: npm install sharp');
+        console.error('✗ Canvas package not found');
+        console.log('Install it with: npm install canvas');
         return false;
     }
 }
@@ -126,8 +156,8 @@ async function checkDependencies() {
 async function main() {
     console.log('🎨 Generating favicons for Tapestry Vertical Gardens...\n');
 
-    const hasSharp = await checkDependencies();
-    if (!hasSharp) {
+    const hasCanvas = await checkDependencies();
+    if (!hasCanvas) {
         process.exit(1);
     }
 
