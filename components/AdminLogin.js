@@ -50,11 +50,36 @@ export default function AdminLogin({ onLogin }) {
     return (
         <div style={{
             display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
             minHeight: '100vh',
             backgroundColor: '#f5f5f5'
         }}>
+            {/* Back to Website Link */}
+            <div style={{ marginBottom: '20px' }}>
+                <a
+                    href="/"
+                    style={{
+                        color: '#2d5016',
+                        textDecoration: 'none',
+                        fontSize: '16px',
+                        fontWeight: '500',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '8px 16px',
+                        borderRadius: '4px',
+                        transition: 'background-color 0.2s ease'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#f0f0f0'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = 'transparent'}
+                >
+                    <span style={{ fontSize: '18px' }}>←</span>
+                    Back to Website
+                </a>
+            </div>
+
             <div style={{
                 backgroundColor: 'white',
                 padding: '40px',

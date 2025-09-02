@@ -1,0 +1,14 @@
+# Allow all user agents
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /admin/
+Disallow: /api/admin/
+
+# Disallow API endpoints (except sitemap)
+Disallow: /api/
+Allow: /api/sitemap.xml
+
+# Sitemap location
+Sitemap: https://tapestryverticalgardens.com/api/sitemap.xml

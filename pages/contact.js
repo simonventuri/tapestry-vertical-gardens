@@ -19,11 +19,13 @@ export default function Contact() {
         message: '',
         projectType: '',
         location: '',
-        budget: ''
+        budget: '',
+        gdprConsent: false
     });
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showThankYou, setShowThankYou] = useState(false);
+    const [submittedName, setSubmittedName] = useState('');
 
     const projectTypes = [
         'Residential Living Wall',
@@ -74,6 +76,13 @@ export default function Contact() {
 
         if (!formData.phone.trim()) {
             newErrors.phone = 'Phone number is required';
+        } else {
+            // Basic UK phone number validation
+            const cleanPhone = formData.phone.replace(/[\s\-\(\)\.]/g, '');
+            const isValidUKPhone = /^(0[1-9]\d{8,9}|07\d{9}|\+44[1-9]\d{8,9}|\+\d{10,15}|\d{10,11})$/.test(cleanPhone);
+            if (!isValidUKPhone) {
+                newErrors.phone = 'Please enter a valid UK phone number (e.g., 07875 203901 or 01234 567890)';
+            }
         }
 
         if (!formData.message.trim()) {
@@ -90,6 +99,10 @@ export default function Contact() {
 
         if (!formData.budget) {
             newErrors.budget = 'Please select a budget range';
+        }
+
+        if (!formData.gdprConsent) {
+            newErrors.gdprConsent = 'You must agree to the data processing terms to submit this form';
         }
 
         return newErrors;
@@ -118,6 +131,9 @@ export default function Contact() {
             const data = await response.json();
 
             if (response.ok) {
+                // Extract first name before clearing form data
+                const firstName = formData.name.trim().split(' ')[0];
+                setSubmittedName(firstName);
                 setShowThankYou(true);
                 setFormData({
                     name: '',
@@ -126,7 +142,8 @@ export default function Contact() {
                     message: '',
                     projectType: '',
                     location: '',
-                    budget: ''
+                    budget: '',
+                    gdprConsent: false
                 });
                 setErrors({});
             } else {
@@ -142,6 +159,7 @@ export default function Contact() {
 
     const closeModal = () => {
         setShowThankYou(false);
+        setSubmittedName('');
     };
 
     return (
@@ -321,6 +339,31 @@ export default function Contact() {
                                     {errors.message && <div className="error-message">{errors.message}</div>}
                                 </div>
 
+                                {/* GDPR Consent */}
+                                <div className="form-group gdpr-consent">
+                                    <label className="checkbox-container">
+                                        <input
+                                            type="checkbox"
+                                            name="gdprConsent"
+                                            checked={formData.gdprConsent}
+                                            onChange={(e) => setFormData(prev => ({
+                                                ...prev,
+                                                gdprConsent: e.target.checked
+                                            }))}
+                                            className={errors.gdprConsent ? 'error' : ''}
+                                        />
+                                        <span className="checkmark"></span>
+                                        <span className="consent-text">
+                                            I consent to Tapestry Vertical Gardens collecting and processing my personal data
+                                            (name, email, phone number, and message) to respond to my enquiry.
+                                            Your data will be stored securely and used only for this purpose.
+                                            For more details, see our <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+                                            You can request deletion of your data at any time by contacting us. *
+                                        </span>
+                                    </label>
+                                    {errors.gdprConsent && <div className="error-message">{errors.gdprConsent}</div>}
+                                </div>
+
                                 <button
                                     type="submit"
                                     className="btn btn-primary submit-btn"
@@ -329,6 +372,30 @@ export default function Contact() {
                                     {isSubmitting ? 'Sending...' : 'Send Enquiry'}
                                 </button>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Contact Information */}
+            <section className="contact-info-section">
+                <div className="container">
+                    <div className="contact-info-grid">
+                        <div className="contact-person">
+                            <h3>ADAM SHEPHERD</h3>
+                            <p><a href="mailto:adam@tapestryverticalgardens.com">adam@tapestryverticalgardens.com</a></p>
+                            <p><a href="tel:07875203901">07875 203901</a></p>
+                        </div>
+
+                        <div className="contact-company">
+                            <h3>TAPESTRY VERTICAL GARDENS</h3>
+                            <p><a href="mailto:info@tapestryverticalgardens.com">info@tapestryverticalgardens.com</a></p>
+                            <p>Greenslade Nursery<br />
+                                Greenslade Road<br />
+                                Blackawton<br />
+                                Totnes<br />
+                                Devon<br />
+                                TQ9 7BP</p>
                         </div>
                     </div>
                 </div>
@@ -344,7 +411,7 @@ export default function Contact() {
                         </div>
                         <div className="modal-body">
                             <div className="success-icon">✓</div>
-                            <p>Thank you for your enquiry, <strong>{formData.name || 'there'}</strong>!</p>
+                            <p>Thank you for your enquiry, <strong>{submittedName || 'there'}</strong>!</p>
                             <p>We'll be in touch shortly to discuss your project and answer any questions you may have.</p>
                             <p className="modal-subtext">You should receive a confirmation email shortly.</p>
                         </div>
@@ -417,6 +484,91 @@ export default function Contact() {
                     color: #dc3545;
                     font-size: 14px;
                     margin-top: 5px;
+                }
+
+                /* GDPR Consent Styling */
+                .gdpr-consent {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background-color: #f8f9fa;
+                    border-radius: 6px;
+                    border: 1px solid #e9ecef;
+                }
+
+                .checkbox-container {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    cursor: pointer;
+                    position: relative;
+                    padding-left: 0;
+                    margin: 0;
+                    line-height: 1.4;
+                }
+
+                .checkbox-container input[type="checkbox"] {
+                    position: absolute;
+                    opacity: 0;
+                    cursor: pointer;
+                }
+
+                .checkmark {
+                    flex-shrink: 0;
+                    height: 18px;
+                    width: 18px;
+                    background-color: white;
+                    border: 2px solid #ddd;
+                    border-radius: 3px;
+                    position: relative;
+                    margin-top: 2px;
+                }
+
+                .checkbox-container:hover input ~ .checkmark {
+                    border-color: #2d5016;
+                }
+
+                .checkbox-container input:checked ~ .checkmark {
+                    background-color: #2d5016;
+                    border-color: #2d5016;
+                }
+
+                .checkmark:after {
+                    content: "";
+                    position: absolute;
+                    display: none;
+                }
+
+                .checkbox-container input:checked ~ .checkmark:after {
+                    display: block;
+                }
+
+                .checkbox-container .checkmark:after {
+                    left: 5px;
+                    top: 1px;
+                    width: 6px;
+                    height: 10px;
+                    border: solid white;
+                    border-width: 0 2px 2px 0;
+                    transform: rotate(45deg);
+                }
+
+                .consent-text {
+                    font-size: 14px;
+                    color: #495057;
+                    line-height: 1.5;
+                }
+
+                .consent-text a {
+                    color: #2d5016;
+                    text-decoration: underline;
+                }
+
+                .consent-text a:hover {
+                    color: #1e3a0f;
+                }
+
+                .checkbox-container input.error ~ .checkmark {
+                    border-color: #dc3545;
                 }
 
                 .submit-btn {
@@ -569,6 +721,67 @@ export default function Contact() {
                     .modal-footer {
                         padding-left: 20px;
                         padding-right: 20px;
+                    }
+                }
+
+                /* Contact Information Section */
+                .contact-info-section {
+                    background-color: #f8f9fa;
+                    padding: 40px 0;
+                    border-top: 1px solid #dee2e6;
+                }
+
+                .contact-info-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 60px;
+                    max-width: 800px;
+                    margin: 0 auto;
+                }
+
+                .contact-person,
+                .contact-company {
+                    text-align: center;
+                }
+
+                .contact-person h3,
+                .contact-company h3 {
+                    color: #2d5016;
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    margin-bottom: 15px;
+                    letter-spacing: 0.5px;
+                    text-align: center;
+                }
+
+                .contact-person p,
+                .contact-company p {
+                    color: #495057;
+                    margin-bottom: 8px;
+                    line-height: 1.6;
+                    text-align: center;
+                }
+
+                .contact-person a,
+                .contact-company a {
+                    color: #2d5016;
+                    text-decoration: none;
+                }
+
+                .contact-person a:hover,
+                .contact-company a:hover {
+                    text-decoration: underline;
+                }
+
+                @media (max-width: 768px) {
+                    .contact-info-section {
+                        padding: 30px 0;
+                    }
+
+                    .contact-info-grid {
+                        grid-template-columns: 1fr;
+                        gap: 40px;
+                        margin: 0 20px;
                     }
                 }
             `}</style>
