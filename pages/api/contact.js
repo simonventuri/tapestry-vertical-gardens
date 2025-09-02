@@ -206,13 +206,17 @@ Submitted: ${new Date().toLocaleString('en-GB', {
 
                 // Send email
                 await transporter.sendMail({
-                    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-                    to: 'info@tapestryverticalgardens.com',
-                    cc: 'simonventuri@gmail.com',
-                    subject: `New Enquiry from ${sanitizedData.name} - ${sanitizedData.projectType}`,
+                    from: `"${sanitizedData.name} via Tapestry Vertical Gardens" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+                    to: 'adam@tapestryverticalgardens.com',
+                    bcc: ['info@tapestryverticalgardens.com', 'simonventuri@gmail.com'],
+                    subject: `New Enquiry from ${sanitizedData.name} (${sanitizedData.email}) - ${sanitizedData.projectType}`,
                     text: emailText,
                     html: emailHtml,
-                    replyTo: sanitizedData.email
+                    replyTo: `"${sanitizedData.name}" <${sanitizedData.email}>`,
+                    headers: {
+                        'X-Original-Sender': sanitizedData.email,
+                        'X-Contact-Form': 'Tapestry Vertical Gardens Website'
+                    }
                 });
             } catch (emailError) {
                 console.error('Email sending error:', emailError);
