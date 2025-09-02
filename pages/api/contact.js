@@ -34,8 +34,24 @@ function validateEmail(email) {
 }
 
 function validatePhone(phone) {
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+    // Remove all spaces, hyphens, parentheses and other formatting characters
+    const cleanPhone = phone.replace(/[\s\-\(\)\.]/g, '');
+
+    // UK phone number patterns:
+    // - Landline: 01xxx, 02xxx (10-11 digits total)
+    // - Mobile: 07xxx (11 digits total)
+    // - International UK: +44 followed by the number without leading 0
+    // - Also allow other international formats for flexibility
+
+    const patterns = [
+        /^0[1-9]\d{8,9}$/,           // UK landline (01xxx, 02xxx, 03xxx etc) - 10-11 digits
+        /^07\d{9}$/,                 // UK mobile (07xxx) - 11 digits
+        /^\+44[1-9]\d{8,9}$/,        // International UK format
+        /^\+\d{10,15}$/,             // Other international numbers (10-15 digits)
+        /^\d{10,11}$/                // Simple 10-11 digit numbers
+    ];
+
+    return patterns.some(pattern => pattern.test(cleanPhone));
 }
 
 export default async function handler(req, res) {

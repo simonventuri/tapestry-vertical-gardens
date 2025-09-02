@@ -25,6 +25,7 @@ export default function Contact() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showThankYou, setShowThankYou] = useState(false);
+    const [submittedName, setSubmittedName] = useState('');
 
     const projectTypes = [
         'Residential Living Wall',
@@ -75,6 +76,13 @@ export default function Contact() {
 
         if (!formData.phone.trim()) {
             newErrors.phone = 'Phone number is required';
+        } else {
+            // Basic UK phone number validation
+            const cleanPhone = formData.phone.replace(/[\s\-\(\)\.]/g, '');
+            const isValidUKPhone = /^(0[1-9]\d{8,9}|07\d{9}|\+44[1-9]\d{8,9}|\+\d{10,15}|\d{10,11})$/.test(cleanPhone);
+            if (!isValidUKPhone) {
+                newErrors.phone = 'Please enter a valid UK phone number (e.g., 07875 203901 or 01234 567890)';
+            }
         }
 
         if (!formData.message.trim()) {
@@ -123,6 +131,9 @@ export default function Contact() {
             const data = await response.json();
 
             if (response.ok) {
+                // Extract first name before clearing form data
+                const firstName = formData.name.trim().split(' ')[0];
+                setSubmittedName(firstName);
                 setShowThankYou(true);
                 setFormData({
                     name: '',
@@ -131,7 +142,8 @@ export default function Contact() {
                     message: '',
                     projectType: '',
                     location: '',
-                    budget: ''
+                    budget: '',
+                    gdprConsent: false
                 });
                 setErrors({});
             } else {
@@ -147,6 +159,7 @@ export default function Contact() {
 
     const closeModal = () => {
         setShowThankYou(false);
+        setSubmittedName('');
     };
 
     return (
@@ -398,7 +411,7 @@ export default function Contact() {
                         </div>
                         <div className="modal-body">
                             <div className="success-icon">✓</div>
-                            <p>Thank you for your enquiry, <strong>{formData.name || 'there'}</strong>!</p>
+                            <p>Thank you for your enquiry, <strong>{submittedName || 'there'}</strong>!</p>
                             <p>We'll be in touch shortly to discuss your project and answer any questions you may have.</p>
                             <p className="modal-subtext">You should receive a confirmation email shortly.</p>
                         </div>
