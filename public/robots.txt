@@ -8,6 +8,7 @@ Disallow: /api/admin/
 
 # Disallow API endpoints (except sitemap)
 Disallow: /api/
+Allow: /api/sitemap.xml
 
 # Sitemap location
-Sitemap: https://tapestryverticalgardens.com/sitemap.xml
+Sitemap: https://tapestryverticalgardens.com/api/sitemap.xml
