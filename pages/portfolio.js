@@ -2,6 +2,7 @@
 import Head from 'next/head';
 import Nav from '../components/Nav';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 export default function Portfolio({ projects }) {
@@ -104,13 +105,23 @@ export default function Portfolio({ projects }) {
                   top: 0,
                   left: 0,
                   width: '100%',
-                  height: '100%'
+                  height: '100%',
+                  overflow: 'hidden'
                 }}>
-                  <img src={project.hero_image} alt={project.title} style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }} />
+                  {project.hero_image && (
+                    <Image 
+                      src={project.hero_image} 
+                      alt={project.title}
+                      fill
+                      style={{
+                        objectFit: 'cover'
+                      }}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      loading="lazy"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                    />
+                  )}
                 </div>
                 <div className="project-info" style={{
                   position: 'absolute',
@@ -153,7 +164,7 @@ export async function getStaticProps() {
       props: {
         projects: JSON.parse(JSON.stringify(projects)),
       },
-      revalidate: 60, // Revalidate every 60 seconds
+      revalidate: 300, // Revalidate every 5 minutes (300 seconds)
     };
   } catch (error) {
     console.error('Failed to fetch portfolio items:', error);

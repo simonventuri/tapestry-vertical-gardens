@@ -10,7 +10,8 @@
     "seed": "node scripts/seed-redis.js",
     "seed-production": "node scripts/seed-production.js",
     "generate-favicons": "node scripts/generate-favicons.js",
-    "production-check": "npm run build && npm run generate-favicons"
+    "production-check": "npm run build && npm run generate-favicons",
+    "migrate-images": "node scripts/migrate-images.js"
   },
   "dependencies": {
     "@next/third-parties": "^15.5.2",

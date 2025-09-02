@@ -1,5 +1,6 @@
 import { createPortfolioItem, deleteProject } from '../../../lib/database';
 import { requireAuth } from '../../../lib/auth';
+import { processProjectImages, deleteProjectImages } from '../../../lib/imageUtils';
 
 // Increase body size limit for image uploads
 export const config = {
@@ -21,6 +22,9 @@ async function handler(req, res) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
+            // Process images - convert base64 to disk storage
+            const processedImages = await processProjectImages(images || [], slug);
+
             // Create the project with new unified structure
             const projectData = {
                 title,
@@ -30,7 +34,7 @@ async function handler(req, res) {
                 location: location || '',
                 year: year || '',
                 size: size || '',
-                images: images || [],
+                images: processedImages,
                 features: features || [],
                 plants: plants || []
             };

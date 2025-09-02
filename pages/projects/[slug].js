@@ -16,10 +16,14 @@ export default function ProjectPage({ project }) {
         return <div>Project not found</div>;
     }
 
+    // Ensure title is always a string to prevent React warning
+    const pageTitle = Array.isArray(project.title) ? project.title.join(' ') : String(project.title || '');
+    const fullTitle = `${pageTitle} - Tapestry Vertical Gardens`;
+
     return (
         <>
             <Head>
-                <title>{project.title} - Tapestry Vertical Gardens</title>
+                <title>{fullTitle}</title>
                 <meta name="description" content={project.description?.substring(0, 160) || ''} />
             </Head>
 
@@ -34,7 +38,7 @@ export default function ProjectPage({ project }) {
                             marginBottom: '2.5rem',
                             textAlign: 'center',
                             color: 'var(--primary)'
-                        }}>{project.title}</h1>
+                        }}>{pageTitle}</h1>
                         <div className="project-hero" style={{
                             width: '100%',
                             maxWidth: '1200px',
