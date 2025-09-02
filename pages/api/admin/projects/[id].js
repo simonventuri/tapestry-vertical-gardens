@@ -43,7 +43,7 @@ async function handler(req, res) {
             // Process new/updated images - handle both base64 and existing disk paths
             let processedImages = existingImages;
             if (images !== undefined) {
-                processedImages = await updateProjectImages(images, existingImages, slug);
+                processedImages = await updateProjectImages(existingImages, images, slug);
             }
 
             // Update project with new schema
