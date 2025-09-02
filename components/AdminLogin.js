@@ -54,7 +54,15 @@ export default function AdminLogin({ onLogin }) {
             justifyContent: 'center',
             alignItems: 'center',
             minHeight: '100vh',
-            backgroundColor: '#f5f5f5'
+            backgroundColor: '#f5f5f5',
+            margin: 0,
+            padding: 0,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999
         }}>
             {/* Back to Website Link */}
             <div style={{ marginBottom: '20px' }}>
@@ -113,8 +121,11 @@ export default function AdminLogin({ onLogin }) {
                     <div style={{ marginBottom: '20px' }}>
                         <label style={{
                             display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: 'bold'
+                            marginBottom: '8px',
+                            fontWeight: '600',
+                            fontSize: '16px',
+                            color: '#1a202c',
+                            letterSpacing: '0.025em'
                         }}>
                             Username
                         </label>
@@ -138,8 +149,11 @@ export default function AdminLogin({ onLogin }) {
                     <div style={{ marginBottom: '30px' }}>
                         <label style={{
                             display: 'block',
-                            marginBottom: '5px',
-                            fontWeight: 'bold'
+                            marginBottom: '8px',
+                            fontWeight: '600',
+                            fontSize: '16px',
+                            color: '#1a202c',
+                            letterSpacing: '0.025em'
                         }}>
                             Password
                         </label>

@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+const tokenManager = require('../../../lib/tokenManager');
 
 // Simple hardcoded credentials - in production, use environment variables and proper hashing
 const ADMIN_USERNAME = 'joey_deacon';
@@ -13,8 +13,8 @@ export default function handler(req, res) {
 
     // Simple credential check
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-        // Create a simple token (in production, use JWT or similar)
-        const token = crypto.randomBytes(32).toString('hex');
+        // Create token using token manager
+        const token = tokenManager.createToken(username);
 
         // Set a cookie with the token (expires in 24 hours)
         res.setHeader('Set-Cookie', `admin_token=${token}; HttpOnly; Path=/; Max-Age=86400; SameSite=Strict`);
