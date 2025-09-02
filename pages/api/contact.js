@@ -1,162 +1,149 @@
 import nodemailer from 'nodemailer';
 import { submitContact } from '../../lib/database.js';
 
-// Simple rate limiting store (in pro        // Only send email if email credentials are configured
-if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+// Simple rate limiting store (in production, use Redis or a proper store)
+const rateLimitStore = new Map();
+
+function rateLimit(ip, limit = 5, windowMs = 15 * 60 * 1000) { // 5 requests per 15 minutes
+    const now = Date.now();
+    const windowStart = now - windowMs;
+
+    if (!rateLimitStore.has(ip)) {
+        rateLimitStore.set(ip, []);
+    }
+
+    const requests = rateLimitStore.get(ip).filter(time => time > windowStart);
+
+    if (requests.length >= limit) {
+        return false;
+    }
+
+    requests.push(now);
+    rateLimitStore.set(ip, requests);
+    return true;
+}
+
+function sanitizeInput(input) {
+    if (typeof input !== 'string') return input;
+    return input.trim().replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+}
+
+function validateEmail(email) {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return emailRegex.test(email);
+}
+
+function validatePhone(phone) {
+    // Remove all spaces, hyphens, parentheses and other formatting characters
+    const cleanPhone = phone.replace(/[\s\-\(\)\.]/g, '');
+
+    // UK phone number patterns:
+    // - Landline: 01xxx, 02xxx (10-11 digits total)
+    // - Mobile: 07xxx (11 digits total)
+    // - International UK: +44 followed by the number without leading 0
+    // - Also allow other international formats for flexibility
+
+    const patterns = [
+        /^0[1-9]\d{8,9}$/,           // UK landline (01xxx, 02xxx, 03xxx etc) - 10-11 digits
+        /^07\d{9}$/,                 // UK mobile (07xxx) - 11 digits
+        /^\+44[1-9]\d{8,9}$/,        // International UK format
+        /^\+\d{10,15}$/,             // Other international numbers (10-15 digits)
+        /^\d{10,11}$/                // Simple 10-11 digit numbers
+    ];
+
+    return patterns.some(pattern => pattern.test(cleanPhone));
+}
+
+export default async function handler(req, res) {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
+
+    // Rate limiting
+    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
+    if (!rateLimit(clientIp)) {
+        return res.status(429).json({
+            message: 'Too many requests. Please try again later.',
+            retryAfter: 900 // 15 minutes
+        });
+    }
+
+    const { name, email, phone, message, projectType, location, budget } = req.body;
+
+    // Sanitize inputs
+    const sanitizedData = {
+        name: sanitizeInput(name),
+        email: sanitizeInput(email),
+        phone: sanitizeInput(phone),
+        message: sanitizeInput(message),
+        projectType: sanitizeInput(projectType),
+        location: sanitizeInput(location),
+        budget: sanitizeInput(budget)
+    };
+
+    // Validate all required fields
+    if (!sanitizedData.name || !sanitizedData.email || !sanitizedData.phone ||
+        !sanitizedData.message || !sanitizedData.projectType || !sanitizedData.location || !sanitizedData.budget) {
+        return res.status(400).json({
+            message: 'All fields are required',
+            missing: {
+                name: !sanitizedData.name,
+                email: !sanitizedData.email,
+                phone: !sanitizedData.phone,
+                message: !sanitizedData.message,
+                projectType: !sanitizedData.projectType,
+                location: !sanitizedData.location,
+                budget: !sanitizedData.budget
+            }
+        });
+    }
+
+    // Validate field lengths
+    if (sanitizedData.name.length > 100) {
+        return res.status(400).json({ message: 'Name must be less than 100 characters' });
+    }
+    if (sanitizedData.message.length > 2000) {
+        return res.status(400).json({ message: 'Message must be less than 2000 characters' });
+    }
+
+    // Validate email format
+    if (!validateEmail(sanitizedData.email)) {
+        return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    // Validate phone format
+    if (!validatePhone(sanitizedData.phone)) {
+        return res.status(400).json({ message: 'Please provide a valid phone number' });
+    }
+
     try {
-        console.log('📧 Attempting to send email notification...');
-        console.log('📧 Email config:', {
-            host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-            port: process.env.EMAIL_PORT || 587,
-            user: process.env.EMAIL_USER ? 'Set ✓' : 'Not set ✗',
-            from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-            environment: process.env.NODE_ENV
+        // Save to database first
+        await submitContact({
+            name: sanitizedData.name,
+            email: sanitizedData.email,
+            phone: sanitizedData.phone,
+            message: sanitizedData.message,
+            project_type: sanitizedData.projectType,
+            location: sanitizedData.location,
+            budget_range: sanitizedData.budget
         });
 
-        // Create email transporter
-        const transporter = nodemailer.createTransporter({ on, use Redis or a proper store)
-        const rateLimitStore = new Map();
-
-        function rateLimit(ip, limit = 5, windowMs = 15 * 60 * 1000) { // 5 requests per 15 minutes
-            const now = Date.now();
-            const windowStart = now - windowMs;
-
-            if (!rateLimitStore.has(ip)) {
-                rateLimitStore.set(ip, []);
-            }
-
-            const requests = rateLimitStore.get(ip).filter(time => time > windowStart);
-
-            if (requests.length >= limit) {
-                return false;
-            }
-
-            requests.push(now);
-            rateLimitStore.set(ip, requests);
-            return true;
-        }
-
-        function sanitizeInput(input) {
-            if (typeof input !== 'string') return input;
-            return input.trim().replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-        }
-
-        function validateEmail(email) {
-            const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-            return emailRegex.test(email);
-        }
-
-        function validatePhone(phone) {
-            // Remove all spaces, hyphens, parentheses and other formatting characters
-            const cleanPhone = phone.replace(/[\s\-\(\)\.]/g, '');
-
-            // UK phone number patterns:
-            // - Landline: 01xxx, 02xxx (10-11 digits total)
-            // - Mobile: 07xxx (11 digits total)
-            // - International UK: +44 followed by the number without leading 0
-            // - Also allow other international formats for flexibility
-
-            const patterns = [
-                /^0[1-9]\d{8,9}$/,           // UK landline (01xxx, 02xxx, 03xxx etc) - 10-11 digits
-                /^07\d{9}$/,                 // UK mobile (07xxx) - 11 digits
-                /^\+44[1-9]\d{8,9}$/,        // International UK format
-                /^\+\d{10,15}$/,             // Other international numbers (10-15 digits)
-                /^\d{10,11}$/                // Simple 10-11 digit numbers
-            ];
-
-            return patterns.some(pattern => pattern.test(cleanPhone));
-        }
-
-        export default async function handler(req, res) {
-            if (req.method !== 'POST') {
-                return res.status(405).json({ message: 'Method not allowed' });
-            }
-
-            // Rate limiting
-            const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
-            if (!rateLimit(clientIp)) {
-                return res.status(429).json({
-                    message: 'Too many requests. Please try again later.',
-                    retryAfter: 900 // 15 minutes
-                });
-            }
-
-            const { name, email, phone, message, projectType, location, budget } = req.body;
-
-            // Sanitize inputs
-            const sanitizedData = {
-                name: sanitizeInput(name),
-                email: sanitizeInput(email),
-                phone: sanitizeInput(phone),
-                message: sanitizeInput(message),
-                projectType: sanitizeInput(projectType),
-                location: sanitizeInput(location),
-                budget: sanitizeInput(budget)
-            };
-
-            // Validate all required fields
-            if (!sanitizedData.name || !sanitizedData.email || !sanitizedData.phone ||
-                !sanitizedData.message || !sanitizedData.projectType || !sanitizedData.location || !sanitizedData.budget) {
-                return res.status(400).json({
-                    message: 'All fields are required',
-                    missing: {
-                        name: !sanitizedData.name,
-                        email: !sanitizedData.email,
-                        phone: !sanitizedData.phone,
-                        message: !sanitizedData.message,
-                        projectType: !sanitizedData.projectType,
-                        location: !sanitizedData.location,
-                        budget: !sanitizedData.budget
-                    }
-                });
-            }
-
-            // Validate field lengths
-            if (sanitizedData.name.length > 100) {
-                return res.status(400).json({ message: 'Name must be less than 100 characters' });
-            }
-            if (sanitizedData.message.length > 2000) {
-                return res.status(400).json({ message: 'Message must be less than 2000 characters' });
-            }
-
-            // Validate email format
-            if (!validateEmail(sanitizedData.email)) {
-                return res.status(400).json({ message: 'Please provide a valid email address' });
-            }
-
-            // Validate phone format
-            if (!validatePhone(sanitizedData.phone)) {
-                return res.status(400).json({ message: 'Please provide a valid phone number' });
-            }
-
+        // Only send email if email credentials are configured
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
             try {
-                // Save to database first
-                await submitContact({
-                    name: sanitizedData.name,
-                    email: sanitizedData.email,
-                    phone: sanitizedData.phone,
-                    message: sanitizedData.message,
-                    project_type: sanitizedData.projectType,
-                    location: sanitizedData.location,
-                    budget_range: sanitizedData.budget
+                // Create email transporter
+                const transporter = nodemailer.createTransport({
+                    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+                    port: process.env.EMAIL_PORT || 587,
+                    secure: false,
+                    auth: {
+                        user: process.env.EMAIL_USER,
+                        pass: process.env.EMAIL_PASS,
+                    },
                 });
 
-                // Only send email if email credentials are configured
-                if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-                    try {
-                        // Create email transporter
-                        const transporter = nodemailer.createTransport({
-                            host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-                            port: process.env.EMAIL_PORT || 587,
-                            secure: false,
-                            auth: {
-                                user: process.env.EMAIL_USER,
-                                pass: process.env.EMAIL_PASS,
-                            },
-                        });
-
-                        // Email content
-                        const emailHtml = `
+                // Email content
+                const emailHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
                 <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                     <h2 style="color: #2d5016; margin-bottom: 20px; font-size: 24px;">New Contact Form Submission</h2>
@@ -184,17 +171,17 @@ if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
                         <p style="margin: 0; color: #6c757d; font-size: 14px; text-align: center;">
                             Submitted from Tapestry Vertical Gardens website<br>
                             ${new Date().toLocaleString('en-GB', {
-                            timeZone: 'Europe/London',
-                            dateStyle: 'full',
-                            timeStyle: 'short'
-                        })}
+                    timeZone: 'Europe/London',
+                    dateStyle: 'full',
+                    timeStyle: 'short'
+                })}
                         </p>
                     </div>
                 </div>
             </div>
         `;
 
-                        const emailText = `
+                const emailText = `
 New Contact Form Submission
 
 Contact Information:
@@ -211,55 +198,51 @@ Message:
 ${sanitizedData.message}
 
 Submitted: ${new Date().toLocaleString('en-GB', {
-                            timeZone: 'Europe/London',
-                            dateStyle: 'full',
-                            timeStyle: 'short'
-                        })}
+                    timeZone: 'Europe/London',
+                    dateStyle: 'full',
+                    timeStyle: 'short'
+                })}
         `;
 
-                        // Send email
-                        await transporter.sendMail({
-                            from: `"${sanitizedData.name} via Tapestry Vertical Gardens" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
-                            to: 'adam@tapestryverticalgardens.com',
-                            bcc: ['info@tapestryverticalgardens.com', 'simonventuri@gmail.com'],
-                            subject: `New Enquiry from ${sanitizedData.name} (${sanitizedData.email}) - ${sanitizedData.projectType}`,
-                            text: emailText,
-                            html: emailHtml,
-                            replyTo: `"${sanitizedData.name}" <${sanitizedData.email}>`,
-                            headers: {
-                                'X-Original-Sender': sanitizedData.email,
-                                'X-Contact-Form': 'Tapestry Vertical Gardens Website'
-                            }
-                        });
-                    } catch (emailError) {
-                        console.error('Email sending error:', emailError);
-                        // Don't fail the entire request if email fails
-                        // Contact is still saved to database
-                    }
-                } else {
-                    console.log('Email credentials not configured - skipping email notification');
-                }
-
-                res.status(200).json({
-                    message: 'Contact form submitted successfully',
-                    success: true
+                // Send email
+                await transporter.sendMail({
+                    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+                    to: 'info@tapestryverticalgardens.com',
+                    cc: 'simonventuri@gmail.com',
+                    subject: `New Enquiry from ${sanitizedData.name} - ${sanitizedData.projectType}`,
+                    text: emailText,
+                    html: emailHtml,
+                    replyTo: sanitizedData.email
                 });
-
-            } catch (error) {
-                console.error('Contact form error:', error);
-
-                // More specific error messages
-                let errorMessage = 'Sorry, there was a problem processing your enquiry. Please try again.';
-
-                if (error.message && error.message.includes('Redis')) {
-                    errorMessage = 'Database connection issue. Please try again in a moment.';
-                } else if (error.message && error.message.includes('connect')) {
-                    errorMessage = 'Connection error. Please check your internet connection and try again.';
-                }
-
-                res.status(500).json({
-                    message: errorMessage,
-                    success: false
-                });
+            } catch (emailError) {
+                console.error('Email sending error:', emailError);
+                // Don't fail the entire request if email fails
+                // Contact is still saved to database
             }
+        } else {
+            console.log('Email credentials not configured - skipping email notification');
         }
+
+        res.status(200).json({
+            message: 'Contact form submitted successfully',
+            success: true
+        });
+
+    } catch (error) {
+        console.error('Contact form error:', error);
+
+        // More specific error messages
+        let errorMessage = 'Sorry, there was a problem processing your enquiry. Please try again.';
+
+        if (error.message && error.message.includes('Redis')) {
+            errorMessage = 'Database connection issue. Please try again in a moment.';
+        } else if (error.message && error.message.includes('connect')) {
+            errorMessage = 'Connection error. Please check your internet connection and try again.';
+        }
+
+        res.status(500).json({
+            message: errorMessage,
+            success: false
+        });
+    }
+}
