@@ -3,30 +3,79 @@ import Head from 'next/head';
 import Link from 'next/link';
 import AdminLogin from '../../components/AdminLogin';
 
-export default function AdminDashboard({ isAuthenticated }) {
-    const [authenticated, setAuthenticated] = useState(isAuthenticated);
+export default function AdminDashboard() {
+    const [authenticated, setAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check for stored token on client side
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('admin_token');
-            if (token && !authenticated) {
-                setAuthenticated(true);
+        // Check authentication status with server
+        const checkAuth = async () => {
+            try {
+                const response = await fetch('/api/admin/verify', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    setAuthenticated(true);
+                } else {
+                    // Clear invalid tokens
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('admin_token');
+                    }
+                    setAuthenticated(false);
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('admin_token');
+                }
+                setAuthenticated(false);
+            } finally {
+                setLoading(false);
             }
-        }
-    }, [authenticated]);
+        };
+
+        checkAuth();
+    }, []);
 
     const handleLogin = (token) => {
         setAuthenticated(true);
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            // Call server logout endpoint
+            await fetch('/api/admin/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+
+        // Clear client-side data
         if (typeof window !== 'undefined') {
             localStorage.removeItem('admin_token');
         }
         document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         setAuthenticated(false);
     };
+
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh',
+                backgroundColor: '#f5f5f5'
+            }}>
+                <div>Loading...</div>
+            </div>
+        );
+    }
 
     if (!authenticated) {
         return <AdminLogin onLogin={handleLogin} />;

@@ -1,7 +1,7 @@
 const tokenManager = require('../../../lib/tokenManager');
 
 export default function handler(req, res) {
-    if (req.method !== 'POST') {
+    if (req.method !== 'GET') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
@@ -10,24 +10,30 @@ export default function handler(req, res) {
         const cookies = req.headers.cookie || '';
         const tokenMatch = cookies.match(/admin_token=([^;]+)/);
 
-        if (tokenMatch) {
-            const token = tokenMatch[1];
-            // Revoke token using token manager
-            tokenManager.revokeToken(token);
+        if (!tokenMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'No token provided'
+            });
         }
 
-        // Clear the authentication cookie
-        res.setHeader('Set-Cookie', [
-            'admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict',
-            `admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict; Domain=${req.headers.host}`
-        ]);
+        const token = tokenMatch[1];
+
+        // Validate token using token manager
+        if (!tokenManager.validateToken(token)) {
+            return res.status(401).json({
+                success: false,
+                message: 'Token expired or invalid'
+            });
+        }
 
         return res.status(200).json({
             success: true,
-            message: 'Logged out successfully'
+            message: 'Token valid'
         });
+
     } catch (error) {
-        console.error('Logout error:', error);
+        console.error('Token verification error:', error);
         return res.status(500).json({
             success: false,
             message: 'Internal server error'
