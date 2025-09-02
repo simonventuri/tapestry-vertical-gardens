@@ -2,11 +2,42 @@ import Head from 'next/head';
 import Nav from '../../components/Nav';
 import Footer from '../../components/Footer';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ProjectPage({ project }) {
     const router = useRouter();
-    const [lightboxImage, setLightboxImage] = useState(null);
+    const [lightboxIndex, setLightboxIndex] = useState(null);
+
+    // Handle keyboard navigation
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (lightboxIndex === null) return;
+
+            if (e.key === 'Escape') {
+                setLightboxIndex(null);
+            } else if (e.key === 'ArrowLeft') {
+                navigateImage(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateImage(1);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [lightboxIndex, project?.images]);
+
+    const navigateImage = (direction) => {
+        if (!project?.images || lightboxIndex === null) return;
+
+        const newIndex = lightboxIndex + direction;
+        if (newIndex >= 0 && newIndex < project.images.length) {
+            setLightboxIndex(newIndex);
+        }
+    };
+
+    const openLightbox = (index) => {
+        setLightboxIndex(index);
+    };
 
     if (router.isFallback) {
         return <div>Loading...</div>;
@@ -57,7 +88,7 @@ export default function ProjectPage({ project }) {
                                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
                                 e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
                             }}
-                            onClick={() => setLightboxImage(project.images[0])}
+                            onClick={() => openLightbox(0)}
                         >
                             <img src={project.images[0]} alt={project.title} style={{
                                 width: '100%',
@@ -119,7 +150,7 @@ export default function ProjectPage({ project }) {
                                                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
                                                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
                                             }}
-                                            onClick={() => setLightboxImage(image)}
+                                            onClick={() => openLightbox(index + 1)}
                                         >
                                             <img src={image} alt={`${project.title} - Gallery Image ${index + 2}`} style={{
                                                 width: '100%',
@@ -171,8 +202,8 @@ export default function ProjectPage({ project }) {
 
             <Footer />
 
-            {/* Lightbox */}
-            {lightboxImage && (
+            {/* Enhanced Lightbox with Navigation */}
+            {lightboxIndex !== null && project?.images && (
                 <div style={{
                     position: 'fixed',
                     top: 0,
@@ -186,7 +217,7 @@ export default function ProjectPage({ project }) {
                     zIndex: 1000,
                     cursor: 'pointer'
                 }}
-                    onClick={() => setLightboxImage(null)}
+                    onClick={() => setLightboxIndex(null)}
                 >
                     <div style={{
                         position: 'relative',
@@ -196,39 +227,162 @@ export default function ProjectPage({ project }) {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
+                        {/* Previous Arrow */}
+                        {lightboxIndex > 0 && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigateImage(-1);
+                                }}
+                                style={{
+                                    position: 'absolute',
+                                    left: '-60px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'rgba(255, 255, 255, 0.9)',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '50px',
+                                    height: '50px',
+                                    cursor: 'pointer',
+                                    fontSize: '24px',
+                                    fontWeight: 'bold',
+                                    color: '#333',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.3s ease',
+                                    zIndex: 1001
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
+                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                                }}
+                            >
+                                ‹
+                            </button>
+                        )}
+
+                        {/* Main Image */}
                         <img
-                            src={lightboxImage}
-                            alt="Full size image"
+                            src={project.images[lightboxIndex]}
+                            alt={`${project.title} - Image ${lightboxIndex + 1}`}
                             style={{
                                 maxWidth: '100%',
                                 maxHeight: '100%',
                                 objectFit: 'contain',
-                                borderRadius: '8px'
+                                borderRadius: '8px',
+                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                             }}
                             onClick={(e) => e.stopPropagation()}
                         />
+
+                        {/* Next Arrow */}
+                        {lightboxIndex < project.images.length - 1 && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigateImage(1);
+                                }}
+                                style={{
+                                    position: 'absolute',
+                                    right: '-60px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'rgba(255, 255, 255, 0.9)',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '50px',
+                                    height: '50px',
+                                    cursor: 'pointer',
+                                    fontSize: '24px',
+                                    fontWeight: 'bold',
+                                    color: '#333',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.3s ease',
+                                    zIndex: 1001
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
+                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                                }}
+                            >
+                                ›
+                            </button>
+                        )}
+
+                        {/* Close Button */}
                         <button
-                            onClick={() => setLightboxImage(null)}
+                            onClick={() => setLightboxIndex(null)}
                             style={{
                                 position: 'absolute',
-                                top: '-40px',
-                                right: '-40px',
+                                top: '-60px',
+                                right: '-60px',
                                 background: 'rgba(255, 255, 255, 0.9)',
                                 border: 'none',
                                 borderRadius: '50%',
-                                width: '40px',
-                                height: '40px',
+                                width: '50px',
+                                height: '50px',
                                 cursor: 'pointer',
-                                fontSize: '20px',
+                                fontSize: '24px',
                                 fontWeight: 'bold',
                                 color: '#333',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
+                                transition: 'all 0.3s ease',
+                                zIndex: 1001
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
+                                e.currentTarget.style.transform = 'scale(1.1)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                                e.currentTarget.style.transform = 'scale(1)';
                             }}
                         >
                             ×
                         </button>
+
+                        {/* Image Counter */}
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-50px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            background: 'rgba(255, 255, 255, 0.9)',
+                            color: '#333',
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                        }}>
+                            {lightboxIndex + 1} of {project.images.length}
+                        </div>
+
+                        {/* Mobile Navigation Instructions */}
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-90px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            fontSize: '12px',
+                            textAlign: 'center'
+                        }}>
+                            Use ← → arrow keys or click arrows to navigate
+                        </div>
                     </div>
                 </div>
             )}

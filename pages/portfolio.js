@@ -20,12 +20,12 @@ export default function Portfolio() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch('/api/portfolio');
       if (!response.ok) {
         throw new Error('Failed to load projects');
       }
-      
+
       const projectsData = await response.json();
       setProjects(projectsData);
     } catch (err) {
