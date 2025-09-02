@@ -23,6 +23,12 @@ export default async function handler(req, res) {
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>${baseUrl}/privacy</loc>
+        <lastmod>${new Date().toISOString()}</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    <url>
         <loc>${baseUrl}/portfolio</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <changefreq>weekly</changefreq>
