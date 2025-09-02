@@ -1,17 +1,17 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-const OptimizedImage = ({ 
-    src, 
-    alt, 
-    width, 
-    height, 
-    className = '', 
+const OptimizedImage = ({
+    src,
+    alt,
+    width,
+    height,
+    className = '',
     priority = false,
     quality = 75,
     placeholder = 'blur',
     blurDataURL,
-    ...props 
+    ...props
 }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
@@ -31,23 +31,23 @@ const OptimizedImage = ({
     // Fallback image component for errors
     if (hasError) {
         return (
-            <div 
+            <div
                 className={`bg-gray-200 flex items-center justify-center ${className}`}
                 style={{ width, height }}
                 role="img"
                 aria-label={alt}
             >
-                <svg 
-                    className="w-12 h-12 text-gray-400" 
-                    fill="none" 
-                    stroke="currentColor" 
+                <svg
+                    className="w-12 h-12 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                 >
-                    <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                 </svg>
             </div>
@@ -73,7 +73,7 @@ const OptimizedImage = ({
                 }}
                 {...props}
             />
-            
+
             {/* Loading overlay */}
             {isLoading && (
                 <div className="absolute inset-0 bg-gray-100 animate-pulse flex items-center justify-center">

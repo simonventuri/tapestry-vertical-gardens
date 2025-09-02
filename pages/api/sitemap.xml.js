@@ -1,4 +1,4 @@
-import { getPortfolioItems } from '../lib/database';
+import { getPortfolioItems } from '../../lib/database';
 
 export default async function handler(req, res) {
     try {
@@ -11,13 +11,13 @@ export default async function handler(req, res) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <!-- Static Pages -->
     <url>
-        <loc>${baseUrl}</loc>
+        <loc>${baseUrl}/home</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
-        <changefreq>weekly</changefreq>
+        <changefreq>monthly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>${baseUrl}/about</loc>
+        <loc>${baseUrl}/contact</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -26,25 +26,13 @@ export default async function handler(req, res) {
         <loc>${baseUrl}/portfolio</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <changefreq>weekly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
-        <loc>${baseUrl}/benefits</loc>
-        <lastmod>${new Date().toISOString()}</lastmod>
-        <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>${baseUrl}/faqs</loc>
+        <loc>${baseUrl}</loc>
         <lastmod>${new Date().toISOString()}</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
-    </url>
-    <url>
-        <loc>${baseUrl}/contact</loc>
-        <lastmod>${new Date().toISOString()}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
     </url>
     
     <!-- Dynamic Project Pages -->
@@ -53,7 +41,7 @@ export default async function handler(req, res) {
         <loc>${baseUrl}/projects/${project.slug}</loc>
         <lastmod>${project.updatedAt || project.createdAt}</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
+        <priority>0.9</priority>
     </url>`).join('')}
 </urlset>`;
 

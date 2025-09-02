@@ -33,6 +33,15 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/api/sitemap.xml',
+        permanent: true,
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     // Exclude Redis and other Node.js modules from client-side bundle
     if (!isServer) {

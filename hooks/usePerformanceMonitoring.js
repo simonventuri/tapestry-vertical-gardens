@@ -130,11 +130,11 @@ export const usePerformanceMonitoring = () => {
 export const measurePageLoad = (pageName) => {
     if (typeof window !== 'undefined' && window.gtag && process.env.NEXT_PUBLIC_GA_ID) {
         const startTime = performance.now();
-        
+
         return () => {
             const endTime = performance.now();
             const loadTime = endTime - startTime;
-            
+
             window.gtag('event', 'page_render_time', {
                 value: Math.round(loadTime),
                 page_name: pageName,
@@ -143,6 +143,6 @@ export const measurePageLoad = (pageName) => {
             });
         };
     }
-    
-    return () => {}; // No-op function if analytics not available
+
+    return () => { }; // No-op function if analytics not available
 };

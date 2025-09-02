@@ -7,17 +7,17 @@ const rateLimitStore = new Map();
 function rateLimit(ip, limit = 5, windowMs = 15 * 60 * 1000) { // 5 requests per 15 minutes
     const now = Date.now();
     const windowStart = now - windowMs;
-    
+
     if (!rateLimitStore.has(ip)) {
         rateLimitStore.set(ip, []);
     }
-    
+
     const requests = rateLimitStore.get(ip).filter(time => time > windowStart);
-    
+
     if (requests.length >= limit) {
         return false;
     }
-    
+
     requests.push(now);
     rateLimitStore.set(ip, requests);
     return true;
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     // Rate limiting
     const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
     if (!rateLimit(clientIp)) {
-        return res.status(429).json({ 
+        return res.status(429).json({
             message: 'Too many requests. Please try again later.',
             retryAfter: 900 // 15 minutes
         });
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
     };
 
     // Validate all required fields
-    if (!sanitizedData.name || !sanitizedData.email || !sanitizedData.phone || 
+    if (!sanitizedData.name || !sanitizedData.email || !sanitizedData.phone ||
         !sanitizedData.message || !sanitizedData.projectType || !sanitizedData.location || !sanitizedData.budget) {
         return res.status(400).json({
             message: 'All fields are required',

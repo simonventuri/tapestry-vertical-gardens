@@ -37,10 +37,10 @@ async function generateFavicons() {
 
         // Ensure output directory exists
         await fs.mkdir(OUTPUT_DIR, { recursive: true });
-        
+
         for (const config of FAVICON_CONFIGS) {
             const outputPath = path.join(OUTPUT_DIR, config.name);
-            
+
             try {
                 let pipeline = sharp(SOURCE_IMAGE)
                     .resize(config.size, config.size, {
@@ -57,7 +57,7 @@ async function generateFavicons() {
 
                 await pipeline.toFile(outputPath);
                 console.log('✓ Generated:', config.name);
-                
+
             } catch (error) {
                 console.error('✗ Failed to generate', config.name, ':', error.message);
             }
@@ -99,14 +99,14 @@ async function generateFavicons() {
 
     } catch (error) {
         console.error('✗ Error generating favicons:', error.message);
-        
+
         if (error.code === 'ENOENT') {
             console.log('\n📝 To fix this:');
             console.log('1. Install sharp: npm install sharp');
             console.log('2. Place your logo.png (512x512 recommended) in public/images/');
             console.log('3. Run this script again: node scripts/generate-favicons.js');
         }
-        
+
         process.exit(1);
     }
 }
@@ -125,12 +125,12 @@ async function checkDependencies() {
 
 async function main() {
     console.log('🎨 Generating favicons for Tapestry Vertical Gardens...\n');
-    
+
     const hasSharp = await checkDependencies();
     if (!hasSharp) {
         process.exit(1);
     }
-    
+
     await generateFavicons();
 }
 

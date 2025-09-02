@@ -10,4 +10,4 @@ Disallow: /api/admin/
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://www.tapestryverticalgardens.com/sitemap.xml
+Sitemap: https://tapestryverticalgardens.com/sitemap.xml

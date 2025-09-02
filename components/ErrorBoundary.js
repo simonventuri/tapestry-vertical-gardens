@@ -14,7 +14,7 @@ class ErrorBoundary extends React.Component {
     componentDidCatch(error, errorInfo) {
         // Log error details
         console.error('Error Boundary caught an error:', error, errorInfo);
-        
+
         this.setState({
             error: error,
             errorInfo: errorInfo
@@ -82,15 +82,15 @@ class ErrorBoundary extends React.Component {
                             Contact Support
                         </a>
                     </div>
-                    
+
                     {process.env.NODE_ENV === 'development' && (
                         <details style={{ marginTop: '2rem', textAlign: 'left' }}>
                             <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
                                 Error Details (Development)
                             </summary>
-                            <pre style={{ 
-                                backgroundColor: '#f3f4f6', 
-                                padding: '1rem', 
+                            <pre style={{
+                                backgroundColor: '#f3f4f6',
+                                padding: '1rem',
                                 borderRadius: '4px',
                                 fontSize: '0.875rem',
                                 overflow: 'auto',

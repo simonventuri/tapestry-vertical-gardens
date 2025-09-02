@@ -13,50 +13,50 @@ export default function Custom500() {
             </Head>
 
             <Nav />
-            
-            <main style={{ 
-                minHeight: '70vh', 
-                display: 'flex', 
-                alignItems: 'center', 
+
+            <main style={{
+                minHeight: '70vh',
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
                 padding: '2rem',
                 textAlign: 'center'
             }}>
                 <div style={{ maxWidth: '600px' }}>
-                    <h1 style={{ 
-                        fontSize: '6rem', 
-                        margin: '0', 
+                    <h1 style={{
+                        fontSize: '6rem',
+                        margin: '0',
                         color: '#d32f2f',
                         fontWeight: 'bold'
                     }}>
                         500
                     </h1>
-                    
-                    <h2 style={{ 
-                        fontSize: '2rem', 
-                        margin: '1rem 0', 
+
+                    <h2 style={{
+                        fontSize: '2rem',
+                        margin: '1rem 0',
                         color: '#333'
                     }}>
                         Server Error
                     </h2>
-                    
-                    <p style={{ 
-                        fontSize: '1.1rem', 
-                        color: '#666', 
+
+                    <p style={{
+                        fontSize: '1.1rem',
+                        color: '#666',
                         marginBottom: '2rem',
                         lineHeight: '1.6'
                     }}>
-                        Something went wrong on our end. Our team has been notified and is working to fix the issue. 
+                        Something went wrong on our end. Our team has been notified and is working to fix the issue.
                         Please try again in a few minutes.
                     </p>
-                    
-                    <div style={{ 
-                        display: 'flex', 
-                        gap: '1rem', 
+
+                    <div style={{
+                        display: 'flex',
+                        gap: '1rem',
                         justifyContent: 'center',
                         flexWrap: 'wrap'
                     }}>
-                        <Link 
+                        <Link
                             href="/"
                             style={{
                                 padding: '12px 24px',
@@ -73,8 +73,8 @@ export default function Custom500() {
                         >
                             Go Home
                         </Link>
-                        
-                        <button 
+
+                        <button
                             onClick={() => window.location.reload()}
                             style={{
                                 padding: '12px 24px',
@@ -99,8 +99,8 @@ export default function Custom500() {
                         >
                             Try Again
                         </button>
-                        
-                        <Link 
+
+                        <Link
                             href="/contact"
                             style={{
                                 padding: '12px 24px',
@@ -127,7 +127,7 @@ export default function Custom500() {
                     </div>
                 </div>
             </main>
-            
+
             <Footer />
         </>
     );
