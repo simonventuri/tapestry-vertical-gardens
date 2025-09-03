@@ -10,7 +10,6 @@ export default function ContentManagement() {
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
     const [activeSection, setActiveSection] = useState('hero');
-    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         checkAuth();
@@ -206,34 +205,6 @@ export default function ContentManagement() {
         const newContent = { ...content };
         newContent.tapestryDifference.features.splice(index, 1);
         setContent(newContent);
-    };
-
-    const uploadImage = async (file, section, field) => {
-        setUploading(true);
-        const formData = new FormData();
-        formData.append('image', file);
-
-        try {
-            const response = await fetch('/api/admin/upload-image', {
-                method: 'POST',
-                credentials: 'include',
-                body: formData
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                updateContent(section, field, data.filePath);
-                setMessage('Image uploaded successfully!');
-                setTimeout(() => setMessage(''), 3000);
-            } else {
-                throw new Error('Failed to upload image');
-            }
-        } catch (error) {
-            console.error('Error uploading image:', error);
-            setMessage('Error uploading image');
-        } finally {
-            setUploading(false);
-        }
     };
 
     if (loading) {
@@ -509,48 +480,18 @@ export default function ContentManagement() {
                                             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                                                 Hero Image Path
                                             </label>
-                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                <input
-                                                    type="text"
-                                                    value={content.hero.image}
-                                                    onChange={(e) => updateContent('hero', 'image', e.target.value)}
-                                                    style={{
-                                                        flex: 1,
-                                                        padding: '10px',
-                                                        border: '1px solid #ddd',
-                                                        borderRadius: '0',
-                                                        fontSize: '16px'
-                                                    }}
-                                                />
-                                                <div style={{ position: 'relative' }}>
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={(e) => {
-                                                            if (e.target.files[0]) {
-                                                                uploadImage(e.target.files[0], 'hero', 'image');
-                                                            }
-                                                        }}
-                                                        style={{ display: 'none' }}
-                                                        id="hero-image-upload"
-                                                    />
-                                                    <label
-                                                        htmlFor="hero-image-upload"
-                                                        style={{
-                                                            display: 'inline-block',
-                                                            padding: '10px 15px',
-                                                            backgroundColor: uploading ? '#ccc' : '#007bff',
-                                                            color: 'white',
-                                                            cursor: uploading ? 'not-allowed' : 'pointer',
-                                                            borderRadius: '0',
-                                                            fontSize: '14px',
-                                                            border: 'none'
-                                                        }}
-                                                    >
-                                                        {uploading ? 'Uploading...' : 'Upload'}
-                                                    </label>
-                                                </div>
-                                            </div>
+                                            <input
+                                                type="text"
+                                                value={content.hero.image}
+                                                onChange={(e) => updateContent('hero', 'image', e.target.value)}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '10px',
+                                                    border: '1px solid #ddd',
+                                                    borderRadius: '0',
+                                                    fontSize: '16px'
+                                                }}
+                                            />
                                         </div>
                                         <div>
                                             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
@@ -869,48 +810,18 @@ export default function ContentManagement() {
                                             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                                                 Image Path
                                             </label>
-                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                                <input
-                                                    type="text"
-                                                    value={content.livingSculpture.image}
-                                                    onChange={(e) => updateContent('livingSculpture', 'image', e.target.value)}
-                                                    style={{
-                                                        flex: 1,
-                                                        padding: '10px',
-                                                        border: '1px solid #ddd',
-                                                        borderRadius: '0',
-                                                        fontSize: '16px'
-                                                    }}
-                                                />
-                                                <div style={{ position: 'relative' }}>
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={(e) => {
-                                                            if (e.target.files[0]) {
-                                                                uploadImage(e.target.files[0], 'livingSculpture', 'image');
-                                                            }
-                                                        }}
-                                                        style={{ display: 'none' }}
-                                                        id="sculpture-image-upload"
-                                                    />
-                                                    <label
-                                                        htmlFor="sculpture-image-upload"
-                                                        style={{
-                                                            display: 'inline-block',
-                                                            padding: '10px 15px',
-                                                            backgroundColor: uploading ? '#ccc' : '#007bff',
-                                                            color: 'white',
-                                                            cursor: uploading ? 'not-allowed' : 'pointer',
-                                                            borderRadius: '0',
-                                                            fontSize: '14px',
-                                                            border: 'none'
-                                                        }}
-                                                    >
-                                                        {uploading ? 'Uploading...' : 'Upload'}
-                                                    </label>
-                                                </div>
-                                            </div>
+                                            <input
+                                                type="text"
+                                                value={content.livingSculpture.image}
+                                                onChange={(e) => updateContent('livingSculpture', 'image', e.target.value)}
+                                                style={{
+                                                    width: '100%',
+                                                    padding: '10px',
+                                                    border: '1px solid #ddd',
+                                                    borderRadius: '0',
+                                                    fontSize: '16px'
+                                                }}
+                                            />
                                         </div>
                                         <div>
                                             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
