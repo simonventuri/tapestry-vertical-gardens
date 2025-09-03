@@ -9,29 +9,13 @@ export default async function handler(req, res) {
         const pageNumber = parseInt(page, 10);
         const limitNumber = parseInt(limit, 10);
 
-        // Get optimized projects for portfolio display
-        const { getPortfolioItemsOptimized } = await import('../../lib/database');
-        const allProjects = await getPortfolioItemsOptimized();
-
-        // Calculate pagination
-        const totalProjects = allProjects.length;
-        const totalPages = Math.ceil(totalProjects / limitNumber);
-        const startIndex = (pageNumber - 1) * limitNumber;
-        const endIndex = startIndex + limitNumber;
-        const projects = allProjects.slice(startIndex, endIndex);
+        // Get paginated projects - only processes the items we need
+        const { getPortfolioItemsPaginated } = await import('../../lib/database');
+        const result = await getPortfolioItemsPaginated(pageNumber, limitNumber);
 
         // Set cache headers for better performance
         res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=60');
-        res.status(200).json({
-            projects,
-            pagination: {
-                currentPage: pageNumber,
-                totalPages,
-                totalProjects,
-                hasNextPage: pageNumber < totalPages,
-                hasPreviousPage: pageNumber > 1
-            }
-        });
+        res.status(200).json(result);
     } catch (error) {
         console.error('Error fetching paginated portfolio:', error);
         res.status(500).json({
