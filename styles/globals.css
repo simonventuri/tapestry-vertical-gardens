@@ -55,20 +55,20 @@ h6 {
 }
 
 h1 {
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(2rem, 4vw, 2.5rem);
     letter-spacing: 0.045em;
-    font-weight: 600;
+    font-weight: 200;
 }
 
 h2 {
-    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(2rem, 4vw, 2rem);
     letter-spacing: 0.035em;
-    text-transform: uppercase !important;
+    font-weight: 300;
 }
 
 h3 {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: 300;
 }
 
 p {
@@ -163,7 +163,7 @@ a:hover {
 
 .nav-left a,
 .nav-right a {
-    font-weight: 500;
+    font-weight: 300;
     color: #000000;
     padding: 0.5rem 1rem;
     transition: all 0.2s ease;
@@ -340,7 +340,7 @@ a:hover {
     background: var(--primary);
     color: white;
     padding: 1rem 2rem;
-    font-weight: 600;
+    font-weight: 300 !important;
     font-size: 1rem;
     border: none;
     cursor: pointer;
@@ -348,6 +348,7 @@ a:hover {
     text-decoration: none;
     box-shadow: var(--shadow);
     border-radius: 0 !important;
+    text-transform: uppercase !important;
 }
 
 .btn:hover {
@@ -923,7 +924,7 @@ html:has(.landing-page) {
     .burger-menu span {
         background: #000000 !important;
         width: 2rem !important;
-        height: 0.25rem !important;
+        height: 0.15rem !important;
         display: block !important;
     }
 
@@ -932,7 +933,7 @@ html:has(.landing-page) {
         display: none !important;
     }
 
-    /* Hide nav-left on mobile */
+    /* Hide left on mobile */
     .nav-left {
         display: none;
     }

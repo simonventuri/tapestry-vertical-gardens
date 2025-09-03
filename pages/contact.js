@@ -173,14 +173,13 @@ export default function Contact() {
             <section className="section">
                 <div className="container">
                     <div className="section-header">
-                        <h1 className="section-title">Meet Tapestry Vertical Gardens</h1>
+                        <h1 className="section-title">Get In Touch</h1>
                         <p><strong>Founded by Adam Shepherd</strong> — a graphic designer turned horticulturalist trained at The English Gardening School in Chelsea — Tapestry blends two decades of design with a lifelong passion for plants.</p>
 
                         <div className="adam-portrait">
                             <img src="./images/adam-portrait.webp" alt="Adam Shepherd, founder of Tapestry Vertical Gardens" />
                         </div>
                         &nbsp;
-                        <h2 className="section-title">Get In Touch</h2>
                         <p className="section-subtitle">Ready to transform your space with a living wall? Let's discuss your vision.</p>
                         <div className="contact-form-container">
                             <form onSubmit={handleSubmit}>
