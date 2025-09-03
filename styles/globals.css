@@ -175,7 +175,7 @@ a:hover {
     transform: translateX(-50%);
     text-decoration: none;
     transition: all 0.2s ease;
-    font-variant: small-caps;
+    text-transform: uppercase;
 }
 
 .main-nav .brand:hover {
@@ -203,11 +203,10 @@ a:hover {
     font-weight: 500;
     color: #000000;
     padding: 0.5rem 1rem;
-    border-radius: var(--radius);
     transition: all 0.2s ease;
     position: relative;
     text-decoration: none;
-    font-variant: small-caps;
+    text-transform: uppercase;
 }
 
 /* Hide mobile-only links on desktop */
@@ -229,7 +228,6 @@ a:hover {
     justify-content: center;
     width: 56px;
     height: 56px;
-    border-radius: 50%;
     transition: all 0.2s ease;
     color: #000000;
     text-decoration: none;
@@ -256,7 +254,6 @@ a:hover {
 .theme-toggle {
     background: none;
     border: 2px solid #cccccc;
-    border-radius: 50px;
     padding: 0.5rem;
     cursor: pointer;
     display: flex;
@@ -294,7 +291,6 @@ a:hover {
     width: 2rem;
     height: 0.25rem;
     background: var(--text);
-    border-radius: 10px;
     transition: all 0.3s linear;
     position: relative;
     transform-origin: 1px;
@@ -356,7 +352,6 @@ a:hover {
     display: inline-block;
     padding: 0.5rem 1rem;
     background: rgba(22, 163, 74, 0.1);
-    border-radius: 50px;
     border: 1px solid rgba(22, 163, 74, 0.2);
 }
 
@@ -398,7 +393,6 @@ a:hover {
     width: 100%;
     height: 500px;
     object-fit: cover;
-    border-radius: var(--radius-lg);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     transition: transform 0.5s ease;
 }
@@ -425,7 +419,6 @@ a:hover {
     background: var(--primary);
     color: white;
     padding: 1rem 2rem;
-    border-radius: 50px;
     font-weight: 600;
     font-size: 1rem;
     border: none;
@@ -433,6 +426,7 @@ a:hover {
     transition: all 0.2s ease;
     text-decoration: none;
     box-shadow: var(--shadow);
+    border-radius: 0 !important;
 }
 
 .btn:hover {
@@ -480,11 +474,11 @@ a:hover {
 .card {
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     padding: 2rem;
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
     height: fit-content;
+    border-radius: 0 !important;
 }
 
 .card:hover {
@@ -494,7 +488,6 @@ a:hover {
 
 .card-image {
     margin: -2rem -2rem 1.5rem -2rem;
-    border-radius: var(--radius) var(--radius) 0 0;
     overflow: hidden;
 }
 
@@ -530,7 +523,6 @@ a:hover {
     width: 80px;
     height: 80px;
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -607,7 +599,6 @@ ul.inline li {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
     padding: 0.5rem 1rem;
-    border-radius: 50px;
     font-weight: 500;
     font-size: 0.875rem;
     box-shadow: var(--shadow);
@@ -617,7 +608,6 @@ ul.inline li {
 img {
     max-width: 100%;
     height: auto;
-    border-radius: var(--radius);
 }
 
 .image-gallery {
@@ -631,7 +621,6 @@ img {
     width: 100%;
     height: 250px;
     object-fit: cover;
-    border-radius: var(--radius);
     box-shadow: var(--shadow);
     transition: all 0.3s ease;
 }
@@ -649,7 +638,6 @@ img {
 
 .faq details {
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     padding: 1.5rem;
     background: var(--bg);
     box-shadow: var(--shadow);
@@ -717,7 +705,6 @@ footer p {
 
 .faq-item {
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     margin-bottom: 1rem;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -846,7 +833,6 @@ html:has(.landing-page) {
     height: 40px;
     border: 3px solid rgba(255, 255, 255, 0.3);
     border-top: 3px solid white;
-    border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
@@ -878,7 +864,7 @@ html:has(.landing-page) {
     color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     margin: 0;
-    font-variant: small-caps;
+    text-transform: uppercase;
     transition: all 0.3s ease;
     position: absolute;
     top: 45%;
@@ -892,7 +878,7 @@ html:has(.landing-page) {
     letter-spacing: 0.1em;
     color: var(--primary);
     margin: 2rem 0 0 0;
-    font-variant: small-caps;
+    text-transform: uppercase;
     position: absolute;
     bottom: 15vh;
     white-space: nowrap;
@@ -900,7 +886,6 @@ html:has(.landing-page) {
     transform: translateX(-50%);
     background: rgba(255, 255, 255, 0.95);
     padding: 0.75rem 1.5rem;
-    border-radius: 50px;
     border: 1px solid rgba(22, 163, 74, 0.2);
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -925,6 +910,10 @@ html:has(.landing-page) {
     }
 }
 
+.form-control {
+    border-radius: 0 !important;
+}
+
 /* Adam Portrait */
 .adam-portrait {
     text-align: center;
@@ -935,7 +924,6 @@ html:has(.landing-page) {
     max-width: 300px;
     width: 100%;
     height: auto;
-    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     transition: transform 0.3s ease;
 }
@@ -1013,7 +1001,6 @@ html:has(.landing-page) {
         top: 50% !important;
         transform: translateY(-50%) !important;
         background: rgba(255, 255, 255, 0.1) !important;
-        border-radius: 4px !important;
         padding: 0.25rem !important;
     }
 
@@ -1064,7 +1051,6 @@ html:has(.landing-page) {
         padding: 1rem 0;
         font-size: 1.1rem;
         border-bottom: 1px solid var(--border);
-        border-radius: 0;
         text-align: left;
         width: 100%;
         color: #000000 !important;
@@ -1076,7 +1062,6 @@ html:has(.landing-page) {
         align-items: center;
         padding: 1rem 0;
         border-bottom: 1px solid var(--border);
-        border-radius: 0;
         width: 100%;
         height: auto;
         justify-content: flex-start;
@@ -1090,7 +1075,7 @@ html:has(.landing-page) {
 
     .nav-right .instagram-link::after {
         content: "Instagram";
-        font-variant: small-caps;
+        text-transform: uppercase;
         font-weight: 500;
         font-size: 1.1rem;
     }

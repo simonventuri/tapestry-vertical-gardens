@@ -113,7 +113,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#dc3545',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             cursor: 'pointer'
                         }}
                     >
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
                     {/* Project Management Card */}
                     <div style={{
                         border: '1px solid #ddd',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         padding: '30px',
                         backgroundColor: '#f8f9fa',
                         textAlign: 'center',
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#2d5016',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontWeight: '500',
                             transition: 'background-color 0.2s ease'
                         }}
@@ -186,7 +186,7 @@ export default function AdminDashboard() {
                     {/* Contact Management Card */}
                     <div style={{
                         border: '1px solid #ddd',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         padding: '30px',
                         backgroundColor: '#f8f9fa',
                         textAlign: 'center',
@@ -229,7 +229,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#2d5016',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontWeight: '500',
                             transition: 'background-color 0.2s ease'
                         }}
@@ -244,7 +244,7 @@ export default function AdminDashboard() {
                 <div style={{
                     backgroundColor: 'white',
                     border: '1px solid #ddd',
-                    borderRadius: '8px',
+                    borderRadius: '0',
                     padding: '20px',
                     marginTop: '20px'
                 }}>
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#28a745',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontSize: '14px'
                         }}>
                             + Add New Project
@@ -271,7 +271,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#6c757d',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontSize: '14px'
                         }}>
                             View Website

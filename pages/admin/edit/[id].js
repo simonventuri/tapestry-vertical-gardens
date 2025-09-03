@@ -271,7 +271,7 @@ export default function EditProject({ project, isAuthenticated }) {
                     {/* Basic Information */}
                     <div style={{
                         backgroundColor: 'white',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                         padding: '2rem',
                         marginBottom: '2rem'
@@ -300,7 +300,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                     required
@@ -326,7 +326,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                     required
@@ -352,7 +352,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem',
                                         resize: 'vertical'
                                     }}
@@ -365,7 +365,7 @@ export default function EditProject({ project, isAuthenticated }) {
                     {/* Additional Project Details */}
                     <div style={{
                         backgroundColor: 'white',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                         padding: '2rem',
                         marginBottom: '2rem'
@@ -394,7 +394,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                 />
@@ -419,7 +419,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                 />
@@ -444,7 +444,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                 />
@@ -469,7 +469,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                 />
@@ -480,7 +480,7 @@ export default function EditProject({ project, isAuthenticated }) {
                     {/* Project Images */}
                     <div style={{
                         backgroundColor: 'white',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                         padding: '2rem',
                         marginBottom: '2rem'
@@ -504,7 +504,7 @@ export default function EditProject({ project, isAuthenticated }) {
                             onClick={() => fileInputRef.current?.click()}
                             style={{
                                 border: `2px dashed ${isDragging ? '#3b82f6' : '#d1d5db'}`,
-                                borderRadius: '8px',
+                                borderRadius: '0',
                                 padding: '2rem',
                                 textAlign: 'center',
                                 cursor: 'pointer',
@@ -548,7 +548,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         style={{
                                             position: 'relative',
                                             aspectRatio: '1/1',
-                                            borderRadius: '8px',
+                                            borderRadius: '0',
                                             overflow: 'hidden',
                                             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                                             cursor: 'move',
@@ -563,7 +563,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                                 backgroundColor: '#3b82f6',
                                                 color: 'white',
                                                 padding: '0.25rem 0.5rem',
-                                                borderRadius: '4px',
+                                                borderRadius: '0',
                                                 fontSize: '0.75rem',
                                                 fontWeight: '500',
                                                 zIndex: 2
@@ -590,7 +590,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                                 backgroundColor: 'rgba(239, 68, 68, 0.9)',
                                                 color: 'white',
                                                 border: 'none',
-                                                borderRadius: '50%',
+                                                borderRadius: '0',
                                                 width: '24px',
                                                 height: '24px',
                                                 cursor: 'pointer',
@@ -619,7 +619,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                 backgroundColor: saving ? '#9ca3af' : '#3b82f6',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '6px',
+                                borderRadius: '0',
                                 fontSize: '1rem',
                                 fontWeight: '500',
                                 cursor: saving ? 'not-allowed' : 'pointer',

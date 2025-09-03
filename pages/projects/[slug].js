@@ -74,7 +74,7 @@ export default function ProjectPage({ project }) {
                             width: '100%',
                             maxWidth: '1200px',
                             margin: '0 auto 0 auto',
-                            borderRadius: '12px',
+                            borderRadius: '0',
                             overflow: 'hidden',
                             boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
                             cursor: 'pointer',
@@ -136,7 +136,7 @@ export default function ProjectPage({ project }) {
                                     `}</style>
                                     {project.images.slice(1).map((image, index) => (
                                         <div key={index} className="gallery-item" style={{
-                                            borderRadius: '8px',
+                                            borderRadius: '0',
                                             overflow: 'hidden',
                                             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                                             cursor: 'pointer',
@@ -173,7 +173,7 @@ export default function ProjectPage({ project }) {
                         <button onClick={() => router.back()} style={{
                             display: 'inline-block',
                             padding: '0.75rem 1.5rem',
-                            borderRadius: '6px',
+                            borderRadius: '0',
                             backgroundColor: 'var(--color-light)',
                             color: 'var(--color-dark)',
                             border: '2px solid var(--color-border)',
@@ -346,7 +346,7 @@ export default function ProjectPage({ project }) {
                                 maxWidth: '100%',
                                 maxHeight: '100%',
                                 objectFit: 'contain',
-                                borderRadius: '8px',
+                                borderRadius: '0',
                                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                             }}
                             onClick={(e) => e.stopPropagation()}

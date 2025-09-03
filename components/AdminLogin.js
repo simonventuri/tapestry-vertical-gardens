@@ -77,7 +77,7 @@ export default function AdminLogin({ onLogin }) {
                         alignItems: 'center',
                         gap: '8px',
                         padding: '8px 16px',
-                        borderRadius: '4px',
+                        borderRadius: '0',
                         transition: 'background-color 0.2s ease'
                     }}
                     onMouseOver={(e) => e.target.style.backgroundColor = '#f0f0f0'}
@@ -91,7 +91,7 @@ export default function AdminLogin({ onLogin }) {
             <div style={{
                 backgroundColor: 'white',
                 padding: '40px',
-                borderRadius: '8px',
+                borderRadius: '0',
                 boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                 width: '400px',
                 maxWidth: '90vw'
@@ -109,7 +109,7 @@ export default function AdminLogin({ onLogin }) {
                         backgroundColor: '#fee',
                         color: '#c33',
                         padding: '10px',
-                        borderRadius: '4px',
+                        borderRadius: '0',
                         marginBottom: '20px',
                         textAlign: 'center'
                     }}>
@@ -139,7 +139,7 @@ export default function AdminLogin({ onLogin }) {
                                 width: '100%',
                                 padding: '12px',
                                 border: '1px solid #ddd',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 fontSize: '16px',
                                 boxSizing: 'border-box'
                             }}
@@ -167,7 +167,7 @@ export default function AdminLogin({ onLogin }) {
                                 width: '100%',
                                 padding: '12px',
                                 border: '1px solid #ddd',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 fontSize: '16px',
                                 boxSizing: 'border-box'
                             }}
@@ -183,7 +183,7 @@ export default function AdminLogin({ onLogin }) {
                             backgroundColor: loading ? '#ccc' : '#2d5016',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontSize: '16px',
                             fontWeight: 'bold',
                             cursor: loading ? 'not-allowed' : 'pointer'

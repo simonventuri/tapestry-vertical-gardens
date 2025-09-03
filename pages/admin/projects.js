@@ -276,7 +276,7 @@ export default function AdminProjects({ isAuthenticated }) {
           }
           .projects-table {
             background: white;
-            border-radius: 8px;
+            
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             width: 100%;
@@ -320,7 +320,7 @@ export default function AdminProjects({ isAuthenticated }) {
             background: #fef3c7;
             color: #92400e;
             padding: 8px 12px;
-            border-radius: 4px;
+            
             font-size: 14px;
             margin-bottom: 16px;
             text-align: center;
@@ -335,7 +335,7 @@ export default function AdminProjects({ isAuthenticated }) {
             background: #3b82f6;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
+            
             font-size: 0.875rem;
             font-weight: 500;
             transition: background-color 0.3s;
@@ -371,7 +371,7 @@ export default function AdminProjects({ isAuthenticated }) {
             height: 40px;
             border: 4px solid #f3f3f3;
             border-top: 4px solid #007bff;
-            border-radius: 50%;
+            
             animation: spin 1s linear infinite;
           }
 
@@ -380,7 +380,7 @@ export default function AdminProjects({ isAuthenticated }) {
             height: 16px;
             border: 2px solid #ffffff33;
             border-top: 2px solid #ffffff;
-            border-radius: 50%;
+            
             animation: spin 1s linear infinite;
           }
 
@@ -419,7 +419,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                 background: loading ? '#6c757d' : '#6b7280',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 cursor: loading ? 'not-allowed' : 'pointer',
                                 fontSize: '14px',
                                 display: 'flex',
@@ -444,7 +444,7 @@ export default function AdminProjects({ isAuthenticated }) {
                             background: '#2d5016',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontWeight: 'bold',
                             fontSize: '14px'
                         }}>
@@ -459,7 +459,7 @@ export default function AdminProjects({ isAuthenticated }) {
                     </div>
                 )}
 
-                <div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '0', overflow: 'hidden' }}>
                     <div style={{
                         padding: '15px',
                         backgroundColor: '#f8f9fa',
@@ -502,7 +502,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                                     background: '#007bff',
                                                     color: 'white',
                                                     border: 'none',
-                                                    borderRadius: '4px',
+                                                    borderRadius: '0',
                                                     cursor: 'pointer'
                                                 }}
                                             >
@@ -541,7 +541,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                                 <span style={{
                                                     background: '#f3f4f6',
                                                     padding: '4px 8px',
-                                                    borderRadius: '12px',
+                                                    borderRadius: '0',
                                                     fontSize: '12px',
                                                     color: '#6b7280',
                                                     fontWeight: '500'
@@ -559,7 +559,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                                         width: '60px',
                                                         height: '60px',
                                                         objectFit: 'cover',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         border: '1px solid #ddd'
                                                     }}
                                                 />
@@ -569,7 +569,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                                         width: '60px',
                                                         height: '60px',
                                                         backgroundColor: '#f3f4f6',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
@@ -606,7 +606,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                                         backgroundColor: '#2d5016',
                                                         color: 'white',
                                                         textDecoration: 'none',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         fontSize: '14px',
                                                         fontWeight: '500'
                                                     }}
@@ -620,7 +620,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                                         backgroundColor: '#dc3545',
                                                         color: 'white',
                                                         border: 'none',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         fontSize: '14px',
                                                         fontWeight: '500',
                                                         cursor: 'pointer'
@@ -648,7 +648,7 @@ export default function AdminProjects({ isAuthenticated }) {
                             backgroundColor: '#28a745',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '5px',
+                            borderRadius: '0',
                             fontSize: '14px',
                             fontWeight: '500'
                         }}
@@ -683,7 +683,7 @@ export default function AdminProjects({ isAuthenticated }) {
                         <div style={{
                             background: 'white',
                             padding: '2rem',
-                            borderRadius: '12px',
+                            borderRadius: '0',
                             maxWidth: '400px',
                             width: '90%',
                             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
@@ -718,7 +718,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                         background: '#f9fafb',
                                         color: '#374151',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '6px',
+                                        borderRadius: '0',
                                         cursor: deleting ? 'not-allowed' : 'pointer',
                                         fontSize: '0.875rem',
                                         fontWeight: '500',
@@ -740,7 +740,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                         background: deleting ? '#9ca3af' : '#dc2626',
                                         color: 'white',
                                         border: 'none',
-                                        borderRadius: '6px',
+                                        borderRadius: '0',
                                         cursor: deleting ? 'not-allowed' : 'pointer',
                                         fontSize: '0.875rem',
                                         fontWeight: '500',

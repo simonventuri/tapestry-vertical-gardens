@@ -130,7 +130,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                     </div>
                 </div>
 
-                <div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '0', overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ backgroundColor: '#f8f9fa' }}>
@@ -174,7 +174,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                                         backgroundColor: '#2d5016',
                                                         color: 'white',
                                                         border: 'none',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         cursor: 'pointer',
                                                         fontSize: '14px'
                                                     }}
@@ -188,7 +188,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                                         backgroundColor: '#dc3545',
                                                         color: 'white',
                                                         border: 'none',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         cursor: 'pointer',
                                                         fontSize: '14px'
                                                     }}
@@ -215,7 +215,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                 backgroundColor: currentPage === 1 ? '#ccc' : '#2d5016',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
                             }}
                         >
@@ -234,7 +234,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                 backgroundColor: currentPage === totalPages ? '#ccc' : '#2d5016',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
                             }}
                         >
@@ -264,7 +264,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                         <div
                             style={{
                                 backgroundColor: 'white',
-                                borderRadius: '12px',
+                                borderRadius: '0',
                                 maxWidth: '600px',
                                 width: '100%',
                                 maxHeight: '90vh',
@@ -303,7 +303,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                             <div style={{ padding: '25px 30px' }}>
                                 <div style={{ marginBottom: '25px' }}>
                                     <h3 style={{ margin: '0 0 15px', color: '#2d5016', fontSize: '18px' }}>Contact Information</h3>
-                                    <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '6px' }}>
+                                    <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '0'}}>
                                         <div style={{ marginBottom: '10px' }}>
                                             <strong>Name:</strong> {selectedContact.name}
                                         </div>
@@ -324,7 +324,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
 
                                 <div style={{ marginBottom: '25px' }}>
                                     <h3 style={{ margin: '0 0 15px', color: '#2d5016', fontSize: '18px' }}>Project Details</h3>
-                                    <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '6px' }}>
+                                    <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '0'}}>
                                         <div style={{ marginBottom: '10px' }}>
                                             <strong>Project Type:</strong> {selectedContact.project_type}
                                         </div>
@@ -342,7 +342,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                     <div style={{
                                         backgroundColor: '#ffffff',
                                         padding: '24px',
-                                        borderRadius: '8px',
+                                        borderRadius: '0',
                                         border: '2px solid #e9ecef',
                                         boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
                                     }}>
@@ -369,7 +369,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                             backgroundColor: '#2d5016',
                                             color: 'white',
                                             textDecoration: 'none',
-                                            borderRadius: '6px',
+                                            borderRadius: '0',
                                             fontSize: '16px'
                                         }}
                                     >
@@ -382,7 +382,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                             backgroundColor: '#6c757d',
                                             color: 'white',
                                             border: 'none',
-                                            borderRadius: '6px',
+                                            borderRadius: '0',
                                             fontSize: '16px',
                                             cursor: 'pointer'
                                         }}
@@ -416,7 +416,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                         <div
                             style={{
                                 backgroundColor: 'white',
-                                borderRadius: '12px',
+                                borderRadius: '0',
                                 maxWidth: '400px',
                                 width: '100%',
                                 boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)'
@@ -438,7 +438,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                             backgroundColor: '#6c757d',
                                             color: 'white',
                                             border: 'none',
-                                            borderRadius: '4px',
+                                            borderRadius: '0',
                                             cursor: deleting ? 'not-allowed' : 'pointer',
                                             fontSize: '14px'
                                         }}
@@ -453,7 +453,7 @@ export default function AdminContacts({ contacts: initialContacts, isAuthenticat
                                             backgroundColor: deleting ? '#9ca3af' : '#dc3545',
                                             color: 'white',
                                             border: 'none',
-                                            borderRadius: '4px',
+                                            borderRadius: '0',
                                             cursor: deleting ? 'not-allowed' : 'pointer',
                                             fontSize: '14px'
                                         }}

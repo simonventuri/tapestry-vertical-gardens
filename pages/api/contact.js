@@ -145,24 +145,24 @@ export default async function handler(req, res) {
                 // Email content
                 const emailHtml = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
-                <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <div style="background-color: white; padding: 30px;  box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                     <h2 style="color: #2d5016; margin-bottom: 20px; font-size: 24px;">New Contact Form Submission</h2>
                     
-                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+                    <div style="background-color: #f8f9fa; padding: 20px;  margin-bottom: 20px;">
                         <h3 style="color: #2d5016; margin-top: 0; margin-bottom: 15px; font-size: 18px;">Contact Information</h3>
                         <p style="margin: 8px 0; line-height: 1.5;"><strong>Name:</strong> ${sanitizedData.name}</p>
                         <p style="margin: 8px 0; line-height: 1.5;"><strong>Email:</strong> <a href="mailto:${sanitizedData.email}" style="color: #2d5016;">${sanitizedData.email}</a></p>
                         <p style="margin: 8px 0; line-height: 1.5;"><strong>Phone:</strong> <a href="tel:${sanitizedData.phone}" style="color: #2d5016;">${sanitizedData.phone}</a></p>
                     </div>
 
-                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+                    <div style="background-color: #f8f9fa; padding: 20px;  margin-bottom: 20px;">
                         <h3 style="color: #2d5016; margin-top: 0; margin-bottom: 15px; font-size: 18px;">Project Details</h3>
                         <p style="margin: 8px 0; line-height: 1.5;"><strong>Project Type:</strong> ${sanitizedData.projectType}</p>
                         <p style="margin: 8px 0; line-height: 1.5;"><strong>Location:</strong> ${sanitizedData.location}</p>
                         <p style="margin: 8px 0; line-height: 1.5;"><strong>Budget Range:</strong> ${sanitizedData.budget}</p>
                     </div>
 
-                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px;">
+                    <div style="background-color: #f8f9fa; padding: 20px; ">
                         <h3 style="color: #2d5016; margin-top: 0; margin-bottom: 15px; font-size: 18px;">Message</h3>
                         <p style="margin: 0; line-height: 1.6; white-space: pre-wrap;">${sanitizedData.message}</p>
                     </div>
