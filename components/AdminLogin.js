@@ -25,7 +25,7 @@ export default function AdminLogin({ onLogin }) {
             if (response.ok) {
                 // Login successful - the cookie is set server-side
                 // No need to store token in localStorage since we're using HTTP-only cookies
-                
+
                 // Call onLogin callback and reload page to get fresh server-side auth
                 onLogin(true);
                 window.location.reload();

@@ -717,7 +717,6 @@ html:has(.landing-page) {
     background-size: cover;
     background-position: 50% 50%;
     background-repeat: no-repeat;
-    transition: opacity 0.1s ease-in-out;
 }
 
 .landing-bg.fade-in {
