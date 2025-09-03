@@ -58,7 +58,7 @@ export default function Home() {
           <a className="btn btn-large" href="/contact">Start Your Project</a>
         </div>
         <div className="hero-image">
-          <img src="./images/bio-sphere-living-sculpture.jpg" alt="Vertical gardens UK - Bio Sphere" />
+          <img src="./images/home_page.jpg" alt="Tapestry Vertical Gardens - Lombolle Road Garden Installation" />
         </div>
       </div>
     </section>
@@ -138,12 +138,16 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="card">
-            <h3>Beyond 2D: Living Sculpture</h3>
-            <p>
-              We create more than flat walls. Living spheres, columns, and chandeliers transform greenery into
-              sculpture. These installations become centrepieces for homes, offices, and events.
-            </p>
+        </div>
+
+        <div className="container">
+          <h2 style={{ marginTop: '4rem' }}>Living Sculpture</h2>
+          <p style={{ textAlign: 'center' }}>
+            We create more than flat walls. Living spheres, columns, and chandeliers transform greenery into
+            sculpture. These installations become centrepieces for homes, offices, and events.
+          </p>
+          <div className="hero-image" style={{ textAlign: 'center' }}>
+            <img src="./images/bio-sphere-living-sculpture.jpg" alt="Tapestry Vertical Gardens - Bio Sphere" />
           </div>
         </div>
       </div>
