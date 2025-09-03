@@ -2,11 +2,42 @@ import Head from 'next/head';
 import Nav from '../../components/Nav';
 import Footer from '../../components/Footer';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ProjectPage({ project }) {
     const router = useRouter();
-    const [lightboxImage, setLightboxImage] = useState(null);
+    const [lightboxIndex, setLightboxIndex] = useState(null);
+
+    // Handle keyboard navigation
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (lightboxIndex === null) return;
+
+            if (e.key === 'Escape') {
+                setLightboxIndex(null);
+            } else if (e.key === 'ArrowLeft') {
+                navigateImage(-1);
+            } else if (e.key === 'ArrowRight') {
+                navigateImage(1);
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+        return () => window.removeEventListener('keydown', handleKeyPress);
+    }, [lightboxIndex, project?.images]);
+
+    const navigateImage = (direction) => {
+        if (!project?.images || lightboxIndex === null) return;
+
+        const newIndex = lightboxIndex + direction;
+        if (newIndex >= 0 && newIndex < project.images.length) {
+            setLightboxIndex(newIndex);
+        }
+    };
+
+    const openLightbox = (index) => {
+        setLightboxIndex(index);
+    };
 
     if (router.isFallback) {
         return <div>Loading...</div>;
@@ -16,10 +47,14 @@ export default function ProjectPage({ project }) {
         return <div>Project not found</div>;
     }
 
+    // Ensure title is always a string to prevent React warning
+    const pageTitle = Array.isArray(project.title) ? project.title.join(' ') : String(project.title || '');
+    const fullTitle = `${pageTitle} - Tapestry Vertical Gardens`;
+
     return (
         <>
             <Head>
-                <title>{project.title} - Tapestry Vertical Gardens</title>
+                <title>{fullTitle}</title>
                 <meta name="description" content={project.description?.substring(0, 160) || ''} />
             </Head>
 
@@ -34,7 +69,7 @@ export default function ProjectPage({ project }) {
                             marginBottom: '2.5rem',
                             textAlign: 'center',
                             color: 'var(--primary)'
-                        }}>{project.title}</h1>
+                        }}>{pageTitle}</h1>
                         <div className="project-hero" style={{
                             width: '100%',
                             maxWidth: '1200px',
@@ -53,7 +88,7 @@ export default function ProjectPage({ project }) {
                                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
                                 e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
                             }}
-                            onClick={() => setLightboxImage(project.images[0])}
+                            onClick={() => openLightbox(0)}
                         >
                             <img src={project.images[0]} alt={project.title} style={{
                                 width: '100%',
@@ -115,7 +150,7 @@ export default function ProjectPage({ project }) {
                                                 e.currentTarget.style.transform = 'translateY(0) scale(1)';
                                                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
                                             }}
-                                            onClick={() => setLightboxImage(image)}
+                                            onClick={() => openLightbox(index + 1)}
                                         >
                                             <img src={image} alt={`${project.title} - Gallery Image ${index + 2}`} style={{
                                                 width: '100%',
@@ -167,8 +202,8 @@ export default function ProjectPage({ project }) {
 
             <Footer />
 
-            {/* Lightbox */}
-            {lightboxImage && (
+            {/* Enhanced Lightbox with Navigation */}
+            {lightboxIndex !== null && project?.images && (
                 <div style={{
                     position: 'fixed',
                     top: 0,
@@ -182,8 +217,119 @@ export default function ProjectPage({ project }) {
                     zIndex: 1000,
                     cursor: 'pointer'
                 }}
-                    onClick={() => setLightboxImage(null)}
+                    onClick={() => setLightboxIndex(null)}
                 >
+                    {/* Previous Arrow - Fixed to left edge */}
+                    {lightboxIndex > 0 && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigateImage(-1);
+                            }}
+                            style={{
+                                position: 'fixed',
+                                left: '20px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '48px',
+                                fontWeight: 'bold',
+                                color: '#fff',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.3s ease',
+                                zIndex: 1001,
+                                padding: '10px'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
+                                e.currentTarget.style.color = '#ddd';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                                e.currentTarget.style.color = '#fff';
+                            }}
+                        >
+                            ‹
+                        </button>
+                    )}
+
+                    {/* Next Arrow - Fixed to right edge */}
+                    {lightboxIndex < project.images.length - 1 && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigateImage(1);
+                            }}
+                            style={{
+                                position: 'fixed',
+                                right: '20px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '48px',
+                                fontWeight: 'bold',
+                                color: '#fff',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.3s ease',
+                                zIndex: 1001,
+                                padding: '10px'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
+                                e.currentTarget.style.color = '#ddd';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                                e.currentTarget.style.color = '#fff';
+                            }}
+                        >
+                            ›
+                        </button>
+                    )}
+
+                    {/* Close Button - Fixed to top-right corner */}
+                    <button
+                        onClick={() => setLightboxIndex(null)}
+                        style={{
+                            position: 'fixed',
+                            top: '20px',
+                            right: '20px',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '36px',
+                            fontWeight: 'bold',
+                            color: '#fff',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.3s ease',
+                            zIndex: 1001,
+                            padding: '10px'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.2)';
+                            e.currentTarget.style.color = '#ddd';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.color = '#fff';
+                        }}
+                    >
+                        ×
+                    </button>
+
                     <div style={{
                         position: 'relative',
                         maxWidth: '90vw',
@@ -192,39 +338,47 @@ export default function ProjectPage({ project }) {
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
+                        {/* Main Image */}
                         <img
-                            src={lightboxImage}
-                            alt="Full size image"
+                            src={project.images[lightboxIndex]}
+                            alt={`${project.title} - Image ${lightboxIndex + 1}`}
                             style={{
                                 maxWidth: '100%',
                                 maxHeight: '100%',
                                 objectFit: 'contain',
-                                borderRadius: '8px'
+                                borderRadius: '8px',
+                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
                             }}
                             onClick={(e) => e.stopPropagation()}
                         />
-                        <button
-                            onClick={() => setLightboxImage(null)}
-                            style={{
-                                position: 'absolute',
-                                top: '-40px',
-                                right: '-40px',
-                                background: 'rgba(255, 255, 255, 0.9)',
-                                border: 'none',
-                                borderRadius: '50%',
-                                width: '40px',
-                                height: '40px',
-                                cursor: 'pointer',
-                                fontSize: '20px',
-                                fontWeight: 'bold',
-                                color: '#333',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}
-                        >
-                            ×
-                        </button>
+
+                        {/* Image Counter */}
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-50px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            color: '#fff',
+                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                            padding: '8px 16px',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                        }}>
+                            {lightboxIndex + 1} of {project.images.length}
+                        </div>
+
+                        {/* Mobile Navigation Instructions */}
+                        <div style={{
+                            position: 'absolute',
+                            bottom: '-90px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            fontSize: '12px',
+                            textAlign: 'center'
+                        }}>
+                            Use ← → arrow keys or click arrows to navigate
+                        </div>
                     </div>
                 </div>
             )}

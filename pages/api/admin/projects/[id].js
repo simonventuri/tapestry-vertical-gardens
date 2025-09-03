@@ -1,5 +1,6 @@
 import { updateProject, deleteProject } from '../../../../lib/database';
 import { requireAuth } from '../../../../lib/auth';
+import { processProjectImages } from '../../../../lib/imageUtils';
 
 // Increase body size limit for image uploads
 export const config = {
@@ -23,6 +24,20 @@ async function handler(req, res) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
+            // Get existing project data to handle image updates
+            const redis = await (await import('../../../../lib/database')).getRedisClient();
+            const existingProject = await redis.hGetAll(`portfolio:${id}`);
+
+            if (!existingProject.id) {
+                return res.status(404).json({ message: 'Project not found' });
+            }
+
+            // Process new/updated images - optimize base64 images for storage
+            let processedImages = JSON.parse(existingProject.images || '[]');
+            if (images !== undefined) {
+                processedImages = await processProjectImages(images);
+            }
+
             // Update project with new schema
             const updateResult = await updateProject(id, {
                 title,
@@ -32,7 +47,7 @@ async function handler(req, res) {
                 location,
                 year,
                 size,
-                images,
+                images: processedImages,
                 features,
                 plants
             });
