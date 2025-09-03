@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         });
     } catch (error) {
         console.error('Error fetching paginated portfolio:', error);
-        res.status(500).json({ 
+        res.status(500).json({
             message: 'Internal server error',
             error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });

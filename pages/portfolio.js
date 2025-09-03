@@ -370,71 +370,71 @@ export default function Portfolio() {
                   margin: '2rem 0'
                 }}>
                   {currentProjects.map((project) => (
-                  <Link href={`/projects/${project.slug}`} key={project.id} className="project-card"
-                    style={getCardStyle(project.id)}
-                    onMouseEnter={(e) => {
-                      if (typeof window !== 'undefined' && !isTouchDevice()) {
-                        e.currentTarget.style.transform = 'scale(1.02)';
-                        // Show overlay
-                        const overlay = e.currentTarget.querySelector('.project-info');
-                        if (overlay) overlay.style.opacity = '1';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (typeof window !== 'undefined' && !isTouchDevice()) {
-                        e.currentTarget.style.transform = 'scale(1)';
-                        // Hide overlay
-                        const overlay = e.currentTarget.querySelector('.project-info');
-                        if (overlay) overlay.style.opacity = '0';
-                      }
-                    }}
-                    onTouchStart={() => handleCardInteraction(project.id, true)}
-                    onTouchEnd={() => handleCardInteraction(project.id, false)}
-                  >
-                    <div className="project-image" style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%'
-                    }}>
-                      <img src={project.hero_image} alt={project.title} style={{
+                    <Link href={`/projects/${project.slug}`} key={project.id} className="project-card"
+                      style={getCardStyle(project.id)}
+                      onMouseEnter={(e) => {
+                        if (typeof window !== 'undefined' && !isTouchDevice()) {
+                          e.currentTarget.style.transform = 'scale(1.02)';
+                          // Show overlay
+                          const overlay = e.currentTarget.querySelector('.project-info');
+                          if (overlay) overlay.style.opacity = '1';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (typeof window !== 'undefined' && !isTouchDevice()) {
+                          e.currentTarget.style.transform = 'scale(1)';
+                          // Hide overlay
+                          const overlay = e.currentTarget.querySelector('.project-info');
+                          if (overlay) overlay.style.opacity = '0';
+                        }
+                      }}
+                      onTouchStart={() => handleCardInteraction(project.id, true)}
+                      onTouchEnd={() => handleCardInteraction(project.id, false)}
+                    >
+                      <div className="project-image" style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%'
+                      }}>
+                        <img src={project.hero_image} alt={project.title} style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }} />
+                      </div>
+                      <div className="project-info" style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
                         width: '100%',
                         height: '100%',
-                        objectFit: 'cover'
-                      }} />
-                    </div>
-                    <div className="project-info" style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'rgba(0, 0, 0, 0.6)',
-                      backdropFilter: 'blur(2px)',
-                      WebkitBackdropFilter: 'blur(2px)',
-                      opacity: 0,
-                      transition: 'all 0.3s ease'
-                    }}>
-                      <h3 style={{
-                        color: 'white',
-                        fontSize: '1.3rem',
-                        fontWeight: '400',
-                        textAlign: 'center',
-                        margin: 0,
-                        padding: '1rem',
-                        textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase',
-                        fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif"
-                      }}>{project.title}</h3>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'rgba(0, 0, 0, 0.6)',
+                        backdropFilter: 'blur(2px)',
+                        WebkitBackdropFilter: 'blur(2px)',
+                        opacity: 0,
+                        transition: 'all 0.3s ease'
+                      }}>
+                        <h3 style={{
+                          color: 'white',
+                          fontSize: '1.3rem',
+                          fontWeight: '400',
+                          textAlign: 'center',
+                          margin: 0,
+                          padding: '1rem',
+                          textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)',
+                          letterSpacing: '0.1em',
+                          textTransform: 'uppercase',
+                          fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif"
+                        }}>{project.title}</h3>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               )}
             </div>
           )}
