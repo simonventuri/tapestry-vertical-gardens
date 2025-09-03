@@ -52,7 +52,7 @@ export default function Home() {
         <h1>Vertical Gardens</h1>
         <h2>Fresh, sustainable, and grown in Devon</h2>
         <p className="lead">
-          Our living walls infuse any space with freshness, texture, and vitality — turning the ordinary into thriving, sustainable environments. These biodiverse vertical gardens are crafted to evolve with the seasons and arrive ready to flourish. We use recycled materials wherever possible
+          Our living walls bring freshness, texture, and vitality to any space — transforming the ordinary into a thriving, sustainable environment. Designed to evolve with the seasons, these biodiverse vertical gardens arrive ready to flourish.
         </p>
         <div>
           <a className="btn btn-large" href="/contact">Start Your Project</a>
