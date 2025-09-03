@@ -302,34 +302,14 @@ export default function ContentManagement() {
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                     <div>
-                        <h1 style={{ margin: 0, color: '#2d5016' }}>Content Management</h1>
-                        <p style={{ margin: '5px 0 0 0', color: '#666' }}>Manage home page content and sections</p>
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Link href="/admin" style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#6c757d',
-                            color: 'white',
+                            color: '#2d5016',
                             textDecoration: 'none',
-                            borderRadius: '0',
                             fontSize: '14px'
                         }}>
-                            ← Back to Dashboard
+                            ← Back to Admin Dashboard
                         </Link>
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                padding: '8px 16px',
-                                backgroundColor: '#dc3545',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '0',
-                                cursor: 'pointer',
-                                fontSize: '14px'
-                            }}
-                        >
-                            Logout
-                        </button>
+                        <h1 style={{ margin: 0, color: '#2d5016' }}>Content Management</h1>
                     </div>
                 </div>
 
@@ -361,7 +341,7 @@ export default function ContentManagement() {
                                 backgroundColor: '#2d5016',
                                 color: 'white'
                             }}>
-                                <h3 style={{ margin: 0, fontSize: '16px' }}>Sections</h3>
+                                <h3 style={{ margin: 0, fontSize: '16px', color: 'white' }}>Sections</h3>
                             </div>
                             {sections.map(section => (
                                 <button
