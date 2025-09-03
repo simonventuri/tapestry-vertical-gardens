@@ -17,7 +17,7 @@ async function handler(req, res) {
     if (req.method === 'PUT') {
         // Update project
         try {
-            const { title, description, slug, category, location, year, size, images, features, plants } = req.body;
+            const { title, description, slug, category, location, year, size, images, features, plants, visible } = req.body;
 
             // Validate required fields
             if (!title || !description || !slug) {
@@ -49,7 +49,8 @@ async function handler(req, res) {
                 size,
                 images: processedImages,
                 features,
-                plants
+                plants,
+                visible
             });
 
             res.status(200).json({

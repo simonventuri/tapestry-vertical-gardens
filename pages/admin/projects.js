@@ -150,6 +150,54 @@ export default function AdminProjects({ isAuthenticated }) {
         }
     };
 
+    const handleToggleVisibility = async (projectId, currentVisibility) => {
+        try {
+            // Find the current project data
+            const project = clientProjects.find(p => p.id === projectId);
+            if (!project) {
+                throw new Error('Project not found');
+            }
+
+            const response = await fetch(`/api/admin/projects/${projectId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+                body: JSON.stringify({
+                    title: project.title,
+                    description: project.description,
+                    slug: project.slug,
+                    category: project.category,
+                    location: project.location,
+                    year: project.year,
+                    size: project.size,
+                    images: project.images,
+                    features: project.features,
+                    plants: project.plants,
+                    visible: !currentVisibility
+                }),
+            });
+
+            if (response.ok) {
+                // Update the project in the client state
+                setClientProjects(prevProjects =>
+                    prevProjects.map(project =>
+                        project.id === projectId
+                            ? { ...project, visible: !currentVisibility }
+                            : project
+                    )
+                );
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update visibility');
+            }
+        } catch (error) {
+            console.error('Error toggling visibility:', error);
+            alert(`Error updating visibility: ${error.message}`);
+        }
+    };
+
     const handleDragStart = (e, index) => {
         setDraggedIndex(index);
         e.dataTransfer.effectAllowed = 'move';
@@ -475,13 +523,14 @@ export default function AdminProjects({ isAuthenticated }) {
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Project Details</th>
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Location</th>
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Photos</th>
+                                <th style={{ padding: '15px', textAlign: 'center', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Visible</th>
                                 <th style={{ padding: '15px', textAlign: 'center', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="6" style={{ padding: '60px', textAlign: 'center', color: '#6c757d' }}>
+                                    <td colSpan="7" style={{ padding: '60px', textAlign: 'center', color: '#6c757d' }}>
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
                                             <div className="spinner"></div>
                                             <span>Loading projects...</span>
@@ -490,7 +539,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                 </tr>
                             ) : error ? (
                                 <tr>
-                                    <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#dc3545' }}>
+                                    <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#dc3545' }}>
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                                             <span>❌ Error loading projects: {error}</span>
                                             <button
@@ -517,7 +566,7 @@ export default function AdminProjects({ isAuthenticated }) {
                                 </tr>
                             ) : clientProjects.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
+                                    <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
                                         No projects found
                                     </td>
                                 </tr>
@@ -594,6 +643,25 @@ export default function AdminProjects({ isAuthenticated }) {
                                             <div style={{ color: '#374151' }}>
                                                 {project.imageCount || 0} photo{(project.imageCount || 0) !== 1 ? 's' : ''}
                                             </div>
+                                        </td>
+                                        <td style={{ padding: '15px', textAlign: 'center' }}>
+                                            <button
+                                                onClick={() => handleToggleVisibility(project.id, project.visible)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: project.visible ? '#28a745' : '#6c757d',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '0',
+                                                    fontSize: '12px',
+                                                    fontWeight: '500',
+                                                    cursor: 'pointer',
+                                                    textTransform: 'uppercase'
+                                                }}
+                                                title={project.visible ? 'Click to hide' : 'Click to show'}
+                                            >
+                                                {project.visible ? 'Visible' : 'Hidden'}
+                                            </button>
                                         </td>
                                         <td style={{ padding: '15px', textAlign: 'center' }}>
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>

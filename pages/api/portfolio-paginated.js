@@ -9,9 +9,9 @@ export default async function handler(req, res) {
         const pageNumber = parseInt(page, 10);
         const limitNumber = parseInt(limit, 10);
 
-        // Get paginated projects - only processes the items we need
-        const { getPortfolioItemsPaginated } = await import('../../lib/database');
-        const result = await getPortfolioItemsPaginated(pageNumber, limitNumber);
+        // Get paginated projects - only visible ones for frontend
+        const { getVisiblePortfolioItemsPaginated } = await import('../../lib/database');
+        const result = await getVisiblePortfolioItemsPaginated(pageNumber, limitNumber);
 
         // Set cache headers for better performance
         res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=60');

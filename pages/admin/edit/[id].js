@@ -15,7 +15,8 @@ export default function EditProject({ project, isAuthenticated }) {
         category: project?.category || '',
         location: project?.location || '',
         year: project?.year || '',
-        size: project?.size || ''
+        size: project?.size || '',
+        visible: project?.visible !== undefined ? project.visible : true
     });
     const [projectImages, setProjectImages] = useState(project?.images || []);
     const [draggedImageIndex, setDraggedImageIndex] = useState(null);
@@ -49,8 +50,11 @@ export default function EditProject({ project, isAuthenticated }) {
     }
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
     };
 
     // Image handling functions
@@ -473,6 +477,38 @@ export default function EditProject({ project, isAuthenticated }) {
                                         fontSize: '1rem'
                                     }}
                                 />
+                            </div>
+
+                            <div>
+                                <label style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '500',
+                                    color: '#374151',
+                                    cursor: 'pointer'
+                                }}>
+                                    <input
+                                        type="checkbox"
+                                        name="visible"
+                                        checked={formData.visible}
+                                        onChange={handleInputChange}
+                                        style={{
+                                            marginRight: '0.5rem',
+                                            width: '16px',
+                                            height: '16px'
+                                        }}
+                                    />
+                                    Visible on Frontend
+                                </label>
+                                <p style={{
+                                    fontSize: '0.75rem',
+                                    color: '#6b7280',
+                                    marginTop: '0.25rem',
+                                    marginLeft: '1.5rem'
+                                }}>
+                                    When unchecked, this project will be hidden from the public portfolio
+                                </p>
                             </div>
                         </div>
                     </div>
