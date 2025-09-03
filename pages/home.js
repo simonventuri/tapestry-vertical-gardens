@@ -67,10 +67,9 @@ export default function Home() {
     <section className="content-section">
       <div className="container">
         <div className="section-header">
-          <h2>Why Vertical Gardens Are More Than Green Décor</h2>
+          <h2>Vertical Gardens: Beauty with Purpose</h2>
           <p className="section-subtitle">
-            In cities, space is scarce. Gardens compete with paving, car parks, and glass. A vertical garden flips the equation,
-            turning unused walls into living ecosystems.
+            As cities grow ever denser, green space becomes increasingly precious. Vertical gardens transform overlooked walls into thriving ecosystems that support biodiversity, improve air quality, and create calming, restorative spaces — bringing nature back into the heart of urban life.
           </p>
         </div>
 
