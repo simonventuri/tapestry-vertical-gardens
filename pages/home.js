@@ -50,9 +50,9 @@ export default function Home() {
     <section className="hero">
       <div className="container">
         <h1>Vertical Gardens</h1>
-        <h2>Fresh, sustainable, and grown in Devon</h2>
+        <h2>Vibrant, sustainable, and grown in Devon</h2>
         <p className="lead">
-          Our living walls bring freshness, texture, and vitality to any space — transforming the ordinary into a thriving, sustainable environment. Designed to evolve with the seasons, these biodiverse vertical gardens arrive ready to flourish.
+          Our living walls bring colour, texture, and vitality to any space — transforming the ordinary into a thriving, sustainable environment. Designed to evolve with the seasons, these biodiverse vertical gardens arrive ready to flourish.
         </p>
         <div>
           <a className="btn btn-large" href="/contact">Start Your Project</a>
@@ -69,7 +69,7 @@ export default function Home() {
         <div className="section-header">
           <h2>Vertical Gardens: Beauty with Purpose</h2>
           <p className="section-subtitle">
-            As cities grow ever denser, green space becomes increasingly precious. Vertical gardens transform overlooked walls into thriving ecosystems that support biodiversity, improve air quality, and create calming, restorative spaces — bringing nature back into the heart of urban life.
+            As cities grow ever denser, green space becomes increasingly precious. Vertical gardens transform barren walls into thriving ecosystems that support biodiversity, improve air quality, and create calming, restorative spaces — bringing nature back into the heart of urban life.
           </p>
         </div>
 
@@ -123,10 +123,10 @@ export default function Home() {
           </div>
 
           <div className="card">
-            <h3>Devon Nursery Advantage</h3>
+            <h3>Fuss-free</h3>
             <p>
-              Every garden is assembled and matured in our Devon nursery. We deliver established planting for
-              immediate impact and minimal disruption on site. Your vertical garden arrives ready to impress.
+              Every garden is planted by hand and matured in our Devon nursery. We install established planting for
+              immediate impact. Your vertical garden arrives ready to impress with minimal disruption on site &mdash; an average installation takes only 2 - 3 days.
             </p>
           </div>
 
