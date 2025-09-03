@@ -165,9 +165,9 @@ export default function Portfolio() {
   };
 
   const getGridGap = () => {
-    if (windowWidth <= 768) return '10px';
-    if (windowWidth <= 1024) return '15px';
-    return '20px';
+    if (windowWidth <= 768) return '5px';
+    if (windowWidth <= 1024) return '5px';
+    return '5px';
   };
 
   const isTouchDevice = () => {
@@ -193,12 +193,16 @@ export default function Portfolio() {
       color: 'inherit',
       transition: 'transform 0.3s ease',
       boxShadow: 'none',
-      transform: isElevated ? 'scale(1.02)' : 'scale(1)'
+      transform: isElevated ? 'scale(1.05)' : 'scale(1.0)' // Increased to full size
     };
   };
 
   return (
-    <>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
       <Head>
         <title>Portfolio - Tapestry Vertical Gardens</title>
         <meta name="description" content="Our portfolio of vertical gardens and living wall projects across the UK." />
@@ -206,8 +210,12 @@ export default function Portfolio() {
 
       <Nav />
 
-      <main className="main-content">
-        <div className="container">
+      <main className="main-content" style={{
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <div className="container" style={{ flexGrow: 1 }}>
           <style jsx>{`
             .spinner {
               width: 50px;
@@ -294,28 +302,36 @@ export default function Portfolio() {
                     <button
                       onClick={goToPreviousPage}
                       style={{
-                        position: 'fixed',
-                        left: isMobile ? '50%' : '20px',
-                        top: isMobile ? '20px' : '50%',
+                        position: 'absolute',
+                        left: isMobile ? '50%' : '-10px',
+                        top: isMobile ? '-60px' : '49%',
                         transform: isMobile ? 'translateX(-50%)' : 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
+                        background: '#fff',
+                        border: '2px solid #000',
+                        borderRadius: '0',
                         cursor: 'pointer',
-                        fontSize: '36px',
+                        fontSize: '24px',
                         fontWeight: 'bold',
-                        color: '#fff',
-                        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                        color: '#000',
+                        textShadow: 'none',
                         transition: 'all 0.3s ease',
                         zIndex: 100,
-                        padding: '10px'
+                        padding: '8px 12px',
+                        width: '40px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = isMobile ? 'translateX(-50%) scale(1.2)' : 'translateY(-50%) scale(1.2)';
-                        e.currentTarget.style.color = '#ddd';
+                        e.currentTarget.style.transform = isMobile ? 'translateX(-50%) scale(1.1)' : 'translateY(-50%) scale(1.1)';
+                        e.currentTarget.style.backgroundColor = '#000';
+                        e.currentTarget.style.color = '#fff';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = isMobile ? 'translateX(-50%) scale(1)' : 'translateY(-50%) scale(1)';
-                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.backgroundColor = '#fff';
+                        e.currentTarget.style.color = '#000';
                       }}
                     >
                       {isMobile ? '▲' : '‹'}
@@ -327,29 +343,37 @@ export default function Portfolio() {
                     <button
                       onClick={goToNextPage}
                       style={{
-                        position: 'fixed',
-                        right: isMobile ? '50%' : '20px',
-                        bottom: isMobile ? '20px' : 'auto',
-                        top: isMobile ? 'auto' : '50%',
+                        position: 'absolute',
+                        right: isMobile ? '50%' : '-10px',
+                        bottom: isMobile ? '-60px' : 'auto',
+                        top: isMobile ? 'auto' : '49%',
                         transform: isMobile ? 'translateX(50%)' : 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
+                        background: '#fff',
+                        border: '2px solid #000',
+                        borderRadius: '0',
                         cursor: 'pointer',
-                        fontSize: '36px',
+                        fontSize: '24px',
                         fontWeight: 'bold',
-                        color: '#fff',
-                        textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                        color: '#000',
+                        textShadow: 'none',
                         transition: 'all 0.3s ease',
                         zIndex: 100,
-                        padding: '10px'
+                        padding: '8px 12px',
+                        width: '40px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = isMobile ? 'translateX(50%) scale(1.2)' : 'translateY(-50%) scale(1.2)';
-                        e.currentTarget.style.color = '#ddd';
+                        e.currentTarget.style.transform = isMobile ? 'translateX(50%) scale(1.1)' : 'translateY(-50%) scale(1.1)';
+                        e.currentTarget.style.backgroundColor = '#000';
+                        e.currentTarget.style.color = '#fff';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = isMobile ? 'translateX(50%) scale(1)' : 'translateY(-50%) scale(1)';
-                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.backgroundColor = '#fff';
+                        e.currentTarget.style.color = '#000';
                       }}
                     >
                       {isMobile ? '▼' : '›'}
@@ -367,14 +391,15 @@ export default function Portfolio() {
                   display: 'grid',
                   gridTemplateColumns: getGridColumns(),
                   gap: getGridGap(),
-                  margin: '2rem 0'
+                  margin: '2rem 0 0 0',
+                  padding: '5px calc(12% - 5px)' // Reduced padding by 5px
                 }}>
                   {currentProjects.map((project) => (
                     <Link href={`/projects/${project.slug}`} key={project.id} className="project-card"
                       style={getCardStyle(project.id)}
                       onMouseEnter={(e) => {
                         if (typeof window !== 'undefined' && !isTouchDevice()) {
-                          e.currentTarget.style.transform = 'scale(1.02)';
+                          e.currentTarget.style.transform = 'scale(1.0)'; // No size change on hover
                           // Show overlay
                           const overlay = e.currentTarget.querySelector('.project-info');
                           if (overlay) overlay.style.opacity = '1';
@@ -382,7 +407,7 @@ export default function Portfolio() {
                       }}
                       onMouseLeave={(e) => {
                         if (typeof window !== 'undefined' && !isTouchDevice()) {
-                          e.currentTarget.style.transform = 'scale(1)';
+                          e.currentTarget.style.transform = 'scale(1.0)'; // Stay at full size
                           // Hide overlay
                           const overlay = e.currentTarget.querySelector('.project-info');
                           if (overlay) overlay.style.opacity = '0';
@@ -436,11 +461,53 @@ export default function Portfolio() {
                   ))}
                 </div>
               )}
+
+              {/* Pagination Indicators */}
+              {totalPages > 1 && !loading && !pageLoading && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  margin: '1rem 0',
+                  gap: '8px'
+                }}>
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                      key={index + 1}
+                      onClick={() => {
+                        const targetPage = index + 1;
+                        if (targetPage !== currentPage) {
+                          if (targetPage > currentPage) {
+                            for (let i = 0; i < (targetPage - currentPage); i++) {
+                              setTimeout(() => goToNextPage(), i * 100);
+                            }
+                          } else {
+                            for (let i = 0; i < (currentPage - targetPage); i++) {
+                              setTimeout(() => goToPreviousPage(), i * 100);
+                            }
+                          }
+                        }
+                      }}
+                      style={{
+                        width: '12px',
+                        height: '12px',
+                        borderRadius: '0',
+                        border: '1px solid #000',
+                        backgroundColor: currentPage === (index + 1) ? '#000' : '#fff',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        padding: '0'
+                      }}
+                      aria-label={`Go to page ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
       </main>
       {!loading && !pageLoading && <Footer />}
-    </>
+    </div>
   );
 }
