@@ -370,7 +370,6 @@ export default function AdminProjects({ isAuthenticated }) {
             width: 40px;
             height: 40px;
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
             
             animation: spin 1s linear infinite;
           }
@@ -378,8 +377,7 @@ export default function AdminProjects({ isAuthenticated }) {
           .small-spinner {
             width: 16px;
             height: 16px;
-            border: 2px solid #ffffff33;
-            border-top: 2px solid #ffffff;
+            border: 2px solid #ffffff;
             
             animation: spin 1s linear infinite;
           }
