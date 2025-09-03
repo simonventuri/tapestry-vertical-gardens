@@ -64,10 +64,12 @@ export default function ProjectPage({ project }) {
                 <div className="container">
                     <div className="section-header" style={{ marginBottom: '0' }}>
                         <h1 style={{
-                            fontSize: 'clamp(2rem, 4vw, 2.5rem)',
+                            fontSize: 'clamp(1.4rem, 1vw, 0.1rem)',
                             fontWeight: '700',
                             marginBottom: '2.5rem',
                             textAlign: 'center',
+                            textTransform: 'uppercase !important',
+                            letterSpacing: '0.15em',
                             color: 'var(--primary)'
                         }}>{pageTitle}</h1>
                         <div className="project-hero" style={{
