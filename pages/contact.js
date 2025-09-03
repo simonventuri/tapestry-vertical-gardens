@@ -2,14 +2,11 @@ import Head from 'next/head';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import { useState } from 'react';
-import { useTheme } from '../components/ThemeProvider';
 
 export default function Contact() {
-    const { resolvedTheme } = useTheme();
-
-    // Helper function to get label color based on theme
+    // Helper function to get label color
     const getLabelColor = () => {
-        return resolvedTheme === 'dark' ? '#ffffff' : '#1e293b';
+        return '#1e293b';
     };
 
     const [formData, setFormData] = useState({

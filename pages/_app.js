@@ -1,6 +1,5 @@
 
 import '../styles/globals.css'
-import { ThemeProvider } from '../components/ThemeProvider'
 import ErrorBoundary from '../components/ErrorBoundary'
 import { usePerformanceMonitoring } from '../hooks/usePerformanceMonitoring'
 import Head from 'next/head'
@@ -53,11 +52,9 @@ export default function MyApp({ Component, pageProps }) {
                 <meta name="twitter:image" content="/images/hero-vertical-gardens-uk.jpg" />
             </Head>
 
-            <ThemeProvider>
-                <ErrorBoundary>
-                    <Component {...pageProps} />
-                </ErrorBoundary>
-            </ThemeProvider>
+            <ErrorBoundary>
+                <Component {...pageProps} />
+            </ErrorBoundary>
 
             {/* Google Analytics */}
             {process.env.NEXT_PUBLIC_GA_ID && (

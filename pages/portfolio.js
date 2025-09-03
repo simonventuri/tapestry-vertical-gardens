@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Nav from '../components/Nav';
+import Footer from '../components/Footer';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
@@ -212,7 +213,6 @@ export default function Portfolio() {
               width: 50px;
               height: 50px;
               border: 5px solid #f3f3f3;
-              border-top: 5px solid #2d5016;
               animation: spin 1s linear infinite;
               margin: 20px auto;
             }
@@ -440,6 +440,7 @@ export default function Portfolio() {
           )}
         </div>
       </main>
+      {!loading && !pageLoading && <Footer />}
     </>
   );
 }
