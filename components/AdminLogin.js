@@ -16,22 +16,21 @@ export default function AdminLogin({ onLogin }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Important: include cookies
                 body: JSON.stringify(credentials),
             });
 
             const data = await response.json();
 
-            if (response.ok && data.success) {
-                // Store token in localStorage for API calls
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('admin_token', data.token);
-                }
-
+            if (response.ok) {
+                // Login successful - the cookie is set server-side
+                // No need to store token in localStorage since we're using HTTP-only cookies
+                
                 // Call onLogin callback and reload page to get fresh server-side auth
-                onLogin(data.token);
+                onLogin(true);
                 window.location.reload();
             } else {
-                setError(data.message || 'Login failed');
+                setError(data.error || data.message || 'Login failed');
             }
         } catch (error) {
             console.error('Login error:', error);

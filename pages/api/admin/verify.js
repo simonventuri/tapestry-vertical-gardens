@@ -1,42 +1,34 @@
-const tokenManager = require('../../../lib/tokenManager');
+import tokenManager from '../../../lib/tokenManager';
 
 export default function handler(req, res) {
     if (req.method !== 'GET') {
-        return res.status(405).json({ message: 'Method not allowed' });
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        // Get token from cookie
-        const cookies = req.headers.cookie || '';
-        const tokenMatch = cookies.match(/admin_token=([^;]+)/);
+        const token = req.cookies.admin_token;
 
-        if (!tokenMatch) {
-            return res.status(401).json({
-                success: false,
-                message: 'No token provided'
-            });
+        if (!token) {
+            return res.status(401).json({ error: 'No token provided' });
         }
 
-        const token = tokenMatch[1];
+        // Validate the token using token manager
+        const isValid = tokenManager.validateToken(token);
 
-        // Validate token using token manager
-        if (!tokenManager.validateToken(token)) {
-            return res.status(401).json({
-                success: false,
-                message: 'Token expired or invalid'
-            });
+        if (!isValid) {
+            // Clear the invalid cookie
+            res.setHeader('Set-Cookie', [
+                'admin_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict'
+            ]);
+            return res.status(401).json({ error: 'Invalid or expired token' });
         }
 
         return res.status(200).json({
-            success: true,
-            message: 'Token valid'
+            authenticated: true,
+            user: { role: 'admin' }
         });
-
     } catch (error) {
-        console.error('Token verification error:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Internal server error'
-        });
+        console.error('Verify error:', error);
+        return res.status(500).json({ error: 'Verification failed' });
     }
 }
