@@ -50,7 +50,7 @@ export default function Nav() {
           <a href="/portfolio" className={currentPath === '/portfolio' ? 'cta' : ''} onClick={closeMenu}>Portfolio</a>
         </div>
 
-        <a href="/" className="brand">
+        <a href="/home" className="brand">
           TAPESTRY
         </a>
 

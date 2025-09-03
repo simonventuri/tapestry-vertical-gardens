@@ -1,16 +1,9 @@
 
 import Head from 'next/head';
-import { useState } from 'react';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 
 export default function Home() {
-  const [openFAQ, setOpenFAQ] = useState(null);
-
-  const toggleFAQ = (index) => {
-    setOpenFAQ(openFAQ === index ? null : index);
-  };
-
   const faqs = [
     {
       question: "How long does a vertical garden last?",
@@ -57,15 +50,15 @@ export default function Home() {
     <section className="hero">
       <div className="container">
         <h1>Vertical Gardens</h1>
-        <h2>Where Design Meets Nature</h2>
+        <h2>Fresh, sustainable, and grown in Devon</h2>
         <p className="lead">
-          Living walls bring freshness, texture, and vitality to spaces — transforming the ordinary into thriving, sustainable environments. Our biodiverse walls are produced in our Devon nursery, designed to evolve with the seasons, and delivered ready to flourish.
+          Our living walls infuse any space with freshness, texture, and vitality — turning the ordinary into thriving, sustainable environments. These biodiverse vertical gardens are crafted to evolve with the seasons and arrive ready to flourish. We use recycled materials wherever possible
         </p>
         <div>
           <a className="btn btn-large" href="/contact">Start Your Project</a>
         </div>
         <div className="hero-image">
-          <img src="./images/hero-vertical-gardens-uk.jpg" alt="Vertical gardens UK - lush living wall feature" />
+          <img src="./images/bio-sphere-living-sculpture.jpg" alt="Vertical gardens UK - Bio Sphere" />
         </div>
       </div>
     </section>
@@ -164,16 +157,8 @@ export default function Home() {
         <div className="faq-container">
           {faqs.map((faq, index) => (
             <div key={index} className="faq-item">
-              <button
-                className={`faq-question ${openFAQ === index ? 'active' : ''}`}
-                onClick={() => toggleFAQ(index)}
-              >
-                <span>{faq.question}</span>
-                <span className="faq-icon">{openFAQ === index ? '−' : '+'}</span>
-              </button>
-              <div className={`faq-answer ${openFAQ === index ? 'open' : ''}`}>
-                <p>{faq.answer}</p>
-              </div>
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
             </div>
           ))}
         </div>
