@@ -72,7 +72,8 @@ export default function Landing() {
           style={{
             backgroundImage: `url('/images/carousel/${currentImage}.webp')`,
             opacity: showFirst ? 1 : 0,
-            transition: 'opacity 0.8s ease-in-out'
+            transition: 'opacity 0.5s ease-out',
+            zIndex: showFirst ? 2 : 1
           }}
         />
         <div
@@ -80,7 +81,8 @@ export default function Landing() {
           style={{
             backgroundImage: `url('/images/carousel/${nextImage}.webp')`,
             opacity: showFirst ? 0 : 1,
-            transition: 'opacity 0.8s ease-in-out'
+            transition: 'opacity 0.5s ease-out',
+            zIndex: showFirst ? 1 : 2
           }}
         />
 
