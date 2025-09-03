@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { page = 1, limit = 9 } = req.query;
+        const { page = 1, limit = 4 } = req.query;
         const pageNumber = parseInt(page, 10);
         const limitNumber = parseInt(limit, 10);
 

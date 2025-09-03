@@ -12,7 +12,8 @@ export default function Portfolio() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [backgroundLoading, setBackgroundLoading] = useState(false);
-  const projectsPerPage = 9;
+  const [pageLoading, setPageLoading] = useState(false);
+  const projectsPerPage = 4;
 
   // Load projects client-side
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function Portfolio() {
       setError(null);
 
       // Load first page
-      const response = await fetch('/api/portfolio-paginated?page=1&limit=9');
+      const response = await fetch('/api/portfolio-paginated?page=1&limit=4');
       if (!response.ok) {
         throw new Error('Failed to load projects');
       }
@@ -55,7 +56,7 @@ export default function Portfolio() {
     try {
       // Load pages 2 through totalPages in the background
       for (let page = 2; page <= totalPagesCount; page++) {
-        const response = await fetch(`/api/portfolio-paginated?page=${page}&limit=9`);
+        const response = await fetch(`/api/portfolio-paginated?page=${page}&limit=4`);
         if (response.ok) {
           const data = await response.json();
           setAllProjects(prev => {
@@ -71,6 +72,29 @@ export default function Portfolio() {
       console.error('Error background loading projects:', err);
     } finally {
       setBackgroundLoading(false);
+    }
+  };
+
+  const loadPageOnDemand = async (pageNumber) => {
+    if (allProjects.has(pageNumber)) {
+      return; // Page already loaded
+    }
+
+    setPageLoading(true);
+    try {
+      const response = await fetch(`/api/portfolio-paginated?page=${pageNumber}&limit=4`);
+      if (response.ok) {
+        const data = await response.json();
+        setAllProjects(prev => {
+          const newMap = new Map(prev);
+          newMap.set(pageNumber, data.projects);
+          return newMap;
+        });
+      }
+    } catch (err) {
+      console.error('Error loading page on demand:', err);
+    } finally {
+      setPageLoading(false);
     }
   };
 
@@ -93,15 +117,19 @@ export default function Portfolio() {
   // Pagination logic
   const currentProjects = allProjects.get(currentPage) || [];
 
-  const goToNextPage = () => {
+  const goToNextPage = async () => {
     if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+      const nextPage = currentPage + 1;
+      await loadPageOnDemand(nextPage);
+      setCurrentPage(nextPage);
     }
   };
 
-  const goToPreviousPage = () => {
+  const goToPreviousPage = async () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      const prevPage = currentPage - 1;
+      await loadPageOnDemand(prevPage);
+      setCurrentPage(prevPage);
     }
   };
 
@@ -132,8 +160,7 @@ export default function Portfolio() {
 
   const getGridColumns = () => {
     if (windowWidth <= 768) return '1fr';
-    if (windowWidth <= 1024) return 'repeat(2, 1fr)';
-    return 'repeat(3, 1fr)';
+    return 'repeat(2, 1fr)';
   };
 
   const getGridGap = () => {
@@ -331,13 +358,18 @@ export default function Portfolio() {
                 </>
               )}
 
-              <div className="projects-grid" style={{
-                display: 'grid',
-                gridTemplateColumns: getGridColumns(),
-                gap: getGridGap(),
-                margin: '2rem 0'
-              }}>
-                {currentProjects.map((project) => (
+              {pageLoading ? (
+                <div className="loading-container">
+                  <div className="spinner"></div>
+                </div>
+              ) : (
+                <div className="projects-grid" style={{
+                  display: 'grid',
+                  gridTemplateColumns: getGridColumns(),
+                  gap: getGridGap(),
+                  margin: '2rem 0'
+                }}>
+                  {currentProjects.map((project) => (
                   <Link href={`/projects/${project.slug}`} key={project.id} className="project-card"
                     style={getCardStyle(project.id)}
                     onMouseEnter={(e) => {
@@ -403,6 +435,7 @@ export default function Portfolio() {
                   </Link>
                 ))}
               </div>
+              )}
             </div>
           )}
         </div>
