@@ -51,17 +51,19 @@ h6 {
     margin: 0 0 1rem 0;
     color: var(--primary);
     text-align: center;
+    text-transform: uppercase !important;
 }
 
 h1 {
     font-size: clamp(2rem, 4vw, 3rem);
-    letter-spacing: -0.025em;
+    letter-spacing: 0.045em;
     font-weight: 600;
 }
 
 h2 {
     font-size: clamp(1.5rem, 3vw, 2rem);
-    letter-spacing: -0.02em;
+    letter-spacing: 0.035em;
+    text-transform: uppercase !important;
 }
 
 h3 {
@@ -301,6 +303,7 @@ a:hover {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    text-transform: uppercase !important;
 }
 
 .hero .lead {
