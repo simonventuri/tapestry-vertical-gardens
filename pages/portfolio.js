@@ -573,26 +573,9 @@ export default function Portfolio() {
                       display: 'flex',
                       justifyContent: 'center',
                       alignItems: 'center',
-                      padding: '2rem 0',
-                      fontSize: '14px',
-                      color: '#666'
+                      padding: '2rem 0'
                     }}>
-                      <div className="spinner" style={{ marginRight: '8px' }}></div>
-                      Loading more projects...
-                    </div>
-                  )}
-                  
-                  {/* End of content indicator */}
-                  {!hasMoreToLoad && displayedProjects.length > 0 && (
-                    <div style={{
-                      textAlign: 'center',
-                      padding: '2rem 0',
-                      fontSize: '14px',
-                      color: '#666',
-                      borderTop: '1px solid #eee',
-                      marginTop: '2rem'
-                    }}>
-                      You've reached the end of our portfolio
+                      <div className="spinner"></div>
                     </div>
                   )}
                 </>
