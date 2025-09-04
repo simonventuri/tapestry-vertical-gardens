@@ -1,5 +1,11 @@
 
 export default function Footer() {
+  const handleCookieSettings = () => {
+    if (typeof window !== 'undefined' && window.manageCookiePreferences) {
+      window.manageCookiePreferences();
+    }
+  };
+
   return (
     <footer>
       <div className="container">
@@ -7,6 +13,14 @@ export default function Footer() {
           <div className="footer-text">
             <p>&copy; {new Date().getFullYear()} Tapestry Vertical Gardens. All rights reserved.</p>
             <p>Bring your walls to life &mdash; fresh, sustainable, and grown in Devon.</p>
+          </div>
+          <div className="footer-links">
+            <button 
+              onClick={handleCookieSettings}
+              className="cookie-settings-btn"
+            >
+              Cookie Settings
+            </button>
           </div>
         </div>
       </div>

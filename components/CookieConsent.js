@@ -7,8 +7,8 @@ export default function CookieConsent() {
     const router = useRouter();
 
     useEffect(() => {
-        // Don't show banner on landing page
-        if (router.pathname === '/') {
+        // Don't show banner on home page or admin pages
+        if (router.pathname === '/' || router.pathname.startsWith('/admin')) {
             return;
         }
 
@@ -64,28 +64,13 @@ export default function CookieConsent() {
         setConsentGiven(null);
     };
 
+    // Export the manage preferences function for use in Footer
+    if (typeof window !== 'undefined') {
+        window.manageCookiePreferences = handleManagePreferences;
+    }
+
     if (!showBanner) {
-        return (
-            <button
-                onClick={handleManagePreferences}
-                style={{
-                    position: 'fixed',
-                    bottom: '20px',
-                    left: '20px',
-                    padding: '8px 12px',
-                    backgroundColor: '#2d5016',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    cursor: 'pointer',
-                    zIndex: 1000,
-                    opacity: 0.7
-                }}
-            >
-                Cookie Settings
-            </button>
-        );
+        return null; // Don't render anything when banner is not shown
     }
 
     return (

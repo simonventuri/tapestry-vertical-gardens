@@ -587,15 +587,40 @@ footer {
 
 .footer-content {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
     position: relative;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .footer-text {
     text-align: center;
+    flex: 1;
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cookie-settings-btn {
+    background: transparent;
+    color: var(--text-lighter);
+    border: 1px solid var(--text-lighter);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cookie-settings-btn:hover {
+    background: var(--text-lighter);
+    color: #0f172a;
 }
 
 footer p {
@@ -1014,10 +1039,14 @@ html:has(.landing-page) {
 
     .footer-content {
         flex-direction: column;
-        gap: 2rem;
+        gap: 1.5rem;
     }
 
     .footer-text {
         text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
     }
 }
