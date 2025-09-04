@@ -325,11 +325,6 @@ a:hover {
     height: 100vh;
     object-fit: cover;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    transition: transform 0.5s ease;
-}
-
-.hero-image:hover img {
-    transform: scale(1.02);
 }
 
 /* Buttons */
@@ -565,10 +560,6 @@ img {
     transition: all 0.2s ease;
 }
 
-.faq details:hover {
-    box-shadow: var(--shadow-lg);
-}
-
 .faq details+details {
     margin-top: 1rem;
 }
@@ -624,10 +615,6 @@ footer p {
     text-align: center;
 }
 
-.faq-item:hover {
-    box-shadow: var(--shadow);
-}
-
 .faq-question {
     width: 100%;
     padding: 1.5rem;
@@ -642,10 +629,6 @@ footer p {
     justify-content: space-between;
     align-items: center;
     transition: all 0.3s ease;
-}
-
-.faq-question:hover {
-    background: var(--bg-alt);
 }
 
 .faq-question.active {
@@ -706,7 +689,8 @@ html:has(.landing-page) {
     padding: 0;
     z-index: 1;
     overflow: hidden;
-    background-color: #000; /* Black background to prevent white glow */
+    background-color: #000;
+    /* Black background to prevent white glow */
 }
 
 .landing-bg {
@@ -839,11 +823,6 @@ html:has(.landing-page) {
     width: 100%;
     height: auto;
     box-shadow: var(--shadow-lg);
-    transition: transform 0.3s ease;
-}
-
-.adam-portrait img:hover {
-    transform: scale(1.02);
 }
 
 /* Utilities */

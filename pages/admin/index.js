@@ -135,17 +135,8 @@ export default function AdminDashboard() {
                         backgroundColor: '#f8f9fa',
                         textAlign: 'center',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                         cursor: 'pointer'
-                    }}
-                        onMouseEnter={(e) => {
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.transform = 'translateY(0)';
-                            e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                        }}>
+                    }}>
                         <div style={{
                             fontSize: '48px',
                             marginBottom: '15px',
@@ -191,17 +182,8 @@ export default function AdminDashboard() {
                         backgroundColor: '#f8f9fa',
                         textAlign: 'center',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                         cursor: 'pointer'
-                    }}
-                        onMouseEnter={(e) => {
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.transform = 'translateY(0)';
-                            e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                        }}>
+                    }}>
                         <div style={{
                             fontSize: '48px',
                             marginBottom: '15px',
@@ -247,17 +229,8 @@ export default function AdminDashboard() {
                         backgroundColor: '#f8f9fa',
                         textAlign: 'center',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                         cursor: 'pointer'
-                    }}
-                        onMouseEnter={(e) => {
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.transform = 'translateY(0)';
-                            e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                        }}>
+                    }}>
                         <div style={{
                             fontSize: '48px',
                             marginBottom: '15px',
