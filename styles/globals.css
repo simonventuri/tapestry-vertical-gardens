@@ -37,6 +37,8 @@ body {
     padding-top: 80px;
     /* Account for fixed navigation */
     transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    min-height: 100dvh; /* Use dynamic viewport height on mobile */
 }
 
 /* Typography */
@@ -906,6 +908,16 @@ html:has(.landing-page) {
 
 /* Responsive */
 @media (max-width: 768px) {
+    body {
+        padding-bottom: 0;
+        margin-bottom: 0;
+    }
+    
+    html {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
     .container {
         padding: 0 1rem;
     }
