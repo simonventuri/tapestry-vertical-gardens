@@ -1,23 +1,15 @@
-import tokenManager from '../../../lib/tokenManager';
-
 export default function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        const token = req.cookies.admin_token;
-
-        // Revoke the token from memory
-        if (token) {
-            tokenManager.revokeToken(token);
-        }
-
-        // Clear the cookie
+        // Clear the cookie - JWT tokens are stateless so no server-side cleanup needed
         res.setHeader('Set-Cookie', [
             'admin_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict'
         ]);
 
+        console.log('User logged out successfully');
         return res.status(200).json({
             success: true,
             message: 'Logged out successfully'

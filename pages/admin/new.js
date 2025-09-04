@@ -237,7 +237,7 @@ export default function NewProject({ isAuthenticated }) {
                             fontSize: '0.875rem'
                         }}
                     >
-                        ← Back to Dashboard
+                        ← Back to Admin Dashboard
                     </Link>
                 </div>
 

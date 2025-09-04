@@ -19,17 +19,10 @@ export default function AdminDashboard() {
                 if (response.ok) {
                     setAuthenticated(true);
                 } else {
-                    // Clear invalid tokens
-                    if (typeof window !== 'undefined') {
-                        localStorage.removeItem('admin_token');
-                    }
                     setAuthenticated(false);
                 }
             } catch (error) {
                 console.error('Auth check failed:', error);
-                if (typeof window !== 'undefined') {
-                    localStorage.removeItem('admin_token');
-                }
                 setAuthenticated(false);
             } finally {
                 setLoading(false);
@@ -54,10 +47,8 @@ export default function AdminDashboard() {
             console.error('Logout error:', error);
         }
 
-        // Clear client-side data
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('admin_token');
-        }
+        // Authentication is handled by HTTP-only cookies, just update state
+        setAuthenticated(false);
         document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         setAuthenticated(false);
     };

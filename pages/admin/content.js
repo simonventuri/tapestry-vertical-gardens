@@ -26,17 +26,11 @@ export default function ContentManagement() {
                 setAuthenticated(true);
                 loadContent();
             } else {
-                if (typeof window !== 'undefined') {
-                    localStorage.removeItem('admin_token');
-                }
                 setAuthenticated(false);
                 setLoading(false);
             }
         } catch (error) {
             console.error('Auth check failed:', error);
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('admin_token');
-            }
             setAuthenticated(false);
             setLoading(false);
         }
@@ -78,10 +72,7 @@ export default function ContentManagement() {
             console.error('Logout error:', error);
         }
 
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('admin_token');
-        }
-        document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        // Authentication is handled by HTTP-only cookies, just update state
         setAuthenticated(false);
     };
 

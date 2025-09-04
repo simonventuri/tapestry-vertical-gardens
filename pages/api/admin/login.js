@@ -1,4 +1,4 @@
-import tokenManager from '../../../lib/tokenManager';
+import { createToken } from '../../../lib/auth';
 
 // Simple hardcoded credentials - in production, use environment variables and proper hashing
 const ADMIN_USERNAME = 'joey_deacon';
@@ -16,14 +16,19 @@ export default function handler(req, res) {
         (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD);
 
     if (!isValidCredentials) {
+        console.log('Invalid credentials attempted:', username);
         return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     try {
-        // Create a secure token using the token manager
-        const token = tokenManager.createToken(username);
+        // Create a JWT token with user information
+        const token = createToken({
+            username: username,
+            role: 'admin',
+            loginTime: Date.now()
+        });
 
-        // Set secure HTTP-only cookie
+        // Set secure HTTP-only cookie with consistent options
         const cookieOptions = [
             `admin_token=${token}`,
             'Path=/',
@@ -39,6 +44,7 @@ export default function handler(req, res) {
 
         res.setHeader('Set-Cookie', cookieOptions.join('; '));
 
+        console.log('Login successful for user:', username);
         return res.status(200).json({
             message: 'Login successful',
             user: { username, role: 'admin' }
