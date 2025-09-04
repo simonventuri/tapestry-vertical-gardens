@@ -638,9 +638,9 @@ footer {
     background: transparent;
     color: var(--text-lighter);
     border: 1px solid var(--text-lighter);
-    padding: 0.5rem 1rem;
+    padding: 0.25rem 0.75rem;
     border-radius: 4px;
-    font-size: 0.875rem;
+    font-size: 0.625rem;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -653,7 +653,7 @@ footer {
 footer p {
     color: var(--text-lighter);
     margin: 0;
-    font-size: 0.75rem;
+    font-size: 0.625rem; /* 10px - smaller than before */
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -1103,6 +1103,10 @@ html:has(.landing-page) {
 
     .footer-text {
         text-align: center;
+    }
+
+    .footer-text p {
+        font-size: 0.5rem; /* 8px - even smaller on mobile */
     }
 
     .footer-links {
