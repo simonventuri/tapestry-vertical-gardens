@@ -2,18 +2,22 @@ import Head from 'next/head';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 export default function Portfolio() {
   const [windowWidth, setWindowWidth] = useState(1200);
   const [touchedCard, setTouchedCard] = useState(null);
   const [allProjects, setAllProjects] = useState(new Map()); // Store all loaded projects by page
+  const [displayedProjects, setDisplayedProjects] = useState([]); // For infinite scroll on mobile
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [backgroundLoading, setBackgroundLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(false);
+  const [hasMoreToLoad, setHasMoreToLoad] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const observerRef = useRef();
   const projectsPerPage = 4;
 
   // Load projects client-side
@@ -37,10 +41,12 @@ export default function Portfolio() {
       newAllProjects.set(1, data.projects);
 
       setAllProjects(newAllProjects);
+      setDisplayedProjects(data.projects); // Initialize displayed projects for mobile
       setTotalPages(data.pagination.totalPages);
+      setHasMoreToLoad(data.pagination.totalPages > 1);
 
-      // Start background loading of remaining pages
-      if (data.pagination.totalPages > 1) {
+      // Start background loading of remaining pages for desktop
+      if (data.pagination.totalPages > 1 && windowWidth > 768) {
         backgroundLoadPages(data.pagination.totalPages);
       }
     } catch (err) {
@@ -99,6 +105,31 @@ export default function Portfolio() {
     }
   };
 
+  // Load more projects for infinite scroll on mobile
+  const loadMoreProjects = useCallback(async () => {
+    if (loadingMore || !hasMoreToLoad) return;
+
+    const nextPage = Math.floor(displayedProjects.length / projectsPerPage) + 1;
+    if (nextPage > totalPages) {
+      setHasMoreToLoad(false);
+      return;
+    }
+
+    setLoadingMore(true);
+    try {
+      const response = await fetch(`/api/portfolio-paginated?page=${nextPage}&limit=4`);
+      if (response.ok) {
+        const data = await response.json();
+        setDisplayedProjects(prev => [...prev, ...data.projects]);
+        setHasMoreToLoad(nextPage < totalPages);
+      }
+    } catch (err) {
+      console.error('Error loading more projects:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [displayedProjects.length, totalPages, loadingMore, hasMoreToLoad, projectsPerPage]);
+
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
 
@@ -115,8 +146,34 @@ export default function Portfolio() {
     };
   }, []);
 
-  // Pagination logic
-  const currentProjects = allProjects.get(currentPage) || [];
+  // Intersection Observer for infinite scroll on mobile
+  useEffect(() => {
+    if (windowWidth > 768) return; // Only on mobile
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreToLoad && !loadingMore) {
+          loadMoreProjects();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [windowWidth, hasMoreToLoad, loadingMore, loadMoreProjects]);
+
+  const isMobile = windowWidth <= 768;
+
+  // Pagination logic - use different data source for mobile vs desktop
+  const currentProjects = isMobile ? displayedProjects : (allProjects.get(currentPage) || []);
 
   const goToNextPage = async () => {
     if (currentPage < totalPages) {
@@ -134,10 +191,10 @@ export default function Portfolio() {
     }
   };
 
-  const isMobile = windowWidth <= 768;
-
-  // Keyboard navigation
+  // Keyboard navigation (desktop only)
   useEffect(() => {
+    if (isMobile) return; // Don't enable keyboard navigation on mobile
+
     const handleKeyPress = (e) => {
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
         e.preventDefault();
@@ -157,7 +214,7 @@ export default function Portfolio() {
         window.removeEventListener('keydown', handleKeyPress);
       }
     };
-  }, [currentPage, totalPages]);
+  }, [currentPage, totalPages, isMobile]);
 
   const getGridColumns = () => {
     if (windowWidth <= 768) return '1fr';
@@ -294,8 +351,8 @@ export default function Portfolio() {
             </div>
           ) : (
             <div style={{ position: 'relative' }}>
-              {/* Navigation Arrows */}
-              {totalPages > 1 && (
+              {/* Navigation Arrows - Desktop Only */}
+              {totalPages > 1 && !isMobile && (
                 <>
                   {/* Previous Arrow */}
                   {currentPage > 1 && (
@@ -462,8 +519,8 @@ export default function Portfolio() {
                 </div>
               )}
 
-              {/* Pagination Indicators */}
-              {totalPages > 1 && !loading && !pageLoading && (
+              {/* Pagination Indicators - Desktop Only */}
+              {totalPages > 1 && !loading && !pageLoading && !isMobile && (
                 <div style={{
                   display: 'flex',
                   justifyContent: 'center',
@@ -502,6 +559,43 @@ export default function Portfolio() {
                     />
                   ))}
                 </div>
+              )}
+
+              {/* Infinite Scroll Trigger and Loading - Mobile Only */}
+              {isMobile && (
+                <>
+                  {/* Trigger element for infinite scroll */}
+                  <div ref={observerRef} style={{ height: '10px', width: '100%' }} />
+                  
+                  {/* Loading indicator for infinite scroll */}
+                  {loadingMore && (
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      padding: '2rem 0',
+                      fontSize: '14px',
+                      color: '#666'
+                    }}>
+                      <div className="spinner" style={{ marginRight: '8px' }}></div>
+                      Loading more projects...
+                    </div>
+                  )}
+                  
+                  {/* End of content indicator */}
+                  {!hasMoreToLoad && displayedProjects.length > 0 && (
+                    <div style={{
+                      textAlign: 'center',
+                      padding: '2rem 0',
+                      fontSize: '14px',
+                      color: '#666',
+                      borderTop: '1px solid #eee',
+                      marginTop: '2rem'
+                    }}>
+                      You've reached the end of our portfolio
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
