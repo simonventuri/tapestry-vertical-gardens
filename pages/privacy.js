@@ -78,7 +78,7 @@ export default function Privacy() {
 
                                 <h2>8. Cookies and Tracking</h2>
                                 <p>We use cookies and similar technologies to enhance your experience on our website:</p>
-                                
+
                                 <h3>Essential Cookies</h3>
                                 <p>These cookies are necessary for the website to function properly and cannot be disabled:</p>
                                 <ul>

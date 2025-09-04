@@ -2,11 +2,14 @@ import Head from 'next/head';
 import Nav from '../../components/Nav';
 import Footer from '../../components/Footer';
 import { useRouter } from 'next/router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function ProjectPage({ project }) {
     const router = useRouter();
     const [lightboxIndex, setLightboxIndex] = useState(null);
+    const [windowWidth, setWindowWidth] = useState(1200);
+    const touchStartX = useRef(null);
+    const touchEndX = useRef(null);
 
     // Handle keyboard navigation
     useEffect(() => {
@@ -25,6 +28,49 @@ export default function ProjectPage({ project }) {
         window.addEventListener('keydown', handleKeyPress);
         return () => window.removeEventListener('keydown', handleKeyPress);
     }, [lightboxIndex, project?.images]);
+
+    // Handle window resize
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+
+        if (typeof window !== 'undefined') {
+            setWindowWidth(window.innerWidth);
+            window.addEventListener('resize', handleResize);
+        }
+
+        return () => {
+            if (typeof window !== 'undefined') {
+                window.removeEventListener('resize', handleResize);
+            }
+        };
+    }, []);
+
+    // Touch handlers for swipe functionality
+    const handleTouchStart = (e) => {
+        touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e) => {
+        touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        if (!touchStartX.current || !touchEndX.current) return;
+
+        const distance = touchStartX.current - touchEndX.current;
+        const isLeftSwipe = distance > 50;
+        const isRightSwipe = distance < -50;
+
+        if (isLeftSwipe) {
+            navigateImage(1); // Next image
+        } else if (isRightSwipe) {
+            navigateImage(-1); // Previous image
+        }
+
+        // Reset
+        touchStartX.current = null;
+        touchEndX.current = null;
+    };
 
     const navigateImage = (direction) => {
         if (!project?.images || lightboxIndex === null) return;
@@ -220,6 +266,9 @@ export default function ProjectPage({ project }) {
                     cursor: 'pointer'
                 }}
                     onClick={() => setLightboxIndex(null)}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                 >
                     {/* Previous Arrow - Fixed to left edge */}
                     {lightboxIndex > 0 && (
@@ -369,18 +418,20 @@ export default function ProjectPage({ project }) {
                             {lightboxIndex + 1} of {project.images.length}
                         </div>
 
-                        {/* Mobile Navigation Instructions */}
-                        <div style={{
-                            position: 'absolute',
-                            bottom: '-90px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            color: 'rgba(255, 255, 255, 0.7)',
-                            fontSize: '12px',
-                            textAlign: 'center'
-                        }}>
-                            Use ← → arrow keys or click arrows to navigate
-                        </div>
+                        {/* Mobile Navigation Instructions - Hide on mobile */}
+                        {windowWidth > 768 && (
+                            <div style={{
+                                position: 'absolute',
+                                bottom: '-90px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                fontSize: '12px',
+                                textAlign: 'center'
+                            }}>
+                                Use ← → arrow keys or click arrows to navigate
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

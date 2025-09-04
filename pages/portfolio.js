@@ -566,7 +566,7 @@ export default function Portfolio() {
                 <>
                   {/* Trigger element for infinite scroll */}
                   <div ref={observerRef} style={{ height: '10px', width: '100%' }} />
-                  
+
                   {/* Loading indicator for infinite scroll */}
                   {loadingMore && (
                     <div style={{
