@@ -16,22 +16,21 @@ export default function AdminLogin({ onLogin }) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include', // Important: include cookies
                 body: JSON.stringify(credentials),
             });
 
             const data = await response.json();
 
-            if (response.ok && data.success) {
-                // Store token in localStorage for API calls
-                if (typeof window !== 'undefined') {
-                    localStorage.setItem('admin_token', data.token);
-                }
+            if (response.ok) {
+                // Login successful - the cookie is set server-side
+                // No need to store token in localStorage since we're using HTTP-only cookies
 
                 // Call onLogin callback and reload page to get fresh server-side auth
-                onLogin(data.token);
+                onLogin(true);
                 window.location.reload();
             } else {
-                setError(data.message || 'Login failed');
+                setError(data.error || data.message || 'Login failed');
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -77,7 +76,7 @@ export default function AdminLogin({ onLogin }) {
                         alignItems: 'center',
                         gap: '8px',
                         padding: '8px 16px',
-                        borderRadius: '4px',
+                        borderRadius: '0',
                         transition: 'background-color 0.2s ease'
                     }}
                     onMouseOver={(e) => e.target.style.backgroundColor = '#f0f0f0'}
@@ -91,7 +90,7 @@ export default function AdminLogin({ onLogin }) {
             <div style={{
                 backgroundColor: 'white',
                 padding: '40px',
-                borderRadius: '8px',
+                borderRadius: '0',
                 boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                 width: '400px',
                 maxWidth: '90vw'
@@ -109,7 +108,7 @@ export default function AdminLogin({ onLogin }) {
                         backgroundColor: '#fee',
                         color: '#c33',
                         padding: '10px',
-                        borderRadius: '4px',
+                        borderRadius: '0',
                         marginBottom: '20px',
                         textAlign: 'center'
                     }}>
@@ -139,7 +138,7 @@ export default function AdminLogin({ onLogin }) {
                                 width: '100%',
                                 padding: '12px',
                                 border: '1px solid #ddd',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 fontSize: '16px',
                                 boxSizing: 'border-box'
                             }}
@@ -167,7 +166,7 @@ export default function AdminLogin({ onLogin }) {
                                 width: '100%',
                                 padding: '12px',
                                 border: '1px solid #ddd',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 fontSize: '16px',
                                 boxSizing: 'border-box'
                             }}
@@ -183,7 +182,7 @@ export default function AdminLogin({ onLogin }) {
                             backgroundColor: loading ? '#ccc' : '#2d5016',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontSize: '16px',
                             fontWeight: 'bold',
                             cursor: loading ? 'not-allowed' : 'pointer'

@@ -37,7 +37,7 @@ class ErrorBoundary extends React.Component {
                     textAlign: 'center',
                     backgroundColor: '#fef2f2',
                     border: '1px solid #fecaca',
-                    borderRadius: '8px',
+                    borderRadius: '0',
                     margin: '1rem',
                     maxWidth: '600px',
                     marginLeft: 'auto',
@@ -57,7 +57,7 @@ class ErrorBoundary extends React.Component {
                                 backgroundColor: '#2d5016',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 cursor: 'pointer',
                                 fontSize: '1rem',
                                 fontWeight: '500'
@@ -72,7 +72,7 @@ class ErrorBoundary extends React.Component {
                                 backgroundColor: 'transparent',
                                 color: '#2d5016',
                                 border: '2px solid #2d5016',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 textDecoration: 'none',
                                 fontSize: '1rem',
                                 fontWeight: '500',
@@ -91,7 +91,7 @@ class ErrorBoundary extends React.Component {
                             <pre style={{
                                 backgroundColor: '#f3f4f6',
                                 padding: '1rem',
-                                borderRadius: '4px',
+                                borderRadius: '0',
                                 fontSize: '0.875rem',
                                 overflow: 'auto',
                                 marginTop: '0.5rem'

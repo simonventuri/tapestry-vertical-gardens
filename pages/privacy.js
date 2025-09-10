@@ -76,8 +76,33 @@ export default function Privacy() {
                                 <h2>7. Data Security</h2>
                                 <p>We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction.</p>
 
-                                <h2>8. Cookies</h2>
-                                <p>Our website uses essential cookies for functionality and analytics cookies (with your consent) to help us improve our services. You can control cookie preferences in your browser settings.</p>
+                                <h2>8. Cookies and Tracking</h2>
+                                <p>We use cookies and similar technologies to enhance your experience on our website:</p>
+
+                                <h3>Essential Cookies</h3>
+                                <p>These cookies are necessary for the website to function properly and cannot be disabled:</p>
+                                <ul>
+                                    <li>Session cookies for contact form functionality</li>
+                                    <li>Security cookies for admin authentication</li>
+                                    <li>Preference cookies to remember your cookie choices</li>
+                                </ul>
+
+                                <h3>Analytics Cookies</h3>
+                                <p>With your consent, we use Google Analytics to understand how visitors use our website:</p>
+                                <ul>
+                                    <li>Google Analytics cookies (_ga, _ga_*, _gid) - track website usage and performance</li>
+                                    <li>These help us improve our website and services</li>
+                                    <li>Data is anonymized and aggregated</li>
+                                </ul>
+
+                                <h3>Managing Your Cookie Preferences</h3>
+                                <p>You can:</p>
+                                <ul>
+                                    <li>Use our cookie banner to accept or decline analytics cookies</li>
+                                    <li>Change your preferences using the "Cookie Settings" button</li>
+                                    <li>Disable cookies in your browser settings (may affect site functionality)</li>
+                                    <li>Opt out of Google Analytics using their <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">opt-out tool</a></li>
+                                </ul>
 
                                 <h2>9. Contact Us</h2>
                                 <p>For any questions about this privacy policy or to exercise your rights, please contact us:</p>

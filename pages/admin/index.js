@@ -19,17 +19,10 @@ export default function AdminDashboard() {
                 if (response.ok) {
                     setAuthenticated(true);
                 } else {
-                    // Clear invalid tokens
-                    if (typeof window !== 'undefined') {
-                        localStorage.removeItem('admin_token');
-                    }
                     setAuthenticated(false);
                 }
             } catch (error) {
                 console.error('Auth check failed:', error);
-                if (typeof window !== 'undefined') {
-                    localStorage.removeItem('admin_token');
-                }
                 setAuthenticated(false);
             } finally {
                 setLoading(false);
@@ -54,10 +47,8 @@ export default function AdminDashboard() {
             console.error('Logout error:', error);
         }
 
-        // Clear client-side data
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem('admin_token');
-        }
+        // Authentication is handled by HTTP-only cookies, just update state
+        setAuthenticated(false);
         document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         setAuthenticated(false);
     };
@@ -113,7 +104,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#dc3545',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             cursor: 'pointer'
                         }}
                     >
@@ -130,22 +121,13 @@ export default function AdminDashboard() {
                     {/* Project Management Card */}
                     <div style={{
                         border: '1px solid #ddd',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         padding: '30px',
                         backgroundColor: '#f8f9fa',
                         textAlign: 'center',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                         cursor: 'pointer'
-                    }}
-                        onMouseEnter={(e) => {
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.transform = 'translateY(0)';
-                            e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                        }}>
+                    }}>
                         <div style={{
                             fontSize: '48px',
                             marginBottom: '15px',
@@ -173,7 +155,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#2d5016',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontWeight: '500',
                             transition: 'background-color 0.2s ease'
                         }}
@@ -186,22 +168,13 @@ export default function AdminDashboard() {
                     {/* Contact Management Card */}
                     <div style={{
                         border: '1px solid #ddd',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         padding: '30px',
                         backgroundColor: '#f8f9fa',
                         textAlign: 'center',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                         cursor: 'pointer'
-                    }}
-                        onMouseEnter={(e) => {
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.target.style.transform = 'translateY(0)';
-                            e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                        }}>
+                    }}>
                         <div style={{
                             fontSize: '48px',
                             marginBottom: '15px',
@@ -229,7 +202,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#2d5016',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontWeight: '500',
                             transition: 'background-color 0.2s ease'
                         }}
@@ -238,13 +211,60 @@ export default function AdminDashboard() {
                             View Messages
                         </Link>
                     </div>
+
+                    {/* Content Management Card */}
+                    <div style={{
+                        border: '1px solid #ddd',
+                        borderRadius: '0',
+                        padding: '30px',
+                        backgroundColor: '#f8f9fa',
+                        textAlign: 'center',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                        cursor: 'pointer'
+                    }}>
+                        <div style={{
+                            fontSize: '48px',
+                            marginBottom: '15px',
+                            color: '#2d5016'
+                        }}>
+                            📝
+                        </div>
+                        <h2 style={{
+                            margin: '0 0 15px 0',
+                            color: '#2d5016',
+                            fontSize: '24px'
+                        }}>
+                            Content Management
+                        </h2>
+                        <p style={{
+                            margin: '0 0 20px 0',
+                            color: '#666',
+                            lineHeight: '1.5'
+                        }}>
+                            Edit home page content, sections, images, and text. Manage all website content from one place.
+                        </p>
+                        <Link href="/admin/content" style={{
+                            display: 'inline-block',
+                            padding: '12px 24px',
+                            backgroundColor: '#2d5016',
+                            color: 'white',
+                            textDecoration: 'none',
+                            borderRadius: '0',
+                            fontWeight: '500',
+                            transition: 'background-color 0.2s ease'
+                        }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#1e3610'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = '#2d5016'}>
+                            Manage Content
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Quick Stats Section */}
                 <div style={{
                     backgroundColor: 'white',
                     border: '1px solid #ddd',
-                    borderRadius: '8px',
+                    borderRadius: '0',
                     padding: '20px',
                     marginTop: '20px'
                 }}>
@@ -261,7 +281,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#28a745',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontSize: '14px'
                         }}>
                             + Add New Project
@@ -271,7 +291,7 @@ export default function AdminDashboard() {
                             backgroundColor: '#6c757d',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '4px',
+                            borderRadius: '0',
                             fontSize: '14px'
                         }}>
                             View Website

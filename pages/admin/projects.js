@@ -3,43 +3,73 @@ import Head from 'next/head';
 import Link from 'next/link';
 import AdminLogin from '../../components/AdminLogin';
 
-export default function AdminProjects({ projects, isAuthenticated }) {
+export default function AdminProjects({ isAuthenticated }) {
     const [authenticated, setAuthenticated] = useState(isAuthenticated);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [deleting, setDeleting] = useState(false);
-    const [clientProjects, setClientProjects] = useState(projects);
+    const [clientProjects, setClientProjects] = useState([]);
     const [mounted, setMounted] = useState(false);
     const [draggedIndex, setDraggedIndex] = useState(null);
     const [reordering, setReordering] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Load projects client-side
+    useEffect(() => {
+        if (authenticated) {
+            loadProjects();
+        }
+    }, [authenticated]);
+
+    const loadProjects = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await fetch('/api/admin/projects-list');
+            if (!response.ok) {
+                throw new Error('Failed to load projects');
+            }
+
+            const projects = await response.json();
+
+            // Process projects to handle any data format issues
+            const processedProjects = projects.map(project => {
+                let images = project.images;
+                if (typeof images === 'string') {
+                    try {
+                        images = JSON.parse(images);
+                    } catch {
+                        images = [];
+                    }
+                }
+                if (!Array.isArray(images)) {
+                    images = [];
+                }
+
+                return {
+                    ...project,
+                    images: images
+                };
+            });
+
+            setClientProjects(processedProjects);
+        } catch (err) {
+            console.error('Error loading projects:', err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         setMounted(true);
-        // Process projects on client side to handle any data format issues
-        const processedProjects = projects.map(project => {
-            let images = project.images;
-            if (typeof images === 'string') {
-                try {
-                    images = JSON.parse(images);
-                } catch {
-                    images = [];
-                }
-            }
-            if (!Array.isArray(images)) {
-                images = [];
-            }
-
-            return {
-                ...project,
-                images: images
-            };
-        });
-        setClientProjects(processedProjects);
-    }, [projects]);
+    }, []);
 
     // Initialize authentication state from server-side props
     useEffect(() => {
         setAuthenticated(isAuthenticated);
-    }, []);
+    }, [isAuthenticated]);
 
     // Handle keyboard events for modal
     useEffect(() => {
@@ -117,6 +147,54 @@ export default function AdminProjects({ projects, isAuthenticated }) {
         } finally {
             setDeleting(false);
             setDeleteConfirm(null);
+        }
+    };
+
+    const handleToggleVisibility = async (projectId, currentVisibility) => {
+        try {
+            // Find the current project data
+            const project = clientProjects.find(p => p.id === projectId);
+            if (!project) {
+                throw new Error('Project not found');
+            }
+
+            const response = await fetch(`/api/admin/projects/${projectId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+                },
+                body: JSON.stringify({
+                    title: project.title,
+                    description: project.description,
+                    slug: project.slug,
+                    category: project.category,
+                    location: project.location,
+                    year: project.year,
+                    size: project.size,
+                    images: project.images,
+                    features: project.features,
+                    plants: project.plants,
+                    visible: !currentVisibility
+                }),
+            });
+
+            if (response.ok) {
+                // Update the project in the client state
+                setClientProjects(prevProjects =>
+                    prevProjects.map(project =>
+                        project.id === projectId
+                            ? { ...project, visible: !currentVisibility }
+                            : project
+                    )
+                );
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update visibility');
+            }
+        } catch (error) {
+            console.error('Error toggling visibility:', error);
+            alert(`Error updating visibility: ${error.message}`);
         }
     };
 
@@ -246,7 +324,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
           }
           .projects-table {
             background: white;
-            border-radius: 8px;
+            
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             width: 100%;
@@ -290,7 +368,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
             background: #fef3c7;
             color: #92400e;
             padding: 8px 12px;
-            border-radius: 4px;
+            
             font-size: 14px;
             margin-bottom: 16px;
             text-align: center;
@@ -305,7 +383,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
             background: #3b82f6;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
+            
             font-size: 0.875rem;
             font-weight: 500;
             transition: background-color 0.3s;
@@ -334,6 +412,28 @@ export default function AdminProjects({ projects, isAuthenticated }) {
               transform: translateY(0) scale(1);
             }
           }
+
+          /* Spinner Animation */
+          .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            
+            animation: spin 1s linear infinite;
+          }
+
+          .small-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            
+            animation: spin 1s linear infinite;
+          }
+
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
         `}</style>
             </Head>
 
@@ -349,9 +449,53 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                         }}>
                             ← Back to Admin Dashboard
                         </Link>
-                        <h1 style={{ margin: 0, color: '#2d5016' }}>Project Management</h1>
+                        <h1 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold', color: '#1a202c' }}>
+                            Manage Projects
+                            <span style={{ fontSize: '16px', color: '#6b7280', fontWeight: 'normal', marginLeft: '10px' }}>
+                                ({clientProjects.length})
+                            </span>
+                        </h1>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                            onClick={loadProjects}
+                            disabled={loading}
+                            style={{
+                                padding: '8px 16px',
+                                background: loading ? '#6c757d' : '#6b7280',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0',
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                                fontSize: '14px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px'
+                            }}
+                            title="Refresh projects list"
+                        >
+                            {loading ? (
+                                <>
+                                    <div className="small-spinner"></div>
+                                    Refreshing...
+                                </>
+                            ) : (
+                                <>
+                                    🔄 Refresh
+                                </>
+                            )}
+                        </button>
+                        <Link href="/admin/new" style={{
+                            padding: '10px 20px',
+                            background: '#2d5016',
+                            color: 'white',
+                            textDecoration: 'none',
+                            borderRadius: '0',
+                            fontWeight: 'bold',
+                            fontSize: '14px'
+                        }}>
+                            + Add New Project
+                        </Link>
                     </div>
                 </div>
 
@@ -361,7 +505,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                     </div>
                 )}
 
-                <div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '0', overflow: 'hidden' }}>
                     <div style={{
                         padding: '15px',
                         backgroundColor: '#f8f9fa',
@@ -379,11 +523,42 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Project Details</th>
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Location</th>
                                 <th style={{ padding: '15px', textAlign: 'left', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Photos</th>
+                                <th style={{ padding: '15px', textAlign: 'center', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Visible</th>
                                 <th style={{ padding: '15px', textAlign: 'center', borderBottom: '1px solid #ddd', color: '#1f2937', fontWeight: 'bold' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {!mounted ? (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="7" style={{ padding: '60px', textAlign: 'center', color: '#6c757d' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+                                            <div className="spinner"></div>
+                                            <span>Loading projects...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : error ? (
+                                <tr>
+                                    <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#dc3545' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                                            <span>❌ Error loading projects: {error}</span>
+                                            <button
+                                                onClick={loadProjects}
+                                                style={{
+                                                    padding: '8px 16px',
+                                                    background: '#007bff',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '0',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Retry
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : !mounted ? (
                                 <tr>
                                     <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
                                         Loading...
@@ -391,7 +566,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                 </tr>
                             ) : clientProjects.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
+                                    <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
                                         No projects found
                                     </td>
                                 </tr>
@@ -413,7 +588,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                                 <span style={{
                                                     background: '#f3f4f6',
                                                     padding: '4px 8px',
-                                                    borderRadius: '12px',
+                                                    borderRadius: '0',
                                                     fontSize: '12px',
                                                     color: '#6b7280',
                                                     fontWeight: '500'
@@ -431,7 +606,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                                         width: '60px',
                                                         height: '60px',
                                                         objectFit: 'cover',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         border: '1px solid #ddd'
                                                     }}
                                                 />
@@ -441,7 +616,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                                         width: '60px',
                                                         height: '60px',
                                                         backgroundColor: '#f3f4f6',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
@@ -466,8 +641,27 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                         </td>
                                         <td style={{ padding: '15px' }}>
                                             <div style={{ color: '#374151' }}>
-                                                {project.images ? project.images.length : 0} photo{project.images && project.images.length !== 1 ? 's' : ''}
+                                                {project.imageCount || 0} photo{(project.imageCount || 0) !== 1 ? 's' : ''}
                                             </div>
+                                        </td>
+                                        <td style={{ padding: '15px', textAlign: 'center' }}>
+                                            <button
+                                                onClick={() => handleToggleVisibility(project.id, project.visible)}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    backgroundColor: project.visible ? '#28a745' : '#6c757d',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '0',
+                                                    fontSize: '12px',
+                                                    fontWeight: '500',
+                                                    cursor: 'pointer',
+                                                    textTransform: 'uppercase'
+                                                }}
+                                                title={project.visible ? 'Click to hide' : 'Click to show'}
+                                            >
+                                                {project.visible ? 'Visible' : 'Hidden'}
+                                            </button>
                                         </td>
                                         <td style={{ padding: '15px', textAlign: 'center' }}>
                                             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
@@ -478,7 +672,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                                         backgroundColor: '#2d5016',
                                                         color: 'white',
                                                         textDecoration: 'none',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         fontSize: '14px',
                                                         fontWeight: '500'
                                                     }}
@@ -492,7 +686,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                                         backgroundColor: '#dc3545',
                                                         color: 'white',
                                                         border: 'none',
-                                                        borderRadius: '4px',
+                                                        borderRadius: '0',
                                                         fontSize: '14px',
                                                         fontWeight: '500',
                                                         cursor: 'pointer'
@@ -520,7 +714,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                             backgroundColor: '#28a745',
                             color: 'white',
                             textDecoration: 'none',
-                            borderRadius: '5px',
+                            borderRadius: '0',
                             fontSize: '14px',
                             fontWeight: '500'
                         }}
@@ -555,7 +749,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                         <div style={{
                             background: 'white',
                             padding: '2rem',
-                            borderRadius: '12px',
+                            borderRadius: '0',
                             maxWidth: '400px',
                             width: '90%',
                             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
@@ -590,7 +784,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                         background: '#f9fafb',
                                         color: '#374151',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '6px',
+                                        borderRadius: '0',
                                         cursor: deleting ? 'not-allowed' : 'pointer',
                                         fontSize: '0.875rem',
                                         fontWeight: '500',
@@ -612,7 +806,7 @@ export default function AdminProjects({ projects, isAuthenticated }) {
                                         background: deleting ? '#9ca3af' : '#dc2626',
                                         color: 'white',
                                         border: 'none',
-                                        borderRadius: '6px',
+                                        borderRadius: '0',
                                         cursor: deleting ? 'not-allowed' : 'pointer',
                                         fontSize: '0.875rem',
                                         fontWeight: '500',
@@ -636,24 +830,9 @@ export async function getServerSideProps({ req }) {
     // Check authentication
     const isAuthenticated = !!req.cookies?.admin_token;
 
-    try {
-        // Get all projects in order
-        const { getPortfolioItems } = await import('../../lib/database');
-        const projects = await getPortfolioItems();
-
-        return {
-            props: {
-                projects: JSON.parse(JSON.stringify(projects)),
-                isAuthenticated
-            }
-        };
-    } catch (error) {
-        console.error('Error fetching projects:', error);
-        return {
-            props: {
-                projects: [],
-                isAuthenticated
-            }
-        };
-    }
+    return {
+        props: {
+            isAuthenticated
+        }
+    };
 }

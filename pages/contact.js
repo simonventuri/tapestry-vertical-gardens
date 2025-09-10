@@ -2,14 +2,11 @@ import Head from 'next/head';
 import Nav from '../components/Nav';
 import Footer from '../components/Footer';
 import { useState } from 'react';
-import { useTheme } from '../components/ThemeProvider';
 
 export default function Contact() {
-    const { resolvedTheme } = useTheme();
-
-    // Helper function to get label color based on theme
+    // Helper function to get label color
     const getLabelColor = () => {
-        return resolvedTheme === 'dark' ? '#ffffff' : '#1e293b';
+        return '#1e293b';
     };
 
     const [formData, setFormData] = useState({
@@ -176,14 +173,13 @@ export default function Contact() {
             <section className="section">
                 <div className="container">
                     <div className="section-header">
-                        <h1 className="section-title">Meet Tapestry Vertical Gardens</h1>
+                        <h1 className="section-title">Get In Touch</h1>
                         <p><strong>Founded by Adam Shepherd</strong> — a graphic designer turned horticulturalist trained at The English Gardening School in Chelsea — Tapestry blends two decades of design with a lifelong passion for plants.</p>
 
                         <div className="adam-portrait">
                             <img src="./images/adam-portrait.webp" alt="Adam Shepherd, founder of Tapestry Vertical Gardens" />
                         </div>
                         &nbsp;
-                        <h2 className="section-title">Get In Touch</h2>
                         <p className="section-subtitle">Ready to transform your space with a living wall? Let's discuss your vision.</p>
                         <div className="contact-form-container">
                             <form onSubmit={handleSubmit}>
@@ -457,7 +453,7 @@ export default function Contact() {
                     width: 100%;
                     padding: 12px 16px;
                     border: 2px solid #e1e5e9;
-                    border-radius: 6px;
+                    
                     font-size: 16px;
                     transition: border-color 0.2s ease;
                     box-sizing: border-box;
@@ -491,7 +487,7 @@ export default function Contact() {
                     margin: 20px 0;
                     padding: 15px;
                     background-color: #f8f9fa;
-                    border-radius: 6px;
+                    
                     border: 1px solid #e9ecef;
                 }
 
@@ -518,7 +514,7 @@ export default function Contact() {
                     width: 18px;
                     background-color: white;
                     border: 2px solid #ddd;
-                    border-radius: 3px;
+                    
                     position: relative;
                     margin-top: 2px;
                 }
@@ -576,7 +572,7 @@ export default function Contact() {
                     color: white;
                     border: none;
                     padding: 15px 40px;
-                    border-radius: 6px;
+                    
                     font-size: 16px;
                     font-weight: 500;
                     cursor: pointer;
@@ -610,7 +606,7 @@ export default function Contact() {
 
                 .modal-content {
                     background: white;
-                    border-radius: 12px;
+                    
                     max-width: 500px;
                     width: 100%;
                     max-height: 90vh;
@@ -660,7 +656,7 @@ export default function Contact() {
                     height: 60px;
                     background-color: #28a745;
                     color: white;
-                    border-radius: 50%;
+                    
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -690,7 +686,7 @@ export default function Contact() {
                     color: white;
                     border: none;
                     padding: 12px 30px;
-                    border-radius: 6px;
+                    
                     font-size: 16px;
                     cursor: pointer;
                     transition: background-color 0.2s ease;

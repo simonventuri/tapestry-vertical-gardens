@@ -1,7 +1,7 @@
 
 import '../styles/globals.css'
-import { ThemeProvider } from '../components/ThemeProvider'
 import ErrorBoundary from '../components/ErrorBoundary'
+import CookieConsent from '../components/CookieConsent'
 import { usePerformanceMonitoring } from '../hooks/usePerformanceMonitoring'
 import Head from 'next/head'
 import { GoogleAnalytics } from '@next/third-parties/google'
@@ -11,9 +11,23 @@ export default function MyApp({ Component, pageProps }) {
     // Initialize performance monitoring
     usePerformanceMonitoring();
 
-    // Track page views
+    // Initialize Google Analytics with consent mode
     useEffect(() => {
         if (window.gtag && process.env.NEXT_PUBLIC_GA_ID) {
+            // Initialize consent mode
+            window.gtag('consent', 'default', {
+                'analytics_storage': 'denied'
+            });
+
+            // Check if consent was previously given
+            const consent = localStorage.getItem('cookie-consent');
+            if (consent === 'accepted') {
+                window.gtag('consent', 'update', {
+                    'analytics_storage': 'granted'
+                });
+            }
+
+            // Track page view
             window.gtag('config', process.env.NEXT_PUBLIC_GA_ID, {
                 page_title: document.title,
                 page_location: window.location.href,
@@ -53,13 +67,12 @@ export default function MyApp({ Component, pageProps }) {
                 <meta name="twitter:image" content="/images/hero-vertical-gardens-uk.jpg" />
             </Head>
 
-            <ThemeProvider>
-                <ErrorBoundary>
-                    <Component {...pageProps} />
-                </ErrorBoundary>
-            </ThemeProvider>
+            <ErrorBoundary>
+                <Component {...pageProps} />
+                <CookieConsent />
+            </ErrorBoundary>
 
-            {/* Google Analytics */}
+            {/* Google Analytics - will respect consent mode */}
             {process.env.NEXT_PUBLIC_GA_ID && (
                 <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
             )}

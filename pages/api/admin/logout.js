@@ -1,27 +1,15 @@
-const tokenManager = require('../../../lib/tokenManager');
-
 export default function handler(req, res) {
     if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method not allowed' });
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        // Get token from cookie
-        const cookies = req.headers.cookie || '';
-        const tokenMatch = cookies.match(/admin_token=([^;]+)/);
-
-        if (tokenMatch) {
-            const token = tokenMatch[1];
-            // Revoke token using token manager
-            tokenManager.revokeToken(token);
-        }
-
-        // Clear the authentication cookie
+        // Clear the cookie - JWT tokens are stateless so no server-side cleanup needed
         res.setHeader('Set-Cookie', [
-            'admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict',
-            `admin_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict; Domain=${req.headers.host}`
+            'admin_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict'
         ]);
 
+        console.log('User logged out successfully');
         return res.status(200).json({
             success: true,
             message: 'Logged out successfully'
@@ -30,7 +18,7 @@ export default function handler(req, res) {
         console.error('Logout error:', error);
         return res.status(500).json({
             success: false,
-            message: 'Internal server error'
+            error: 'Logout failed'
         });
     }
 }

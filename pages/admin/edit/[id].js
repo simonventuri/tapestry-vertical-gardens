@@ -15,7 +15,8 @@ export default function EditProject({ project, isAuthenticated }) {
         category: project?.category || '',
         location: project?.location || '',
         year: project?.year || '',
-        size: project?.size || ''
+        size: project?.size || '',
+        visible: project?.visible !== undefined ? project.visible : true
     });
     const [projectImages, setProjectImages] = useState(project?.images || []);
     const [draggedImageIndex, setDraggedImageIndex] = useState(null);
@@ -49,18 +50,55 @@ export default function EditProject({ project, isAuthenticated }) {
     }
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
     };
 
     // Image handling functions
     const handleImageUpload = (files) => {
         Array.from(files).forEach(file => {
             if (file.type.startsWith('image/')) {
+                // Compress image before converting to base64
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Set maximum dimensions
+                    const maxWidth = 1200;
+                    const maxHeight = 800;
+
+                    let { width, height } = img;
+
+                    // Calculate new dimensions maintaining aspect ratio
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = (height * maxWidth) / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width = (width * maxHeight) / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw and compress
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8); // 80% quality
+
+                    setProjectImages(prev => [...prev, compressedDataUrl]);
+                };
+
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const imageUrl = e.target.result;
-                    setProjectImages(prev => [...prev, imageUrl]);
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -237,7 +275,7 @@ export default function EditProject({ project, isAuthenticated }) {
                     {/* Basic Information */}
                     <div style={{
                         backgroundColor: 'white',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                         padding: '2rem',
                         marginBottom: '2rem'
@@ -266,7 +304,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                     required
@@ -292,7 +330,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                     required
@@ -318,7 +356,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem',
                                         resize: 'vertical'
                                     }}
@@ -331,7 +369,7 @@ export default function EditProject({ project, isAuthenticated }) {
                     {/* Additional Project Details */}
                     <div style={{
                         backgroundColor: 'white',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                         padding: '2rem',
                         marginBottom: '2rem'
@@ -360,7 +398,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                 />
@@ -385,7 +423,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                 />
@@ -410,7 +448,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                 />
@@ -435,10 +473,42 @@ export default function EditProject({ project, isAuthenticated }) {
                                         width: '100%',
                                         padding: '0.75rem',
                                         border: '1px solid #d1d5db',
-                                        borderRadius: '4px',
+                                        borderRadius: '0',
                                         fontSize: '1rem'
                                     }}
                                 />
+                            </div>
+
+                            <div>
+                                <label style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '500',
+                                    color: '#374151',
+                                    cursor: 'pointer'
+                                }}>
+                                    <input
+                                        type="checkbox"
+                                        name="visible"
+                                        checked={formData.visible}
+                                        onChange={handleInputChange}
+                                        style={{
+                                            marginRight: '0.5rem',
+                                            width: '16px',
+                                            height: '16px'
+                                        }}
+                                    />
+                                    Visible on Frontend
+                                </label>
+                                <p style={{
+                                    fontSize: '0.75rem',
+                                    color: '#6b7280',
+                                    marginTop: '0.25rem',
+                                    marginLeft: '1.5rem'
+                                }}>
+                                    When unchecked, this project will be hidden from the public portfolio
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -446,7 +516,7 @@ export default function EditProject({ project, isAuthenticated }) {
                     {/* Project Images */}
                     <div style={{
                         backgroundColor: 'white',
-                        borderRadius: '8px',
+                        borderRadius: '0',
                         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                         padding: '2rem',
                         marginBottom: '2rem'
@@ -470,7 +540,7 @@ export default function EditProject({ project, isAuthenticated }) {
                             onClick={() => fileInputRef.current?.click()}
                             style={{
                                 border: `2px dashed ${isDragging ? '#3b82f6' : '#d1d5db'}`,
-                                borderRadius: '8px',
+                                borderRadius: '0',
                                 padding: '2rem',
                                 textAlign: 'center',
                                 cursor: 'pointer',
@@ -514,7 +584,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                         style={{
                                             position: 'relative',
                                             aspectRatio: '1/1',
-                                            borderRadius: '8px',
+                                            borderRadius: '0',
                                             overflow: 'hidden',
                                             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                                             cursor: 'move',
@@ -529,7 +599,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                                 backgroundColor: '#3b82f6',
                                                 color: 'white',
                                                 padding: '0.25rem 0.5rem',
-                                                borderRadius: '4px',
+                                                borderRadius: '0',
                                                 fontSize: '0.75rem',
                                                 fontWeight: '500',
                                                 zIndex: 2
@@ -556,7 +626,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                                 backgroundColor: 'rgba(239, 68, 68, 0.9)',
                                                 color: 'white',
                                                 border: 'none',
-                                                borderRadius: '50%',
+                                                borderRadius: '0',
                                                 width: '24px',
                                                 height: '24px',
                                                 cursor: 'pointer',
@@ -585,7 +655,7 @@ export default function EditProject({ project, isAuthenticated }) {
                                 backgroundColor: saving ? '#9ca3af' : '#3b82f6',
                                 color: 'white',
                                 border: 'none',
-                                borderRadius: '6px',
+                                borderRadius: '0',
                                 fontSize: '1rem',
                                 fontWeight: '500',
                                 cursor: saving ? 'not-allowed' : 'pointer',

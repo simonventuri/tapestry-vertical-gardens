@@ -1,42 +1,40 @@
-const tokenManager = require('../../../lib/tokenManager');
+import { verifyToken } from '../../../lib/auth';
 
 export default function handler(req, res) {
     if (req.method !== 'GET') {
-        return res.status(405).json({ message: 'Method not allowed' });
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        // Get token from cookie
-        const cookies = req.headers.cookie || '';
-        const tokenMatch = cookies.match(/admin_token=([^;]+)/);
+        const token = req.cookies.admin_token;
 
-        if (!tokenMatch) {
-            return res.status(401).json({
-                success: false,
-                message: 'No token provided'
-            });
+        if (!token) {
+            console.log('No token provided for verification');
+            return res.status(401).json({ error: 'No token provided' });
         }
 
-        const token = tokenMatch[1];
+        // Validate the token using JWT
+        const decoded = verifyToken(token);
 
-        // Validate token using token manager
-        if (!tokenManager.validateToken(token)) {
-            return res.status(401).json({
-                success: false,
-                message: 'Token expired or invalid'
-            });
+        if (!decoded) {
+            console.log('Token verification failed');
+            // Clear the invalid cookie
+            res.setHeader('Set-Cookie', [
+                'admin_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; SameSite=Strict'
+            ]);
+            return res.status(401).json({ error: 'Invalid or expired token' });
         }
 
+        console.log('Token verified successfully for user:', decoded.username);
         return res.status(200).json({
-            success: true,
-            message: 'Token valid'
+            authenticated: true,
+            user: {
+                username: decoded.username,
+                role: decoded.role || 'admin'
+            }
         });
-
     } catch (error) {
-        console.error('Token verification error:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Internal server error'
-        });
+        console.error('Verify error:', error);
+        return res.status(500).json({ error: 'Verification failed' });
     }
 }
