@@ -152,7 +152,7 @@ export default function ProjectPage({ project }) {
                         maxWidth: '800px',
                         margin: '1.5rem auto 3rem auto'
                     }}>
-                        <div className="project-story" style={{ marginBottom: '3rem' }}>
+                        <div className="project-story" style={{ marginBottom: '3rem', textAlign: 'center' }}>
                             <p style={{
                                 fontSize: '1.1rem',
                                 lineHeight: '1.7',
@@ -246,195 +246,197 @@ export default function ProjectPage({ project }) {
                         </button>
                     </div>
                 </div>
-            </section>
+            </section >
 
             <Footer />
 
             {/* Enhanced Lightbox with Navigation */}
-            {lightboxIndex !== null && project?.images && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000,
-                    cursor: 'pointer'
-                }}
-                    onClick={() => setLightboxIndex(null)}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                >
-                    {/* Previous Arrow - Fixed to left edge */}
-                    {lightboxIndex > 0 && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigateImage(-1);
-                            }}
-                            style={{
-                                position: 'fixed',
-                                left: '20px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '48px',
-                                fontWeight: 'bold',
-                                color: '#fff',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.3s ease',
-                                zIndex: 1001,
-                                padding: '10px'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
-                                e.currentTarget.style.color = '#ddd';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-                                e.currentTarget.style.color = '#fff';
-                            }}
-                        >
-                            ‹
-                        </button>
-                    )}
-
-                    {/* Next Arrow - Fixed to right edge */}
-                    {lightboxIndex < project.images.length - 1 && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigateImage(1);
-                            }}
-                            style={{
-                                position: 'fixed',
-                                right: '20px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '48px',
-                                fontWeight: 'bold',
-                                color: '#fff',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.3s ease',
-                                zIndex: 1001,
-                                padding: '10px'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
-                                e.currentTarget.style.color = '#ddd';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-                                e.currentTarget.style.color = '#fff';
-                            }}
-                        >
-                            ›
-                        </button>
-                    )}
-
-                    {/* Close Button - Fixed to top-right corner */}
-                    <button
-                        onClick={() => setLightboxIndex(null)}
-                        style={{
-                            position: 'fixed',
-                            top: '20px',
-                            right: '20px',
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '36px',
-                            fontWeight: 'bold',
-                            color: '#fff',
-                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all 0.3s ease',
-                            zIndex: 1001,
-                            padding: '10px'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'scale(1.2)';
-                            e.currentTarget.style.color = '#ddd';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'scale(1)';
-                            e.currentTarget.style.color = '#fff';
-                        }}
-                    >
-                        ×
-                    </button>
-
+            {
+                lightboxIndex !== null && project?.images && (
                     <div style={{
-                        position: 'relative',
-                        maxWidth: '90vw',
-                        maxHeight: '90vh',
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
-                        {/* Main Image */}
-                        <img
-                            src={project.images[lightboxIndex]}
-                            alt={`${project.title} - Image ${lightboxIndex + 1}`}
+                        justifyContent: 'center',
+                        zIndex: 1000,
+                        cursor: 'pointer'
+                    }}
+                        onClick={() => setLightboxIndex(null)}
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
+                    >
+                        {/* Previous Arrow - Fixed to left edge */}
+                        {lightboxIndex > 0 && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigateImage(-1);
+                                }}
+                                style={{
+                                    position: 'fixed',
+                                    left: '20px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '48px',
+                                    fontWeight: 'bold',
+                                    color: '#fff',
+                                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.3s ease',
+                                    zIndex: 1001,
+                                    padding: '10px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
+                                    e.currentTarget.style.color = '#ddd';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                                    e.currentTarget.style.color = '#fff';
+                                }}
+                            >
+                                ‹
+                            </button>
+                        )}
+
+                        {/* Next Arrow - Fixed to right edge */}
+                        {lightboxIndex < project.images.length - 1 && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigateImage(1);
+                                }}
+                                style={{
+                                    position: 'fixed',
+                                    right: '20px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '48px',
+                                    fontWeight: 'bold',
+                                    color: '#fff',
+                                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.3s ease',
+                                    zIndex: 1001,
+                                    padding: '10px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
+                                    e.currentTarget.style.color = '#ddd';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+                                    e.currentTarget.style.color = '#fff';
+                                }}
+                            >
+                                ›
+                            </button>
+                        )}
+
+                        {/* Close Button - Fixed to top-right corner */}
+                        <button
+                            onClick={() => setLightboxIndex(null)}
                             style={{
-                                maxWidth: '100%',
-                                maxHeight: '100%',
-                                objectFit: 'contain',
-                                borderRadius: '0',
-                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                                position: 'fixed',
+                                top: '20px',
+                                right: '20px',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '36px',
+                                fontWeight: 'bold',
+                                color: '#fff',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.3s ease',
+                                zIndex: 1001,
+                                padding: '10px'
                             }}
-                            onClick={(e) => e.stopPropagation()}
-                        />
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.2)';
+                                e.currentTarget.style.color = '#ddd';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.color = '#fff';
+                            }}
+                        >
+                            ×
+                        </button>
 
-                        {/* Image Counter */}
                         <div style={{
-                            position: 'absolute',
-                            bottom: '-50px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            color: '#fff',
-                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                            padding: '8px 16px',
-                            fontSize: '14px',
-                            fontWeight: '500'
+                            position: 'relative',
+                            maxWidth: '90vw',
+                            maxHeight: '90vh',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
                         }}>
-                            {lightboxIndex + 1} of {project.images.length}
-                        </div>
+                            {/* Main Image */}
+                            <img
+                                src={project.images[lightboxIndex]}
+                                alt={`${project.title} - Image ${lightboxIndex + 1}`}
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    objectFit: 'contain',
+                                    borderRadius: '0',
+                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                            />
 
-                        {/* Mobile Navigation Instructions - Hide on mobile */}
-                        {windowWidth > 768 && (
+                            {/* Image Counter */}
                             <div style={{
                                 position: 'absolute',
-                                bottom: '-90px',
+                                bottom: '-50px',
                                 left: '50%',
                                 transform: 'translateX(-50%)',
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                fontSize: '12px',
-                                textAlign: 'center'
+                                color: '#fff',
+                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                                padding: '8px 16px',
+                                fontSize: '14px',
+                                fontWeight: '500'
                             }}>
-                                Use ← → arrow keys or click arrows to navigate
+                                {lightboxIndex + 1} of {project.images.length}
                             </div>
-                        )}
+
+                            {/* Mobile Navigation Instructions - Hide on mobile */}
+                            {windowWidth > 768 && (
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: '-90px',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    color: 'rgba(255, 255, 255, 0.7)',
+                                    fontSize: '12px',
+                                    textAlign: 'center'
+                                }}>
+                                    Use ← → arrow keys or click arrows to navigate
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
         </>
     );
 }
