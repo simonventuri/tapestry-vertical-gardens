@@ -653,7 +653,8 @@ footer {
 footer p {
     color: var(--text-lighter);
     margin: 0;
-    font-size: 0.625rem; /* 10px - smaller than before */
+    font-size: 0.625rem;
+    /* 10px - smaller than before */
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -785,7 +786,6 @@ html:has(.landing-page) {
     width: 40px;
     height: 40px;
     border: 3px solid rgba(255, 255, 255, 0.3);
-    border-top: 3px solid white;
     animation: spin 1s linear infinite;
 }
 
@@ -1106,7 +1106,8 @@ html:has(.landing-page) {
     }
 
     .footer-text p {
-        font-size: 0.5rem; /* 8px - even smaller on mobile */
+        font-size: 0.5rem;
+        /* 8px - even smaller on mobile */
     }
 
     .footer-links {
