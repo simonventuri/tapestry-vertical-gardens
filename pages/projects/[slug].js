@@ -5,29 +5,24 @@ import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
 
 export default function ProjectPage({ project }) {
-    const router = useRouter();
-    const [lightboxIndex, setLightboxIndex] = useState(null);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxScrollTo, setLightboxScrollTo] = useState(0);
+    const imageRefs = useRef([]);
+    const [imageLoadStates, setImageLoadStates] = useState([]); // true = loaded, false = loading
     const [windowWidth, setWindowWidth] = useState(1200);
     const touchStartX = useRef(null);
     const touchEndX = useRef(null);
 
-    // Handle keyboard navigation
+    // Scroll to the clicked image when modal opens
     useEffect(() => {
-        const handleKeyPress = (e) => {
-            if (lightboxIndex === null) return;
+        if (lightboxOpen && imageRefs.current[lightboxScrollTo]) {
+            imageRefs.current[lightboxScrollTo].scrollIntoView({ behavior: 'auto', block: 'center' });
+        }
+    }, [lightboxOpen, lightboxScrollTo]);
+    const router = useRouter();
+    // (Declarations moved above)
 
-            if (e.key === 'Escape') {
-                setLightboxIndex(null);
-            } else if (e.key === 'ArrowLeft') {
-                navigateImage(-1);
-            } else if (e.key === 'ArrowRight') {
-                navigateImage(1);
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyPress);
-        return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [lightboxIndex, project?.images]);
+    // Remove keyboard navigation logic for lightboxIndex (not needed for vertical scroll modal)
 
     // Handle window resize
     useEffect(() => {
@@ -81,8 +76,17 @@ export default function ProjectPage({ project }) {
         }
     };
 
-    const openLightbox = (index) => {
-        setLightboxIndex(index);
+    // (Declarations moved above)
+    const openLightbox = (index = 0) => {
+        setLightboxOpen(true);
+        setLightboxScrollTo(index);
+        if (project?.images) {
+            setImageLoadStates(Array(project.images.length).fill(false));
+        }
+    };
+
+    const closeLightbox = () => {
+        setLightboxOpen(false);
     };
 
     if (router.isFallback) {
@@ -96,6 +100,33 @@ export default function ProjectPage({ project }) {
     // Ensure title is always a string to prevent React warning
     const pageTitle = Array.isArray(project.title) ? project.title.join(' ') : String(project.title || '');
     const fullTitle = `${pageTitle} - Tapestry Vertical Gardens`;
+
+    // Preload images when lightbox opens
+    useEffect(() => {
+        if (!lightboxOpen || !project?.images) return;
+        let isMounted = true;
+        project.images.forEach((src, idx) => {
+            const img = new window.Image();
+            img.onload = () => {
+                if (isMounted) setImageLoadStates(prev => {
+                    const next = [...prev];
+                    next[idx] = true;
+                    return next;
+                });
+            };
+            img.onerror = () => {
+                if (isMounted) setImageLoadStates(prev => {
+                    const next = [...prev];
+                    next[idx] = true; // treat errored as loaded to remove spinner
+                    return next;
+                });
+            };
+            img.src = src;
+        });
+        return () => { isMounted = false; };
+    }, [lightboxOpen, project?.images]);
+
+    const anyLoading = imageLoadStates.some(loaded => !loaded);
 
     return (
         <>
@@ -250,193 +281,100 @@ export default function ProjectPage({ project }) {
 
             <Footer />
 
-            {/* Enhanced Lightbox with Navigation */}
-            {
-                lightboxIndex !== null && project?.images && (
-                    <div style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1000,
-                        cursor: 'pointer'
-                    }}
-                        onClick={() => setLightboxIndex(null)}
-                        onTouchStart={handleTouchStart}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                    >
-                        {/* Previous Arrow - Fixed to left edge */}
-                        {lightboxIndex > 0 && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    navigateImage(-1);
-                                }}
-                                style={{
-                                    position: 'fixed',
-                                    left: '20px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    fontSize: '48px',
-                                    fontWeight: 'bold',
-                                    color: '#fff',
-                                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    transition: 'all 0.3s ease',
-                                    zIndex: 1001,
-                                    padding: '10px'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
-                                    e.currentTarget.style.color = '#ddd';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-                                    e.currentTarget.style.color = '#fff';
-                                }}
-                            >
-                                ‹
-                            </button>
-                        )}
-
-                        {/* Next Arrow - Fixed to right edge */}
-                        {lightboxIndex < project.images.length - 1 && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    navigateImage(1);
-                                }}
-                                style={{
-                                    position: 'fixed',
-                                    right: '20px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    fontSize: '48px',
-                                    fontWeight: 'bold',
-                                    color: '#fff',
-                                    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    transition: 'all 0.3s ease',
-                                    zIndex: 1001,
-                                    padding: '10px'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
-                                    e.currentTarget.style.color = '#ddd';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-                                    e.currentTarget.style.color = '#fff';
-                                }}
-                            >
-                                ›
-                            </button>
-                        )}
-
-                        {/* Close Button - Fixed to top-right corner */}
-                        <button
-                            onClick={() => setLightboxIndex(null)}
-                            style={{
-                                position: 'fixed',
-                                top: '20px',
-                                right: '20px',
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '36px',
-                                fontWeight: 'bold',
-                                color: '#fff',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.3s ease',
-                                zIndex: 1001,
-                                padding: '10px'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'scale(1.2)';
-                                e.currentTarget.style.color = '#ddd';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'scale(1)';
-                                e.currentTarget.style.color = '#fff';
-                            }}
-                        >
-                            ×
-                        </button>
-
-                        <div style={{
-                            position: 'relative',
-                            maxWidth: '90vw',
-                            maxHeight: '90vh',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            {/* Main Image */}
-                            <img
-                                src={project.images[lightboxIndex]}
-                                alt={`${project.title} - Image ${lightboxIndex + 1}`}
-                                style={{
-                                    maxWidth: '100%',
-                                    maxHeight: '100%',
-                                    objectFit: 'contain',
-                                    borderRadius: '0',
-                                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
-                                }}
-                                onClick={(e) => e.stopPropagation()}
-                            />
-
-                            {/* Image Counter */}
-                            <div style={{
-                                position: 'absolute',
-                                bottom: '-50px',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                color: '#fff',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                                padding: '8px 16px',
-                                fontSize: '14px',
-                                fontWeight: '500'
-                            }}>
-                                {lightboxIndex + 1} of {project.images.length}
-                            </div>
-
-                            {/* Mobile Navigation Instructions - Hide on mobile */}
-                            {windowWidth > 768 && (
+            {/* Lightbox Modal: Vertical Scrollable Images */}
+            {lightboxOpen && project?.images && (
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  width: '100vw',
+                  height: '100vh',
+                  backgroundColor: 'rgba(0,0,0,0.95)',
+                  zIndex: 1000,
+                  overflowY: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  padding: '40px 0 40px 0',
+                  cursor: 'pointer',
+                }}
+                onClick={closeLightbox}
+              >
+                {/* Close Button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
+                  style={{
+                    position: 'fixed',
+                    top: '20px',
+                    right: '20px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '36px',
+                    fontWeight: 'bold',
+                    color: '#fff',
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                    zIndex: 1001,
+                    padding: '10px',
+                  }}
+                  aria-label="Close lightbox"
+                >×</button>
+                {/* Spinner overlay if any images are loading */}
+                {anyLoading && (
+                  <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    background: 'rgba(0,0,0,0.3)',
+                    zIndex: 1002,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <div className="spinner" style={{ width: 60, height: 60, borderWidth: 8 }}></div>
+                  </div>
+                )}
+                {/* Vertically stacked images */}
                                 <div style={{
-                                    position: 'absolute',
-                                    bottom: '-90px',
-                                    left: '50%',
-                                    transform: 'translateX(-50%)',
-                                    color: 'rgba(255, 255, 255, 0.7)',
-                                    fontSize: '12px',
-                                    textAlign: 'center'
+                                    width: '100%',
+                                    maxWidth: '900px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: '40px',
+                                    alignItems: 'center',
+                                    margin: '0 auto',
                                 }}>
-                                    Use ← → arrow keys or click arrows to navigate
+                                    {project.images.map((src, idx) => (
+                                        <img
+                                            key={src}
+                                            ref={el => imageRefs.current[idx] = el}
+                                            src={src}
+                                            alt={`${project.title} - Image ${idx + 1}`}
+                                            style={{
+                                                width: '100%',
+                                                maxHeight: '80vh',
+                                                objectFit: 'contain',
+                                                borderRadius: '0',
+                                                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                                opacity: imageLoadStates[idx] ? 1 : 0.5,
+                                                transition: 'opacity 0.3s',
+                                                pointerEvents: 'none',
+                                            }}
+                                            onLoad={() => setImageLoadStates(prev => {
+                                                const next = [...prev];
+                                                next[idx] = true;
+                                                return next;
+                                            })}
+                                            onClick={e => e.stopPropagation()}
+                                        />
+                                    ))}
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                )
-            }
+              </div>
+            )}
         </>
     );
 }
