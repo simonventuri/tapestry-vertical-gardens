@@ -5,6 +5,26 @@ import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
 
 export default function ProjectPage({ project }) {
+    // State for gallery images (fetched client-side)
+    const [galleryImages, setGalleryImages] = useState([]);
+    const [galleryLoaded, setGalleryLoaded] = useState(false);
+    useEffect(() => {
+        setGalleryLoaded(false);
+        // Fetch gallery images client-side
+        async function fetchGalleryImages() {
+            try {
+                const res = await fetch(`/api/projects/${project.slug}/images`);
+                if (!res.ok) throw new Error('Failed to fetch gallery images');
+                const data = await res.json();
+                setGalleryImages(data.images || []);
+            } catch (e) {
+                setGalleryImages([]);
+            } finally {
+                setGalleryLoaded(true);
+            }
+        }
+        fetchGalleryImages();
+    }, [project.slug]);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     // Close lightbox on Escape key
     useEffect(() => {
@@ -89,8 +109,8 @@ export default function ProjectPage({ project }) {
     const openLightbox = (index = 0) => {
         setLightboxOpen(true);
         setLightboxScrollTo(index);
-        if (project?.images) {
-            setImageLoadStates(Array(project.images.length).fill(false));
+        if (galleryImages && galleryImages.length > 0) {
+            setImageLoadStates(Array(galleryImages.length).fill(false));
         }
     };
 
@@ -112,9 +132,9 @@ export default function ProjectPage({ project }) {
 
     // Preload images when lightbox opens
     useEffect(() => {
-        if (!lightboxOpen || !project?.images) return;
+        if (!lightboxOpen || !galleryImages || galleryImages.length === 0) return;
         let isMounted = true;
-        project.images.forEach((src, idx) => {
+        galleryImages.forEach((src, idx) => {
             const img = new window.Image();
             img.onload = () => {
                 if (isMounted) setImageLoadStates(prev => {
@@ -133,12 +153,42 @@ export default function ProjectPage({ project }) {
             img.src = src;
         });
         return () => { isMounted = false; };
-    }, [lightboxOpen, project?.images]);
+    }, [lightboxOpen, galleryImages]);
 
     const anyLoading = imageLoadStates.some(loaded => !loaded);
 
     return (
         <>
+            <style jsx>{`
+                            .spinner {
+                                width: 50px;
+                                height: 50px;
+                                border: 5px solid #bbb;
+                                animation: spin 1s linear infinite;
+                                margin: 20px auto;
+                                background: none;
+                            }
+                            @keyframes spin {
+                                0% { transform: rotate(0deg); }
+                                100% { transform: rotate(360deg); }
+                            }
+                            .gallery-grid {
+                                display: grid;
+                                grid-template-columns: repeat(3, 1fr);
+                                gap: 1.5rem;
+                                margin-bottom: 2rem;
+                            }
+                            @media (max-width: 768px) {
+                                .gallery-grid {
+                                    grid-template-columns: repeat(2, 1fr) !important;
+                                }
+                            }
+                            @media (max-width: 480px) {
+                                .gallery-grid {
+                                    grid-template-columns: 1fr !important;
+                                }
+                            }
+                    `}</style>
             <Head>
                 <title>{fullTitle}</title>
                 <meta name="description" content={project.description?.substring(0, 160) || ''} />
@@ -178,7 +228,7 @@ export default function ProjectPage({ project }) {
                             }}
                             onClick={() => openLightbox(0)}
                         >
-                            <img src={project.images[0]} alt={project.title} style={{
+                            <img src={project.heroImage} alt={project.title} style={{
                                 width: '100%',
                                 height: 'auto',
                                 display: 'block',
@@ -201,53 +251,40 @@ export default function ProjectPage({ project }) {
                             }}>{project.description}</p>
                         </div>
 
-                        {/* Project Gallery - Additional Images */}
-                        {project.images && project.images.length > 1 && (
+                        {/* Project Gallery - Additional Images (lazy loaded) */}
+                        {galleryImages && galleryImages.length > 1 && (
                             <div className="project-gallery" style={{ marginBottom: '3rem' }}>
-                                <div className="gallery-grid" style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(3, 1fr)',
-                                    gap: '1.5rem',
-                                    marginBottom: '2rem'
-                                }}>
-                                    <style jsx>{`
-                                        @media (max-width: 768px) {
-                                            .gallery-grid {
-                                                grid-template-columns: repeat(2, 1fr) !important;
-                                            }
-                                        }
-                                        @media (max-width: 480px) {
-                                            .gallery-grid {
-                                                grid-template-columns: 1fr !important;
-                                            }
-                                        }
-                                    `}</style>
-                                    {project.images.slice(1).map((image, index) => (
-                                        <div key={index} className="gallery-item" style={{
-                                            borderRadius: '0',
-                                            overflow: 'hidden',
-                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                                            cursor: 'pointer',
-                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-                                        }}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
-                                                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                                {!galleryLoaded ? (
+                                    <div className="spinner"></div>
+                                ) : (
+                                    <div className="gallery-grid">
+                                        {galleryImages.slice(1).map((image, index) => (
+                                            <div key={index} className="gallery-item" style={{
+                                                borderRadius: '0',
+                                                overflow: 'hidden',
+                                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                                cursor: 'pointer',
+                                                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
                                             }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                                            }}
-                                            onClick={() => openLightbox(index + 1)}
-                                        >
-                                            <img src={image} alt={`${project.title} - Gallery Image ${index + 2}`} style={{
-                                                width: '100%',
-                                                height: '250px',
-                                                objectFit: 'cover'
-                                            }} />
-                                        </div>
-                                    ))}
-                                </div>
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
+                                                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                                }}
+                                                onClick={() => openLightbox(index + 1)}
+                                            >
+                                                <img src={image} alt={`${project.title} - Gallery Image ${index + 2}`} style={{
+                                                    width: '100%',
+                                                    height: '250px',
+                                                    objectFit: 'cover'
+                                                }} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -291,7 +328,7 @@ export default function ProjectPage({ project }) {
             <Footer />
 
             {/* Lightbox Modal: Vertical Scrollable Images */}
-            {lightboxOpen && project?.images && (
+            {lightboxOpen && galleryImages && galleryImages.length > 0 && (
                 <div
                     style={{
                         position: 'fixed',
@@ -357,7 +394,7 @@ export default function ProjectPage({ project }) {
                         alignItems: 'center',
                         margin: '0 auto',
                     }}>
-                        {project.images.map((src, idx) => (
+                        {galleryImages.map((src, idx) => (
                             <img
                                 key={src}
                                 ref={el => imageRefs.current[idx] = el}
@@ -408,9 +445,12 @@ export async function getStaticProps({ params }) {
             };
         }
 
+        // Only send essential info and hero image (first image)
+        const { title, description, images = [], slug } = project;
+        const heroImage = images[0] || '';
         return {
             props: {
-                project: JSON.parse(JSON.stringify(project)),
+                project: { title, description, heroImage, slug },
             },
             revalidate: 60,
         };
