@@ -86,6 +86,18 @@ export default function Home({ initialContent }) {
       </div>
     </section>
 
+
+    {/* CTA2 Section */}
+    {content.cta2 && (
+      <section className="content-section" style={{ background: 'var(--bg-alt)' }}>
+        <div className="container" style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
+          <h2>{content.cta2.title}</h2>
+          <p className="section-subtitle" style={{ marginBottom: '2rem' }}>{content.cta2.description}</p>
+          <a className="btn btn-large" href={content.cta2.ctaLink}>{content.cta2.ctaText}</a>
+        </div>
+      </section>
+    )}
+
     {/* The Tapestry Difference */}
     <section className="content-section">
       <div className="container">
@@ -181,6 +193,12 @@ export async function getServerSideProps(context) {
           description: "Transform bland walls into stunning focal points that add beauty, texture, and life to any space."
         }
       ]
+    },
+    cta2: {
+      title: "Ready to Transform Your Space?",
+      description: "Contact us today for a free consultation and discover how a living wall can elevate your environment.",
+      ctaText: "Book a Free Consultation",
+      ctaLink: "/contact"
     },
     tapestryDifference: {
       title: "The Tapestry Difference",
