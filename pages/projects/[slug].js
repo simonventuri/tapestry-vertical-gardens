@@ -25,6 +25,9 @@ export default function ProjectPage({ project }) {
         }
         fetchGalleryImages();
     }, [project.slug]);
+
+    // Reset imageLoadStates to correct length when galleryImages changes
+    // Remove all gallery image loading state and spinner logic
     const [lightboxOpen, setLightboxOpen] = useState(false);
     // Close lightbox on Escape key
     useEffect(() => {
@@ -130,23 +133,25 @@ export default function ProjectPage({ project }) {
     const pageTitle = Array.isArray(project.title) ? project.title.join(' ') : String(project.title || '');
     const fullTitle = `${pageTitle} - Tapestry Vertical Gardens`;
 
-    // Preload images when lightbox opens
+    // Separate state for lightbox image loading
+    const [lightboxLoadStates, setLightboxLoadStates] = useState([]);
     useEffect(() => {
         if (!lightboxOpen || !galleryImages || galleryImages.length === 0) return;
+        setLightboxLoadStates(Array(galleryImages.length).fill(false));
         let isMounted = true;
         galleryImages.forEach((src, idx) => {
             const img = new window.Image();
             img.onload = () => {
-                if (isMounted) setImageLoadStates(prev => {
+                if (isMounted) setLightboxLoadStates(prev => {
                     const next = [...prev];
                     next[idx] = true;
                     return next;
                 });
             };
             img.onerror = () => {
-                if (isMounted) setImageLoadStates(prev => {
+                if (isMounted) setLightboxLoadStates(prev => {
                     const next = [...prev];
-                    next[idx] = true; // treat errored as loaded to remove spinner
+                    next[idx] = true;
                     return next;
                 });
             };
@@ -155,7 +160,7 @@ export default function ProjectPage({ project }) {
         return () => { isMounted = false; };
     }, [lightboxOpen, galleryImages]);
 
-    const anyLoading = imageLoadStates.some(loaded => !loaded);
+    const anyLoading = imageLoadStates.length > 0 && imageLoadStates.some(loaded => !loaded);
 
     return (
         <>
@@ -253,38 +258,35 @@ export default function ProjectPage({ project }) {
 
                         {/* Project Gallery - Additional Images (lazy loaded) */}
                         {galleryImages && galleryImages.length > 1 && (
-                            <div className="project-gallery" style={{ marginBottom: '3rem' }}>
-                                {!galleryLoaded ? (
-                                    <div className="spinner"></div>
-                                ) : (
-                                    <div className="gallery-grid">
-                                        {galleryImages.slice(1).map((image, index) => (
-                                            <div key={index} className="gallery-item" style={{
-                                                borderRadius: '0',
-                                                overflow: 'hidden',
-                                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                                                cursor: 'pointer',
-                                                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                            <div className="project-gallery" style={{ marginBottom: '3rem', position: 'relative', minHeight: 80 }}>
+                                <div className="gallery-grid">
+                                    {galleryImages.slice(1).map((image, index) => (
+                                        <div key={index} className="gallery-item" style={{
+                                            borderRadius: '0',
+                                            overflow: 'hidden',
+                                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                            cursor: 'pointer',
+                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                        }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
+                                                e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
                                             }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
-                                                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                                                }}
-                                                onClick={() => openLightbox(index + 1)}
-                                            >
-                                                <img src={image} alt={`${project.title} - Gallery Image ${index + 2}`} style={{
-                                                    width: '100%',
-                                                    height: '250px',
-                                                    objectFit: 'cover'
-                                                }} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                                            }}
+                                            onClick={() => openLightbox(index + 1)}
+                                        >
+                                            <img
+                                                key={image + '-' + index}
+                                                src={image}
+                                                alt={`${project.title} - Gallery Image ${index + 2}`}
+                                                style={{ width: '100%', height: '250px', objectFit: 'cover', display: 'block' }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
