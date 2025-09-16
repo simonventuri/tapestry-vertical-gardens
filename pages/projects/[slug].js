@@ -6,6 +6,15 @@ import { useState, useEffect, useRef } from 'react';
 
 export default function ProjectPage({ project }) {
     const [lightboxOpen, setLightboxOpen] = useState(false);
+    // Close lightbox on Escape key
+    useEffect(() => {
+        if (!lightboxOpen) return;
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [lightboxOpen]);
     const [lightboxScrollTo, setLightboxScrollTo] = useState(0);
     const imageRefs = useRef([]);
     const [imageLoadStates, setImageLoadStates] = useState([]); // true = loaded, false = loading
@@ -283,97 +292,97 @@ export default function ProjectPage({ project }) {
 
             {/* Lightbox Modal: Vertical Scrollable Images */}
             {lightboxOpen && project?.images && (
-              <div
-                style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  width: '100vw',
-                  height: '100vh',
-                  backgroundColor: 'rgba(0,0,0,0.95)',
-                  zIndex: 1000,
-                  overflowY: 'auto',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  padding: '40px 0 40px 0',
-                  cursor: 'pointer',
-                }}
-                onClick={closeLightbox}
-              >
-                {/* Close Button */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
-                  style={{
-                    position: 'fixed',
-                    top: '20px',
-                    right: '20px',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '36px',
-                    fontWeight: 'bold',
-                    color: '#fff',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
-                    zIndex: 1001,
-                    padding: '10px',
-                  }}
-                  aria-label="Close lightbox"
-                >×</button>
-                {/* Spinner overlay if any images are loading */}
-                {anyLoading && (
-                  <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    background: 'rgba(0,0,0,0.3)',
-                    zIndex: 1002,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                    <div className="spinner" style={{ width: 60, height: 60, borderWidth: 8 }}></div>
-                  </div>
-                )}
-                {/* Vertically stacked images */}
-                                <div style={{
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100vw',
+                        height: '100vh',
+                        backgroundColor: 'rgba(0,0,0,0.95)',
+                        zIndex: 1000,
+                        overflowY: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        padding: '40px 0 40px 0',
+                        cursor: 'pointer',
+                    }}
+                    onClick={closeLightbox}
+                >
+                    {/* Close Button */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
+                        style={{
+                            position: 'fixed',
+                            top: '20px',
+                            right: '20px',
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontSize: '36px',
+                            fontWeight: 'bold',
+                            color: '#fff',
+                            textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                            zIndex: 1001,
+                            padding: '10px',
+                        }}
+                        aria-label="Close lightbox"
+                    >×</button>
+                    {/* Spinner overlay if any images are loading */}
+                    {anyLoading && (
+                        <div style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100vw',
+                            height: '100vh',
+                            background: 'rgba(0,0,0,0.3)',
+                            zIndex: 1002,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            <div className="spinner" style={{ width: 60, height: 60, borderWidth: 8 }}></div>
+                        </div>
+                    )}
+                    {/* Vertically stacked images */}
+                    <div style={{
+                        width: '100%',
+                        maxWidth: '900px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '40px',
+                        alignItems: 'center',
+                        margin: '0 auto',
+                    }}>
+                        {project.images.map((src, idx) => (
+                            <img
+                                key={src}
+                                ref={el => imageRefs.current[idx] = el}
+                                src={src}
+                                alt={`${project.title} - Image ${idx + 1}`}
+                                style={{
                                     width: '100%',
-                                    maxWidth: '900px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '40px',
-                                    alignItems: 'center',
-                                    margin: '0 auto',
-                                }}>
-                                    {project.images.map((src, idx) => (
-                                        <img
-                                            key={src}
-                                            ref={el => imageRefs.current[idx] = el}
-                                            src={src}
-                                            alt={`${project.title} - Image ${idx + 1}`}
-                                            style={{
-                                                width: '100%',
-                                                maxHeight: '80vh',
-                                                objectFit: 'contain',
-                                                borderRadius: '0',
-                                                boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                                                opacity: imageLoadStates[idx] ? 1 : 0.5,
-                                                transition: 'opacity 0.3s',
-                                                pointerEvents: 'none',
-                                            }}
-                                            onLoad={() => setImageLoadStates(prev => {
-                                                const next = [...prev];
-                                                next[idx] = true;
-                                                return next;
-                                            })}
-                                            onClick={e => e.stopPropagation()}
-                                        />
-                                    ))}
-                                </div>
-              </div>
+                                    maxHeight: '80vh',
+                                    objectFit: 'contain',
+                                    borderRadius: '0',
+                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                    opacity: imageLoadStates[idx] ? 1 : 0.5,
+                                    transition: 'opacity 0.3s',
+                                    pointerEvents: 'none',
+                                }}
+                                onLoad={() => setImageLoadStates(prev => {
+                                    const next = [...prev];
+                                    next[idx] = true;
+                                    return next;
+                                })}
+                                onClick={e => e.stopPropagation()}
+                            />
+                        ))}
+                    </div>
+                </div>
             )}
         </>
     );

@@ -231,12 +231,12 @@ export default function ContentManagement() {
     }
 
     const sections = [
-    { key: 'hero', label: 'Hero Section' },
-    { key: 'cta2', label: 'CTA 2 Section' },
-    { key: 'whyVerticalGardens', label: 'Why Vertical Gardens' },
-    { key: 'tapestryDifference', label: 'Tapestry Difference' },
-    { key: 'livingSculpture', label: 'Living Sculpture' },
-    { key: 'faqs', label: 'FAQs' }
+        { key: 'hero', label: 'Hero Section' },
+        { key: 'cta2', label: 'CTA 2 Section' },
+        { key: 'whyVerticalGardens', label: 'Why Vertical Gardens' },
+        { key: 'tapestryDifference', label: 'Tapestry Difference' },
+        { key: 'livingSculpture', label: 'Living Sculpture' },
+        { key: 'faqs', label: 'FAQs' }
     ];
 
     return (

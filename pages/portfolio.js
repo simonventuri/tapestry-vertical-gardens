@@ -31,7 +31,7 @@ export default function Portfolio() {
       setError(null);
 
       // Load first page
-  const response = await fetch(`/api/portfolio-paginated?page=1&limit=${projectsPerPage}`);
+      const response = await fetch(`/api/portfolio-paginated?page=1&limit=${projectsPerPage}`);
       if (!response.ok) {
         throw new Error('Failed to load projects');
       }
@@ -89,7 +89,7 @@ export default function Portfolio() {
 
     setPageLoading(true);
     try {
-  const response = await fetch(`/api/portfolio-paginated?page=${pageNumber}&limit=${projectsPerPage}`);
+      const response = await fetch(`/api/portfolio-paginated?page=${pageNumber}&limit=${projectsPerPage}`);
       if (response.ok) {
         const data = await response.json();
         setAllProjects(prev => {
@@ -117,7 +117,7 @@ export default function Portfolio() {
 
     setLoadingMore(true);
     try {
-  const response = await fetch(`/api/portfolio-paginated?page=${nextPage}&limit=${projectsPerPage}`);
+      const response = await fetch(`/api/portfolio-paginated?page=${nextPage}&limit=${projectsPerPage}`);
       if (response.ok) {
         const data = await response.json();
         setDisplayedProjects(prev => [...prev, ...data.projects]);

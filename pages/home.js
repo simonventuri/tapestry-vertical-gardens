@@ -257,7 +257,7 @@ export async function getServerSideProps(context) {
     const { getRedisClient } = await import('../lib/database');
     const redis = await getRedisClient();
     const storedContent = await redis.get('home:content');
-    
+
     if (storedContent) {
       const content = JSON.parse(storedContent);
       return {
@@ -266,7 +266,7 @@ export async function getServerSideProps(context) {
         }
       };
     }
-    
+
     // If no stored content, return default
     return {
       props: {
@@ -275,7 +275,7 @@ export async function getServerSideProps(context) {
     };
   } catch (error) {
     console.error('Error fetching content in getServerSideProps:', error);
-    
+
     // Return default content if anything fails
     return {
       props: {
