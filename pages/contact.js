@@ -385,7 +385,7 @@ export default function Contact() {
 
                         <div className="contact-company">
                             <h3>TAPESTRY VERTICAL GARDENS</h3>
-                            <p><a href="mailto:info@tapestryverticalgardens.com">info@tapestryverticalgardens.com</a></p>
+                            <p><a href="mailto:adam@tapestryverticalgardens.com">adam@tapestryverticalgardens.com</a></p>
                             <p>Greenslade Nursery<br />
                                 Greenslade Road<br />
                                 Blackawton<br />

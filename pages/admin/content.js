@@ -232,6 +232,7 @@ export default function ContentManagement() {
 
     const sections = [
         { key: 'hero', label: 'Hero Section' },
+        { key: 'cta2', label: 'CTA 2 Section' },
         { key: 'whyVerticalGardens', label: 'Why Vertical Gardens' },
         { key: 'tapestryDifference', label: 'Tapestry Difference' },
         { key: 'livingSculpture', label: 'Living Sculpture' },
@@ -370,10 +371,38 @@ export default function ContentManagement() {
                             borderRadius: '0',
                             padding: '20px'
                         }}>
+                            {activeSection === 'cta2' && (
+                                <div>
+                                    <h2 style={{ marginTop: 0, color: '#2d5016' }}>CTA 2 Section</h2>
+                                    {content.cta2 ? (
+                                        <>
+                                            <div style={{ marginBottom: '20px' }}>
+                                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Title</label>
+                                                <input type="text" value={content.cta2.title} onChange={(e) => updateContent('cta2', 'title', e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '0', fontSize: '16px' }} />
+                                            </div>
+                                            <div style={{ marginBottom: '20px' }}>
+                                                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Description</label>
+                                                <textarea value={content.cta2.description} onChange={(e) => updateContent('cta2', 'description', e.target.value)} rows={3} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '0', fontSize: '16px', resize: 'vertical' }} />
+                                            </div>
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                                <div>
+                                                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>CTA Button Text</label>
+                                                    <input type="text" value={content.cta2.ctaText} onChange={(e) => updateContent('cta2', 'ctaText', e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '0', fontSize: '16px' }} />
+                                                </div>
+                                                <div>
+                                                    <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>CTA Link</label>
+                                                    <input type="text" value={content.cta2.ctaLink} onChange={(e) => updateContent('cta2', 'ctaLink', e.target.value)} style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '0', fontSize: '16px' }} />
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div style={{ color: '#dc3545', fontWeight: 'bold' }}>CTA 2 section is missing from content. Please reset content or contact support.</div>
+                                    )}
+                                </div>
+                            )}
                             {activeSection === 'hero' && (
                                 <div>
                                     <h2 style={{ marginTop: 0, color: '#2d5016' }}>Hero Section</h2>
-
                                     <div style={{ marginBottom: '20px' }}>
                                         <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                                             Title
@@ -391,7 +420,6 @@ export default function ContentManagement() {
                                             }}
                                         />
                                     </div>
-
                                     <div style={{ marginBottom: '20px' }}>
                                         <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
                                             Subtitle

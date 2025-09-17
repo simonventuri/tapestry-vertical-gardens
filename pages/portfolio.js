@@ -18,7 +18,7 @@ export default function Portfolio() {
   const [hasMoreToLoad, setHasMoreToLoad] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const observerRef = useRef();
-  const projectsPerPage = 4;
+  const projectsPerPage = 6;
 
   // Load projects client-side
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function Portfolio() {
       setError(null);
 
       // Load first page
-      const response = await fetch('/api/portfolio-paginated?page=1&limit=4');
+      const response = await fetch(`/api/portfolio-paginated?page=1&limit=${projectsPerPage}`);
       if (!response.ok) {
         throw new Error('Failed to load projects');
       }
@@ -63,7 +63,7 @@ export default function Portfolio() {
     try {
       // Load pages 2 through totalPages in the background
       for (let page = 2; page <= totalPagesCount; page++) {
-        const response = await fetch(`/api/portfolio-paginated?page=${page}&limit=4`);
+        const response = await fetch(`/api/portfolio-paginated?page=${page}&limit=${projectsPerPage}`);
         if (response.ok) {
           const data = await response.json();
           setAllProjects(prev => {
@@ -89,7 +89,7 @@ export default function Portfolio() {
 
     setPageLoading(true);
     try {
-      const response = await fetch(`/api/portfolio-paginated?page=${pageNumber}&limit=4`);
+      const response = await fetch(`/api/portfolio-paginated?page=${pageNumber}&limit=${projectsPerPage}`);
       if (response.ok) {
         const data = await response.json();
         setAllProjects(prev => {
@@ -117,7 +117,7 @@ export default function Portfolio() {
 
     setLoadingMore(true);
     try {
-      const response = await fetch(`/api/portfolio-paginated?page=${nextPage}&limit=4`);
+      const response = await fetch(`/api/portfolio-paginated?page=${nextPage}&limit=${projectsPerPage}`);
       if (response.ok) {
         const data = await response.json();
         setDisplayedProjects(prev => [...prev, ...data.projects]);
@@ -172,8 +172,8 @@ export default function Portfolio() {
 
   const isMobile = windowWidth <= 768;
 
-  // Pagination logic - use different data source for mobile vs desktop
-  const currentProjects = isMobile ? displayedProjects : (allProjects.get(currentPage) || []);
+  // Infinite scroll for both desktop and mobile: show all loaded projects
+  const currentProjects = Array.from(allProjects.values()).flat();
 
   const goToNextPage = async () => {
     if (currentPage < totalPages) {
@@ -255,23 +255,13 @@ export default function Portfolio() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Head>
         <title>Portfolio - Tapestry Vertical Gardens</title>
         <meta name="description" content="Our portfolio of vertical gardens and living wall projects across the UK." />
       </Head>
-
       <Nav />
-
-      <main className="main-content" style={{
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+      <main className="main-content" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <div className="container" style={{ flexGrow: 1 }}>
           <style jsx>{`
             .spinner {
@@ -281,12 +271,10 @@ export default function Portfolio() {
               animation: spin 1s linear infinite;
               margin: 20px auto;
             }
-
             @keyframes spin {
               0% { transform: rotate(0deg); }
               100% { transform: rotate(360deg); }
             }
-
             .loading-container {
               display: flex;
               flex-direction: column;
@@ -295,7 +283,6 @@ export default function Portfolio() {
               padding: 80px 20px;
               text-align: center;
             }
-
             .error-container {
               display: flex;
               flex-direction: column;
@@ -305,7 +292,6 @@ export default function Portfolio() {
               text-align: center;
               color: #dc3545;
             }
-
             .retry-button {
               margin-top: 20px;
               padding: 12px 24px;
@@ -317,18 +303,15 @@ export default function Portfolio() {
               font-weight: 600;
               transition: background-color 0.3s ease;
             }
-
             .retry-button:hover {
               background: #1e3a0f;
             }
-
             .loading-text {
               margin-top: 20px;
               color: #6b7280;
               font-size: 18px;
             }
           `}</style>
-
           {loading ? (
             <div className="loading-container">
               <div className="spinner"></div>
@@ -351,94 +334,6 @@ export default function Portfolio() {
             </div>
           ) : (
             <div style={{ position: 'relative' }}>
-              {/* Navigation Arrows - Desktop Only */}
-              {totalPages > 1 && !isMobile && (
-                <>
-                  {/* Previous Arrow */}
-                  {currentPage > 1 && (
-                    <button
-                      onClick={goToPreviousPage}
-                      style={{
-                        position: 'absolute',
-                        left: isMobile ? '50%' : '-10px',
-                        top: isMobile ? '-60px' : '49%',
-                        transform: isMobile ? 'translateX(-50%)' : 'translateY(-50%)',
-                        background: '#fff',
-                        border: '2px solid #000',
-                        borderRadius: '0',
-                        cursor: 'pointer',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        color: '#000',
-                        textShadow: 'none',
-                        transition: 'all 0.3s ease',
-                        zIndex: 100,
-                        padding: '8px 12px',
-                        width: '40px',
-                        height: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = isMobile ? 'translateX(-50%) scale(1.1)' : 'translateY(-50%) scale(1.1)';
-                        e.currentTarget.style.backgroundColor = '#000';
-                        e.currentTarget.style.color = '#fff';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = isMobile ? 'translateX(-50%) scale(1)' : 'translateY(-50%) scale(1)';
-                        e.currentTarget.style.backgroundColor = '#fff';
-                        e.currentTarget.style.color = '#000';
-                      }}
-                    >
-                      {isMobile ? '▲' : '‹'}
-                    </button>
-                  )}
-
-                  {/* Next Arrow */}
-                  {currentPage < totalPages && (
-                    <button
-                      onClick={goToNextPage}
-                      style={{
-                        position: 'absolute',
-                        right: isMobile ? '50%' : '-10px',
-                        bottom: isMobile ? '-60px' : 'auto',
-                        top: isMobile ? 'auto' : '49%',
-                        transform: isMobile ? 'translateX(50%)' : 'translateY(-50%)',
-                        background: '#fff',
-                        border: '2px solid #000',
-                        borderRadius: '0',
-                        cursor: 'pointer',
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        color: '#000',
-                        textShadow: 'none',
-                        transition: 'all 0.3s ease',
-                        zIndex: 100,
-                        padding: '8px 12px',
-                        width: '40px',
-                        height: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = isMobile ? 'translateX(50%) scale(1.1)' : 'translateY(-50%) scale(1.1)';
-                        e.currentTarget.style.backgroundColor = '#000';
-                        e.currentTarget.style.color = '#fff';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = isMobile ? 'translateX(50%) scale(1)' : 'translateY(-50%) scale(1)';
-                        e.currentTarget.style.backgroundColor = '#fff';
-                        e.currentTarget.style.color = '#000';
-                      }}
-                    >
-                      {isMobile ? '▼' : '›'}
-                    </button>
-                  )}
-                </>
-              )}
-
               {pageLoading ? (
                 <div className="loading-container">
                   <div className="spinner"></div>
@@ -449,23 +344,21 @@ export default function Portfolio() {
                   gridTemplateColumns: getGridColumns(),
                   gap: getGridGap(),
                   margin: '2rem 0 0 0',
-                  padding: '5px calc(12% - 5px)' // Reduced padding by 5px
+                  padding: '5px calc(12% - 5px)'
                 }}>
                   {currentProjects.map((project) => (
                     <Link href={`/projects/${project.slug}`} key={project.id} className="project-card"
                       style={getCardStyle(project.id)}
                       onMouseEnter={(e) => {
                         if (typeof window !== 'undefined' && !isTouchDevice()) {
-                          e.currentTarget.style.transform = 'scale(1.0)'; // No size change on hover
-                          // Show overlay
+                          e.currentTarget.style.transform = 'scale(1.0)';
                           const overlay = e.currentTarget.querySelector('.project-info');
                           if (overlay) overlay.style.opacity = '1';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (typeof window !== 'undefined' && !isTouchDevice()) {
-                          e.currentTarget.style.transform = 'scale(1.0)'; // Stay at full size
-                          // Hide overlay
+                          e.currentTarget.style.transform = 'scale(1.0)';
                           const overlay = e.currentTarget.querySelector('.project-info');
                           if (overlay) overlay.style.opacity = '0';
                         }
@@ -518,67 +411,16 @@ export default function Portfolio() {
                   ))}
                 </div>
               )}
-
-              {/* Pagination Indicators - Desktop Only */}
-              {totalPages > 1 && !loading && !pageLoading && !isMobile && (
+              <div ref={observerRef} style={{ height: '10px', width: '100%' }} />
+              {(loadingMore || backgroundLoading) && (
                 <div style={{
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  margin: '1rem 0',
-                  gap: '8px'
+                  padding: '2rem 0'
                 }}>
-                  {Array.from({ length: totalPages }, (_, index) => (
-                    <button
-                      key={index + 1}
-                      onClick={() => {
-                        const targetPage = index + 1;
-                        if (targetPage !== currentPage) {
-                          if (targetPage > currentPage) {
-                            for (let i = 0; i < (targetPage - currentPage); i++) {
-                              setTimeout(() => goToNextPage(), i * 100);
-                            }
-                          } else {
-                            for (let i = 0; i < (currentPage - targetPage); i++) {
-                              setTimeout(() => goToPreviousPage(), i * 100);
-                            }
-                          }
-                        }
-                      }}
-                      style={{
-                        width: '12px',
-                        height: '12px',
-                        borderRadius: '0',
-                        border: '1px solid #000',
-                        backgroundColor: currentPage === (index + 1) ? '#000' : '#fff',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                        padding: '0'
-                      }}
-                      aria-label={`Go to page ${index + 1}`}
-                    />
-                  ))}
+                  <div className="spinner"></div>
                 </div>
-              )}
-
-              {/* Infinite Scroll Trigger and Loading - Mobile Only */}
-              {isMobile && (
-                <>
-                  {/* Trigger element for infinite scroll */}
-                  <div ref={observerRef} style={{ height: '10px', width: '100%' }} />
-
-                  {/* Loading indicator for infinite scroll */}
-                  {loadingMore && (
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '2rem 0'
-                    }}>
-                      <div className="spinner"></div>
-                    </div>
-                  )}
-                </>
               )}
             </div>
           )}

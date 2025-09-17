@@ -42,6 +42,12 @@ const defaultContent = {
             }
         ]
     },
+    cta2: {
+        title: "Ready to Transform Your Space?",
+        description: "Contact us today for a free consultation and discover how a living wall can elevate your environment.",
+        ctaText: "Book a Free Consultation",
+        ctaLink: "/contact"
+    },
     tapestryDifference: {
         title: "The Tapestry Difference",
         subtitle: "We transform walls into dynamic, living installations built to thrive and inspire for years.",

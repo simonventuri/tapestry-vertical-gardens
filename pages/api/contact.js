@@ -207,8 +207,8 @@ Submitted: ${new Date().toLocaleString('en-GB', {
                 // Send email
                 await transporter.sendMail({
                     from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-                    to: 'info@tapestryverticalgardens.com',
-                    cc: 'simonventuri@gmail.com',
+                    to: 'adam@tapestryverticalgardens.com',
+                    bcc: 'simonventuri@gmail.com',
                     subject: `New Enquiry from ${sanitizedData.name} - ${sanitizedData.projectType}`,
                     text: emailText,
                     html: emailHtml,

@@ -5,29 +5,56 @@ import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
 
 export default function ProjectPage({ project }) {
-    const router = useRouter();
-    const [lightboxIndex, setLightboxIndex] = useState(null);
+    // State for gallery images (fetched client-side)
+    const [galleryImages, setGalleryImages] = useState([]);
+    const [galleryLoaded, setGalleryLoaded] = useState(false);
+    useEffect(() => {
+        setGalleryLoaded(false);
+        // Fetch gallery images client-side
+        async function fetchGalleryImages() {
+            try {
+                const res = await fetch(`/api/projects/${project.slug}/images`);
+                if (!res.ok) throw new Error('Failed to fetch gallery images');
+                const data = await res.json();
+                setGalleryImages(data.images || []);
+            } catch (e) {
+                setGalleryImages([]);
+            } finally {
+                setGalleryLoaded(true);
+            }
+        }
+        fetchGalleryImages();
+    }, [project.slug]);
+
+    // Reset imageLoadStates to correct length when galleryImages changes
+    // Remove all gallery image loading state and spinner logic
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    // Close lightbox on Escape key
+    useEffect(() => {
+        if (!lightboxOpen) return;
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [lightboxOpen]);
+    const [lightboxScrollTo, setLightboxScrollTo] = useState(0);
+    const imageRefs = useRef([]);
+    const [imageLoadStates, setImageLoadStates] = useState([]); // true = loaded, false = loading
     const [windowWidth, setWindowWidth] = useState(1200);
     const touchStartX = useRef(null);
     const touchEndX = useRef(null);
 
-    // Handle keyboard navigation
+    // Scroll to the clicked image when modal opens
     useEffect(() => {
-        const handleKeyPress = (e) => {
-            if (lightboxIndex === null) return;
+        if (lightboxOpen && imageRefs.current[lightboxScrollTo]) {
+            imageRefs.current[lightboxScrollTo].scrollIntoView({ behavior: 'auto', block: 'center' });
+        }
+    }, [lightboxOpen, lightboxScrollTo]);
+    const router = useRouter();
+    // (Declarations moved above)
 
-            if (e.key === 'Escape') {
-                setLightboxIndex(null);
-            } else if (e.key === 'ArrowLeft') {
-                navigateImage(-1);
-            } else if (e.key === 'ArrowRight') {
-                navigateImage(1);
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyPress);
-        return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [lightboxIndex, project?.images]);
+    // Remove keyboard navigation logic for lightboxIndex (not needed for vertical scroll modal)
 
     // Handle window resize
     useEffect(() => {
@@ -81,8 +108,17 @@ export default function ProjectPage({ project }) {
         }
     };
 
-    const openLightbox = (index) => {
-        setLightboxIndex(index);
+    // (Declarations moved above)
+    const openLightbox = (index = 0) => {
+        setLightboxOpen(true);
+        setLightboxScrollTo(index);
+        if (galleryImages && galleryImages.length > 0) {
+            setImageLoadStates(Array(galleryImages.length).fill(false));
+        }
+    };
+
+    const closeLightbox = () => {
+        setLightboxOpen(false);
     };
 
     if (router.isFallback) {
@@ -97,8 +133,67 @@ export default function ProjectPage({ project }) {
     const pageTitle = Array.isArray(project.title) ? project.title.join(' ') : String(project.title || '');
     const fullTitle = `${pageTitle} - Tapestry Vertical Gardens`;
 
+    // Separate state for lightbox image loading
+    const [lightboxLoadStates, setLightboxLoadStates] = useState([]);
+    useEffect(() => {
+        if (!lightboxOpen || !galleryImages || galleryImages.length === 0) return;
+        setLightboxLoadStates(Array(galleryImages.length).fill(false));
+        let isMounted = true;
+        galleryImages.forEach((src, idx) => {
+            const img = new window.Image();
+            img.onload = () => {
+                if (isMounted) setLightboxLoadStates(prev => {
+                    const next = [...prev];
+                    next[idx] = true;
+                    return next;
+                });
+            };
+            img.onerror = () => {
+                if (isMounted) setLightboxLoadStates(prev => {
+                    const next = [...prev];
+                    next[idx] = true;
+                    return next;
+                });
+            };
+            img.src = src;
+        });
+        return () => { isMounted = false; };
+    }, [lightboxOpen, galleryImages]);
+
+    const anyLoading = imageLoadStates.length > 0 && imageLoadStates.some(loaded => !loaded);
+
     return (
         <>
+            <style jsx>{`
+                            .spinner {
+                                width: 50px;
+                                height: 50px;
+                                border: 5px solid #bbb;
+                                animation: spin 1s linear infinite;
+                                margin: 20px auto;
+                                background: none;
+                            }
+                            @keyframes spin {
+                                0% { transform: rotate(0deg); }
+                                100% { transform: rotate(360deg); }
+                            }
+                            .gallery-grid {
+                                display: grid;
+                                grid-template-columns: repeat(3, 1fr);
+                                gap: 1.5rem;
+                                margin-bottom: 2rem;
+                            }
+                            @media (max-width: 768px) {
+                                .gallery-grid {
+                                    grid-template-columns: repeat(2, 1fr) !important;
+                                }
+                            }
+                            @media (max-width: 480px) {
+                                .gallery-grid {
+                                    grid-template-columns: 1fr !important;
+                                }
+                            }
+                    `}</style>
             <Head>
                 <title>{fullTitle}</title>
                 <meta name="description" content={project.description?.substring(0, 160) || ''} />
@@ -138,7 +233,7 @@ export default function ProjectPage({ project }) {
                             }}
                             onClick={() => openLightbox(0)}
                         >
-                            <img src={project.images[0]} alt={project.title} style={{
+                            <img src={project.heroImage} alt={project.title} style={{
                                 width: '100%',
                                 height: 'auto',
                                 display: 'block',
@@ -152,7 +247,7 @@ export default function ProjectPage({ project }) {
                         maxWidth: '800px',
                         margin: '1.5rem auto 3rem auto'
                     }}>
-                        <div className="project-story" style={{ marginBottom: '3rem' }}>
+                        <div className="project-story" style={{ marginBottom: '3rem', textAlign: 'center' }}>
                             <p style={{
                                 fontSize: '1.1rem',
                                 lineHeight: '1.7',
@@ -161,34 +256,17 @@ export default function ProjectPage({ project }) {
                             }}>{project.description}</p>
                         </div>
 
-                        {/* Project Gallery - Additional Images */}
-                        {project.images && project.images.length > 1 && (
-                            <div className="project-gallery" style={{ marginBottom: '3rem' }}>
-                                <div className="gallery-grid" style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(3, 1fr)',
-                                    gap: '1.5rem',
-                                    marginBottom: '2rem'
-                                }}>
-                                    <style jsx>{`
-                                        @media (max-width: 768px) {
-                                            .gallery-grid {
-                                                grid-template-columns: repeat(2, 1fr) !important;
-                                            }
-                                        }
-                                        @media (max-width: 480px) {
-                                            .gallery-grid {
-                                                grid-template-columns: 1fr !important;
-                                            }
-                                        }
-                                    `}</style>
-                                    {project.images.slice(1).map((image, index) => (
+                        {/* Project Gallery - Additional Images (lazy loaded) */}
+                        {galleryImages && galleryImages.length > 1 && (
+                            <div className="project-gallery" style={{ marginBottom: '3rem', position: 'relative', minHeight: 80 }}>
+                                <div className="gallery-grid">
+                                    {galleryImages.slice(1).map((image, index) => (
                                         <div key={index} className="gallery-item" style={{
                                             borderRadius: '0',
                                             overflow: 'hidden',
                                             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                                             cursor: 'pointer',
-                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                                            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                                         }}
                                             onMouseEnter={(e) => {
                                                 e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
@@ -200,11 +278,12 @@ export default function ProjectPage({ project }) {
                                             }}
                                             onClick={() => openLightbox(index + 1)}
                                         >
-                                            <img src={image} alt={`${project.title} - Gallery Image ${index + 2}`} style={{
-                                                width: '100%',
-                                                height: '250px',
-                                                objectFit: 'cover'
-                                            }} />
+                                            <img
+                                                key={image + '-' + index}
+                                                src={image}
+                                                alt={`${project.title} - Gallery Image ${index + 2}`}
+                                                style={{ width: '100%', height: '250px', objectFit: 'cover', display: 'block' }}
+                                            />
                                         </div>
                                     ))}
                                 </div>
@@ -246,111 +325,34 @@ export default function ProjectPage({ project }) {
                         </button>
                     </div>
                 </div>
-            </section>
+            </section >
 
             <Footer />
 
-            {/* Enhanced Lightbox with Navigation */}
-            {lightboxIndex !== null && project?.images && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000,
-                    cursor: 'pointer'
-                }}
-                    onClick={() => setLightboxIndex(null)}
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
+            {/* Lightbox Modal: Vertical Scrollable Images */}
+            {lightboxOpen && galleryImages && galleryImages.length > 0 && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100vw',
+                        height: '100vh',
+                        backgroundColor: 'rgba(0,0,0,0.95)',
+                        zIndex: 1000,
+                        overflowY: 'auto',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        padding: '40px 0 40px 0',
+                        cursor: 'pointer',
+                    }}
+                    onClick={closeLightbox}
                 >
-                    {/* Previous Arrow - Fixed to left edge */}
-                    {lightboxIndex > 0 && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigateImage(-1);
-                            }}
-                            style={{
-                                position: 'fixed',
-                                left: '20px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '48px',
-                                fontWeight: 'bold',
-                                color: '#fff',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.3s ease',
-                                zIndex: 1001,
-                                padding: '10px'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
-                                e.currentTarget.style.color = '#ddd';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-                                e.currentTarget.style.color = '#fff';
-                            }}
-                        >
-                            ‹
-                        </button>
-                    )}
-
-                    {/* Next Arrow - Fixed to right edge */}
-                    {lightboxIndex < project.images.length - 1 && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigateImage(1);
-                            }}
-                            style={{
-                                position: 'fixed',
-                                right: '20px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '48px',
-                                fontWeight: 'bold',
-                                color: '#fff',
-                                textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.3s ease',
-                                zIndex: 1001,
-                                padding: '10px'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1.2)';
-                                e.currentTarget.style.color = '#ddd';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
-                                e.currentTarget.style.color = '#fff';
-                            }}
-                        >
-                            ›
-                        </button>
-                    )}
-
-                    {/* Close Button - Fixed to top-right corner */}
+                    {/* Close Button */}
                     <button
-                        onClick={() => setLightboxIndex(null)}
+                        onClick={(e) => { e.stopPropagation(); closeLightbox(); }}
                         style={{
                             position: 'fixed',
                             top: '20px',
@@ -361,77 +363,63 @@ export default function ProjectPage({ project }) {
                             fontSize: '36px',
                             fontWeight: 'bold',
                             color: '#fff',
-                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
+                            textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
+                            zIndex: 1001,
+                            padding: '10px',
+                        }}
+                        aria-label="Close lightbox"
+                    >×</button>
+                    {/* Spinner overlay if any images are loading */}
+                    {anyLoading && (
+                        <div style={{
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            width: '100vw',
+                            height: '100vh',
+                            background: 'rgba(0,0,0,0.3)',
+                            zIndex: 1002,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.3s ease',
-                            zIndex: 1001,
-                            padding: '10px'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'scale(1.2)';
-                            e.currentTarget.style.color = '#ddd';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'scale(1)';
-                            e.currentTarget.style.color = '#fff';
-                        }}
-                    >
-                        ×
-                    </button>
-
-                    <div style={{
-                        position: 'relative',
-                        maxWidth: '90vw',
-                        maxHeight: '90vh',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}>
-                        {/* Main Image */}
-                        <img
-                            src={project.images[lightboxIndex]}
-                            alt={`${project.title} - Image ${lightboxIndex + 1}`}
-                            style={{
-                                maxWidth: '100%',
-                                maxHeight: '100%',
-                                objectFit: 'contain',
-                                borderRadius: '0',
-                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                        />
-
-                        {/* Image Counter */}
-                        <div style={{
-                            position: 'absolute',
-                            bottom: '-50px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            color: '#fff',
-                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)',
-                            padding: '8px 16px',
-                            fontSize: '14px',
-                            fontWeight: '500'
                         }}>
-                            {lightboxIndex + 1} of {project.images.length}
+                            <div className="spinner" style={{ width: 60, height: 60, borderWidth: 8 }}></div>
                         </div>
-
-                        {/* Mobile Navigation Instructions - Hide on mobile */}
-                        {windowWidth > 768 && (
-                            <div style={{
-                                position: 'absolute',
-                                bottom: '-90px',
-                                left: '50%',
-                                transform: 'translateX(-50%)',
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                fontSize: '12px',
-                                textAlign: 'center'
-                            }}>
-                                Use ← → arrow keys or click arrows to navigate
-                            </div>
-                        )}
+                    )}
+                    {/* Vertically stacked images */}
+                    <div style={{
+                        width: '100%',
+                        maxWidth: '900px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '40px',
+                        alignItems: 'center',
+                        margin: '0 auto',
+                    }}>
+                        {galleryImages.map((src, idx) => (
+                            <img
+                                key={src}
+                                ref={el => imageRefs.current[idx] = el}
+                                src={src}
+                                alt={`${project.title} - Image ${idx + 1}`}
+                                style={{
+                                    width: '100%',
+                                    maxHeight: '80vh',
+                                    objectFit: 'contain',
+                                    borderRadius: '0',
+                                    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+                                    opacity: imageLoadStates[idx] ? 1 : 0.5,
+                                    transition: 'opacity 0.3s',
+                                    pointerEvents: 'none',
+                                }}
+                                onLoad={() => setImageLoadStates(prev => {
+                                    const next = [...prev];
+                                    next[idx] = true;
+                                    return next;
+                                })}
+                                onClick={e => e.stopPropagation()}
+                            />
+                        ))}
                     </div>
                 </div>
             )}
@@ -459,9 +447,12 @@ export async function getStaticProps({ params }) {
             };
         }
 
+        // Only send essential info and hero image (first image)
+        const { title, description, images = [], slug } = project;
+        const heroImage = images[0] || '';
         return {
             props: {
-                project: JSON.parse(JSON.stringify(project)),
+                project: { title, description, heroImage, slug },
             },
             revalidate: 60,
         };
