@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/about',
+        destination: '/contact',
+        permanent: true, // 301
+      },
+    ];
+  },
   // basePath: "/tapestry-vertical-gardens",
   // output: "export",
   reactStrictMode: true,
