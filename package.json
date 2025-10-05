@@ -12,7 +12,12 @@
     "generate-favicons": "node scripts/generate-favicons.js",
     "production-check": "npm run build && npm run generate-favicons",
     "migrate-images": "node scripts/migrate-images.js",
-    "migrate-to-base64": "node scripts/migrate-to-base64.js"
+    "migrate-to-base64": "node scripts/migrate-to-base64.js",
+    "migrate-redis": "node scripts/migrate-redis.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop tapestry-vertical-gardens",
+    "pm2:restart": "pm2 restart tapestry-vertical-gardens",
+    "pm2:logs": "pm2 logs tapestry-vertical-gardens"
   },
   "dependencies": {
     "@next/third-parties": "^15.5.2",
