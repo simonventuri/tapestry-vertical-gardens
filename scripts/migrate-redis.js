@@ -1,3 +1,5 @@
+const { createClient } = require('redis');
+
 // Remote Redis connection (your current Vercel setup)
 const remoteRedis = createClient({
     url: process.env.REMOTE_REDIS_URL, // Your current Vercel Redis URL
