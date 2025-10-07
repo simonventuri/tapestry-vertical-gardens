@@ -13,6 +13,16 @@ export default function Footer() {
           <div className="footer-text">
             <p>&copy; {new Date().getFullYear()} Tapestry Vertical Gardens.<br />All rights reserved.</p>
             <p>Tapestry Vertical Gardens &mdash; vibrant, sustainable, and grown in Devon.</p>
+            <p>
+              <a 
+                href="https://www.venturiwebconsulting.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="site-credit"
+              >
+                Site by VENTURI
+              </a>
+            </p>
           </div>
           <div className="footer-links">
             <button
