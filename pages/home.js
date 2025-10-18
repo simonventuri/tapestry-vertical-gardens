@@ -53,9 +53,7 @@ export default function Home({ initialContent }) {
       <div className="container">
         <h1>{content.hero.title}</h1>
         <h2>{content.hero.subtitle}</h2>
-        <p className="lead">
-          {content.hero.description}
-        </p>
+        <p className="lead" dangerouslySetInnerHTML={{ __html: content.hero.description }}></p>
         <div>
           <a className="btn btn-large" href={content.hero.ctaLink}>{content.hero.ctaText}</a>
         </div>
@@ -70,16 +68,14 @@ export default function Home({ initialContent }) {
       <div className="container">
         <div className="section-header">
           <h2>{content.whyVerticalGardens.title}</h2>
-          <p className="section-subtitle">
-            {content.whyVerticalGardens.subtitle}
-          </p>
+          <p className="section-subtitle" dangerouslySetInnerHTML={{ __html: content.whyVerticalGardens.subtitle }}></p>
         </div>
 
         <div className="grid grid-2">
           {content.whyVerticalGardens.benefits.map((benefit, index) => (
             <div key={index} className="card">
-              <h3>{benefit.title}</h3>
-              <p>{benefit.description}</p>
+              <h3 dangerouslySetInnerHTML={{ __html: benefit.title }}></h3>
+              <p dangerouslySetInnerHTML={{ __html: benefit.description }}></p>
             </div>
           ))}
         </div>
@@ -92,7 +88,7 @@ export default function Home({ initialContent }) {
       <section className="content-section" style={{ background: 'var(--bg-alt)' }}>
         <div className="container" style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto' }}>
           <h2>{content.cta2.title}</h2>
-          <p className="section-subtitle" style={{ marginBottom: '2rem' }}>{content.cta2.description}</p>
+          <p className="section-subtitle" style={{ marginBottom: '2rem' }} dangerouslySetInnerHTML={{ __html: content.cta2.description }}></p>
           <a className="btn btn-large" href={content.cta2.ctaLink}>{content.cta2.ctaText}</a>
         </div>
       </section>
@@ -103,25 +99,21 @@ export default function Home({ initialContent }) {
       <div className="container">
         <div className="section-header">
           <h2>{content.tapestryDifference.title}</h2>
-          <p className="section-subtitle">
-            {content.tapestryDifference.subtitle}
-          </p>
+          <p className="section-subtitle" dangerouslySetInnerHTML={{ __html: content.tapestryDifference.subtitle }}></p>
         </div>
 
         <div className="grid grid-2">
           {content.tapestryDifference.features.map((feature, index) => (
             <div key={index} className="card">
               <h3 dangerouslySetInnerHTML={{ __html: feature.title }}></h3>
-              <p>{feature.description}</p>
+              <p dangerouslySetInnerHTML={{ __html: feature.description }}></p>
             </div>
           ))}
         </div>
 
         <div className="container">
           <h2 style={{ marginTop: '4rem' }}>{content.livingSculpture.title}</h2>
-          <p style={{ textAlign: 'center' }}>
-            {content.livingSculpture.description}
-          </p>
+          <p style={{ textAlign: 'center' }} dangerouslySetInnerHTML={{ __html: content.livingSculpture.description }}></p>
           <div className="hero-image" style={{ textAlign: 'center' }}>
             <img src={content.livingSculpture.image} alt={content.livingSculpture.imageAlt} />
           </div>
