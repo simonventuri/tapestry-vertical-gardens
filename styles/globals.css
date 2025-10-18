@@ -650,6 +650,25 @@ footer {
     color: #0f172a;
 }
 
+.site-credit {
+    color: var(--text-lighter);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+}
+
+.site-credit:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+}
+
 footer p {
     color: var(--text-lighter);
     margin: 0;

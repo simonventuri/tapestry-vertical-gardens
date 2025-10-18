@@ -5,6 +5,12 @@ import { useRouter } from 'next/router';
 import { useState, useEffect, useRef } from 'react';
 
 export default function ProjectPage({ project }) {
+    // Helper function to strip HTML tags for meta description
+    const stripHtml = (html) => {
+        if (!html) return '';
+        return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    };
+
     // State for gallery images (fetched client-side)
     const [galleryImages, setGalleryImages] = useState([]);
     const [galleryLoaded, setGalleryLoaded] = useState(false);
@@ -196,7 +202,7 @@ export default function ProjectPage({ project }) {
                     `}</style>
             <Head>
                 <title>{fullTitle}</title>
-                <meta name="description" content={project.description?.substring(0, 160) || ''} />
+                <meta name="description" content={stripHtml(project.description)?.substring(0, 160) || ''} />
             </Head>
 
             <Nav />
@@ -248,12 +254,12 @@ export default function ProjectPage({ project }) {
                         margin: '1.5rem auto 3rem auto'
                     }}>
                         <div className="project-story" style={{ marginBottom: '3rem', textAlign: 'center' }}>
-                            <p style={{
+                            <div style={{
                                 fontSize: '1.1rem',
                                 lineHeight: '1.7',
                                 color: 'var(--color-text)',
                                 marginBottom: '1.5rem'
-                            }}>{project.description}</p>
+                            }} dangerouslySetInnerHTML={{ __html: project.description }}></div>
                         </div>
 
                         {/* Project Gallery - Additional Images (lazy loaded) */}
