@@ -61,7 +61,32 @@ async function handler(req, res) {
             });
         } catch (error) {
             console.error('Error updating project:', error);
-            res.status(500).json({ message: 'Internal server error' });
+            console.error('Error details:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+                projectId: id,
+                requestBody: {
+                    title: req.body.title?.substring(0, 50),
+                    description: req.body.description?.substring(0, 100),
+                    slug: req.body.slug
+                }
+            });
+            
+            // Provide more specific error messages
+            let errorMessage = 'Internal server error';
+            if (error.message.includes('Redis')) {
+                errorMessage = 'Database connection error. Please check Redis service.';
+            } else if (error.message.includes('Project not found')) {
+                errorMessage = 'Project not found';
+            } else if (error.message.includes('ECONNREFUSED')) {
+                errorMessage = 'Database service unavailable. Please contact admin.';
+            }
+            
+            res.status(500).json({ 
+                message: errorMessage,
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
         }
     } else if (req.method === 'DELETE') {
         // Delete project

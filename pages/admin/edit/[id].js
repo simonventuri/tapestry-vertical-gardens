@@ -171,7 +171,13 @@ export default function EditProject({ project, isAuthenticated }) {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to save project');
+                const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
+                console.error('Server response error:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    errorData
+                });
+                throw new Error(errorData.message || `Server error: ${response.status}`);
             }
 
             const updatedProject = await response.json();
@@ -217,7 +223,25 @@ export default function EditProject({ project, isAuthenticated }) {
             }
         } catch (error) {
             console.error('Error saving project:', error);
-            alert('Error saving project. Please try again.');
+            
+            // Show more specific error message
+            let userMessage = 'Error saving project. Please try again.';
+            if (error.message.includes('Database connection error')) {
+                userMessage = 'Database connection error. Please contact the administrator.';
+            } else if (error.message.includes('Database service unavailable')) {
+                userMessage = 'Database service is currently unavailable. Please try again later.';
+            } else if (error.message.includes('Server error: 401')) {
+                userMessage = 'Your session has expired. Please log in again.';
+                // Redirect to login
+                router.push('/admin/login');
+                return;
+            } else if (error.message.includes('Server error: 404')) {
+                userMessage = 'Project not found. It may have been deleted.';
+            } else if (error.message !== 'Error saving project. Please try again.') {
+                userMessage = error.message;
+            }
+            
+            alert(userMessage);
         } finally {
             setSaving(false);
         }
