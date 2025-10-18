@@ -1,4 +1,4 @@
-import { updateProject, deleteProject } from '../../../../lib/database';
+import { updateProject, deleteProject, getRedisClient } from '../../../../lib/database';
 import { requireAuth } from '../../../../lib/auth';
 import { processProjectImages } from '../../../../lib/imageUtils';
 
@@ -19,13 +19,34 @@ async function handler(req, res) {
         try {
             const { title, description, slug, category, location, year, size, images, features, plants, visible } = req.body;
 
+            // Debug logging
+            console.log('Received update request for project:', id);
+            console.log('Request body keys:', Object.keys(req.body));
+
+            // Check payload size
+            const payloadSize = JSON.stringify(req.body).length;
+            console.log('Payload size:', payloadSize, 'bytes (', Math.round(payloadSize / 1024), 'KB )');
+
+            if (payloadSize > 10 * 1024 * 1024) { // 10MB warning
+                console.warn('Large payload detected:', Math.round(payloadSize / 1024 / 1024), 'MB');
+            }
+
+            console.log('Data types:', {
+                title: typeof title,
+                description: typeof description,
+                slug: typeof slug,
+                features: typeof features,
+                plants: typeof plants,
+                images: Array.isArray(images) ? `array[${images.length}]` : typeof images
+            });
+
             // Validate required fields
             if (!title || !description || !slug) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
             // Get existing project data to handle image updates
-            const redis = await (await import('../../../../lib/database')).getRedisClient();
+            const redis = await getRedisClient();
             const existingProject = await redis.hGetAll(`portfolio:${id}`);
 
             if (!existingProject.id) {
@@ -72,7 +93,7 @@ async function handler(req, res) {
                     slug: req.body.slug
                 }
             });
-            
+
             // Provide more specific error messages
             let errorMessage = 'Internal server error';
             if (error.message.includes('Redis')) {
@@ -82,8 +103,8 @@ async function handler(req, res) {
             } else if (error.message.includes('ECONNREFUSED')) {
                 errorMessage = 'Database service unavailable. Please contact admin.';
             }
-            
-            res.status(500).json({ 
+
+            res.status(500).json({
                 message: errorMessage,
                 details: process.env.NODE_ENV === 'development' ? error.message : undefined
             });

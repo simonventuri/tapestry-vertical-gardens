@@ -24,22 +24,22 @@ async function handler(req, res) {
         try {
             const { getRedisClient } = await import('../../../lib/database');
             const redis = await getRedisClient();
-            
+
             // Simple Redis test
             await redis.ping();
             diagnostics.redis = {
                 status: 'connected',
                 message: 'Redis connection successful'
             };
-            
+
             // Test basic Redis operations
             const testKey = `diagnostic:${Date.now()}`;
             await redis.set(testKey, 'test-value', { EX: 10 });
             const testValue = await redis.get(testKey);
             await redis.del(testKey);
-            
+
             diagnostics.redis.operationsTest = testValue === 'test-value' ? 'passed' : 'failed';
-            
+
         } catch (redisError) {
             diagnostics.redis = {
                 status: 'error',
@@ -49,11 +49,11 @@ async function handler(req, res) {
         }
 
         res.status(200).json(diagnostics);
-        
+
     } catch (error) {
         console.error('Diagnostic error:', error);
-        res.status(500).json({ 
-            error: 'Diagnostic failed', 
+        res.status(500).json({
+            error: 'Diagnostic failed',
             message: error.message,
             timestamp: new Date().toISOString()
         });

@@ -14,9 +14,9 @@ export default function Footer() {
             <p>&copy; {new Date().getFullYear()} Tapestry Vertical Gardens.<br />All rights reserved.</p>
             <p>Tapestry Vertical Gardens &mdash; vibrant, sustainable, and grown in Devon.</p>
             <p>
-              <a 
-                href="https://www.venturiwebconsulting.com" 
-                target="_blank" 
+              <a
+                href="https://www.venturiwebconsulting.com"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="site-credit"
               >

@@ -155,12 +155,33 @@ export default function EditProject({ project, isAuthenticated }) {
         setSaving(true);
 
         try {
+            // Helper function to ensure arrays are properly parsed
+            const ensureArray = (value) => {
+                if (Array.isArray(value)) return value;
+                if (typeof value === 'string') {
+                    try {
+                        const parsed = JSON.parse(value);
+                        return Array.isArray(parsed) ? parsed : [];
+                    } catch {
+                        return [];
+                    }
+                }
+                return [];
+            };
+
             const updateData = {
                 ...formData,
                 images: projectImages,
-                features: project.features || [],
-                plants: project.plants || []
+                features: ensureArray(project.features),
+                plants: ensureArray(project.plants)
             };
+
+            // Debug logging
+            console.log('Sending update data:', {
+                ...updateData,
+                images: `[${updateData.images.length} images]`, // Don't log full image data
+                description: updateData.description?.substring(0, 100) + '...'
+            });
 
             const response = await fetch(`/api/admin/projects/${project.id}`, {
                 method: 'PUT',
@@ -223,7 +244,7 @@ export default function EditProject({ project, isAuthenticated }) {
             }
         } catch (error) {
             console.error('Error saving project:', error);
-            
+
             // Show more specific error message
             let userMessage = 'Error saving project. Please try again.';
             if (error.message.includes('Database connection error')) {
@@ -240,7 +261,7 @@ export default function EditProject({ project, isAuthenticated }) {
             } else if (error.message !== 'Error saving project. Please try again.') {
                 userMessage = error.message;
             }
-            
+
             alert(userMessage);
         } finally {
             setSaving(false);
