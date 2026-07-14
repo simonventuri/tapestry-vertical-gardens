@@ -1,19 +1,23 @@
 import { createToken } from '../../../lib/auth';
 
-// Simple hardcoded credentials - in production, use environment variables and proper hashing
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'jMtKDUVma1j2LXN5';
+// Admin credentials are configured via environment variables (see .env.example)
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 export default function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
+    if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+        console.error('ADMIN_USERNAME / ADMIN_PASSWORD environment variables are not set');
+        return res.status(500).json({ error: 'Server not configured for authentication' });
+    }
+
     const { username, password } = req.body;
 
-    // Simple credential check - using hardcoded credentials and environment fallback
-    const isValidCredentials = (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) ||
-        (username === process.env.ADMIN_USERNAME && password === process.env.ADMIN_PASSWORD);
+    // Credential check against configured environment variables
+    const isValidCredentials = username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
 
     if (!isValidCredentials) {
         console.log('Invalid credentials attempted:', username);
