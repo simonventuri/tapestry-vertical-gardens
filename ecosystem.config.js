@@ -6,8 +6,8 @@ module.exports = {
     cwd: '/var/www/tapestry-vertical-gardens',
     env: {
       NODE_ENV: 'production',
-      PORT: 3000,
-      REDIS_PASSWORD: 'LfL4l3Y6rTqzaudi'
+      PORT: 3000
+      // REDIS_PASSWORD and other secrets are loaded from .env.production (see env_file below)
     },
     instances: 1,
     autorestart: true,
