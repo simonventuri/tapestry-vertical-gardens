@@ -1,8 +1,8 @@
 import { createToken } from '../../../lib/auth';
 
 // Simple hardcoded credentials - in production, use environment variables and proper hashing
-const ADMIN_USERNAME = 'joey_deacon';
-const ADMIN_PASSWORD = 'spazzmatron2025';
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'jMtKDUVma1j2LXN5';
 
 export default function handler(req, res) {
     if (req.method !== 'POST') {
